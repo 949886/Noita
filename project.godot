@@ -1,0 +1,21 @@
+; Engine configuration file.
+; Godot 4.7 demo project.
+
+config_version=5
+
+[application]
+config/name="Noita Wang TileMapLayer Demo"
+run/main_scene="res://scenes/World.tscn"
+config/features=PackedStringArray("4.7")
+config/icon="res://icon.svg"
+
+[display]
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/stretch/mode="canvas_items"
+
+[rendering]
+textures/canvas_textures/default_texture_filter=0
+
+[editor_plugins]
+enabled=PackedStringArray("res://addons/noita_world_gen/plugin.cfg")

@@ -1,0 +1,1461 @@
+[gd_resource type="Resource" script_class="TileAtlasDef" load_steps=99 format=3]
+
+[ext_resource type="Script" path="res://scripts/tiles/TileAtlasDef.gd" id="1"]
+[ext_resource type="Texture2D" path="res://resources/tilesets/atlases/special_chunk_atlas.png" id="2"]
+[ext_resource type="Script" path="res://scripts/tiles/TileDef.gd" id="3"]
+
+[sub_resource type="Resource" id="TileDef_0"]
+script = ExtResource("3")
+id = &"special_wall_01"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(0, 0)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"wall"
+
+[sub_resource type="Resource" id="TileDef_1"]
+script = ExtResource("3")
+id = &"special_wall_02"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(1, 0)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"wall"
+
+[sub_resource type="Resource" id="TileDef_2"]
+script = ExtResource("3")
+id = &"special_wall_03"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(2, 0)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"wall"
+
+[sub_resource type="Resource" id="TileDef_3"]
+script = ExtResource("3")
+id = &"special_wall_04"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(3, 0)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"wall"
+
+[sub_resource type="Resource" id="TileDef_4"]
+script = ExtResource("3")
+id = &"special_wall_05"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(4, 0)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"wall"
+
+[sub_resource type="Resource" id="TileDef_5"]
+script = ExtResource("3")
+id = &"special_wall_06"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(5, 0)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"wall"
+
+[sub_resource type="Resource" id="TileDef_6"]
+script = ExtResource("3")
+id = &"special_wall_07"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(6, 0)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"wall"
+
+[sub_resource type="Resource" id="TileDef_7"]
+script = ExtResource("3")
+id = &"special_wall_08"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(7, 0)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"wall"
+
+[sub_resource type="Resource" id="TileDef_8"]
+script = ExtResource("3")
+id = &"special_floor_01"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(0, 1)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"floor"
+
+[sub_resource type="Resource" id="TileDef_9"]
+script = ExtResource("3")
+id = &"special_floor_02"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(1, 1)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"floor"
+
+[sub_resource type="Resource" id="TileDef_10"]
+script = ExtResource("3")
+id = &"special_floor_03"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(2, 1)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"floor"
+
+[sub_resource type="Resource" id="TileDef_11"]
+script = ExtResource("3")
+id = &"special_floor_04"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(3, 1)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"floor"
+
+[sub_resource type="Resource" id="TileDef_12"]
+script = ExtResource("3")
+id = &"special_floor_05"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(4, 1)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"floor"
+
+[sub_resource type="Resource" id="TileDef_13"]
+script = ExtResource("3")
+id = &"special_floor_06"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(5, 1)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"floor"
+
+[sub_resource type="Resource" id="TileDef_14"]
+script = ExtResource("3")
+id = &"special_floor_07"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(6, 1)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"floor"
+
+[sub_resource type="Resource" id="TileDef_15"]
+script = ExtResource("3")
+id = &"special_floor_08"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(7, 1)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"floor"
+
+[sub_resource type="Resource" id="TileDef_16"]
+script = ExtResource("3")
+id = &"special_platform_01"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(0, 2)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"platform"
+
+[sub_resource type="Resource" id="TileDef_17"]
+script = ExtResource("3")
+id = &"special_platform_02"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(1, 2)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"platform"
+
+[sub_resource type="Resource" id="TileDef_18"]
+script = ExtResource("3")
+id = &"special_platform_03"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(2, 2)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"platform"
+
+[sub_resource type="Resource" id="TileDef_19"]
+script = ExtResource("3")
+id = &"special_platform_04"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(3, 2)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"platform"
+
+[sub_resource type="Resource" id="TileDef_20"]
+script = ExtResource("3")
+id = &"special_platform_05"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(4, 2)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"platform"
+
+[sub_resource type="Resource" id="TileDef_21"]
+script = ExtResource("3")
+id = &"special_platform_06"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(5, 2)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"platform"
+
+[sub_resource type="Resource" id="TileDef_22"]
+script = ExtResource("3")
+id = &"special_platform_07"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(6, 2)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"platform"
+
+[sub_resource type="Resource" id="TileDef_23"]
+script = ExtResource("3")
+id = &"special_platform_08"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(7, 2)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"platform"
+
+[sub_resource type="Resource" id="TileDef_24"]
+script = ExtResource("3")
+id = &"special_door_01"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(0, 3)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"door"
+
+[sub_resource type="Resource" id="TileDef_25"]
+script = ExtResource("3")
+id = &"special_door_02"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(1, 3)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"door"
+
+[sub_resource type="Resource" id="TileDef_26"]
+script = ExtResource("3")
+id = &"special_door_03"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(2, 3)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"door"
+
+[sub_resource type="Resource" id="TileDef_27"]
+script = ExtResource("3")
+id = &"special_door_04"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(3, 3)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"door"
+
+[sub_resource type="Resource" id="TileDef_28"]
+script = ExtResource("3")
+id = &"special_door_05"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(4, 3)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"door"
+
+[sub_resource type="Resource" id="TileDef_29"]
+script = ExtResource("3")
+id = &"special_door_06"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(5, 3)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"door"
+
+[sub_resource type="Resource" id="TileDef_30"]
+script = ExtResource("3")
+id = &"special_door_07"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(6, 3)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"door"
+
+[sub_resource type="Resource" id="TileDef_31"]
+script = ExtResource("3")
+id = &"special_door_08"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(7, 3)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"door"
+
+[sub_resource type="Resource" id="TileDef_32"]
+script = ExtResource("3")
+id = &"special_pillar_01"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(0, 4)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"pillar"
+
+[sub_resource type="Resource" id="TileDef_33"]
+script = ExtResource("3")
+id = &"special_pillar_02"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(1, 4)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"pillar"
+
+[sub_resource type="Resource" id="TileDef_34"]
+script = ExtResource("3")
+id = &"special_pillar_03"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(2, 4)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"pillar"
+
+[sub_resource type="Resource" id="TileDef_35"]
+script = ExtResource("3")
+id = &"special_pillar_04"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(3, 4)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"pillar"
+
+[sub_resource type="Resource" id="TileDef_36"]
+script = ExtResource("3")
+id = &"special_pillar_05"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(4, 4)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"pillar"
+
+[sub_resource type="Resource" id="TileDef_37"]
+script = ExtResource("3")
+id = &"special_pillar_06"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(5, 4)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"pillar"
+
+[sub_resource type="Resource" id="TileDef_38"]
+script = ExtResource("3")
+id = &"special_pillar_07"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(6, 4)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"pillar"
+
+[sub_resource type="Resource" id="TileDef_39"]
+script = ExtResource("3")
+id = &"special_pillar_08"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(7, 4)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"pillar"
+
+[sub_resource type="Resource" id="TileDef_40"]
+script = ExtResource("3")
+id = &"special_background_01"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(0, 5)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = false
+tile_role = 1
+category = &"background"
+
+[sub_resource type="Resource" id="TileDef_41"]
+script = ExtResource("3")
+id = &"special_background_02"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(1, 5)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = false
+tile_role = 1
+category = &"background"
+
+[sub_resource type="Resource" id="TileDef_42"]
+script = ExtResource("3")
+id = &"special_background_03"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(2, 5)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = false
+tile_role = 1
+category = &"background"
+
+[sub_resource type="Resource" id="TileDef_43"]
+script = ExtResource("3")
+id = &"special_background_04"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(3, 5)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = false
+tile_role = 1
+category = &"background"
+
+[sub_resource type="Resource" id="TileDef_44"]
+script = ExtResource("3")
+id = &"special_background_05"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(4, 5)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = false
+tile_role = 1
+category = &"background"
+
+[sub_resource type="Resource" id="TileDef_45"]
+script = ExtResource("3")
+id = &"special_background_06"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(5, 5)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = false
+tile_role = 1
+category = &"background"
+
+[sub_resource type="Resource" id="TileDef_46"]
+script = ExtResource("3")
+id = &"special_background_07"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(6, 5)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = false
+tile_role = 1
+category = &"background"
+
+[sub_resource type="Resource" id="TileDef_47"]
+script = ExtResource("3")
+id = &"special_background_08"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(7, 5)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = false
+tile_role = 1
+category = &"background"
+
+[sub_resource type="Resource" id="TileDef_48"]
+script = ExtResource("3")
+id = &"special_decoration_01"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(0, 6)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = false
+tile_role = 1
+category = &"decoration"
+
+[sub_resource type="Resource" id="TileDef_49"]
+script = ExtResource("3")
+id = &"special_decoration_02"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(1, 6)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = false
+tile_role = 1
+category = &"decoration"
+
+[sub_resource type="Resource" id="TileDef_50"]
+script = ExtResource("3")
+id = &"special_decoration_03"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(2, 6)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = false
+tile_role = 1
+category = &"decoration"
+
+[sub_resource type="Resource" id="TileDef_51"]
+script = ExtResource("3")
+id = &"special_decoration_04"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(3, 6)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = false
+tile_role = 1
+category = &"decoration"
+
+[sub_resource type="Resource" id="TileDef_52"]
+script = ExtResource("3")
+id = &"special_decoration_05"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(4, 6)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = false
+tile_role = 1
+category = &"decoration"
+
+[sub_resource type="Resource" id="TileDef_53"]
+script = ExtResource("3")
+id = &"special_decoration_06"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(5, 6)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = false
+tile_role = 1
+category = &"decoration"
+
+[sub_resource type="Resource" id="TileDef_54"]
+script = ExtResource("3")
+id = &"special_decoration_07"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(6, 6)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = false
+tile_role = 1
+category = &"decoration"
+
+[sub_resource type="Resource" id="TileDef_55"]
+script = ExtResource("3")
+id = &"special_decoration_08"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(7, 6)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = false
+tile_role = 1
+category = &"decoration"
+
+[sub_resource type="Resource" id="TileDef_56"]
+script = ExtResource("3")
+id = &"special_transition_top_01"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(0, 7)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"transition_top"
+
+[sub_resource type="Resource" id="TileDef_57"]
+script = ExtResource("3")
+id = &"special_transition_top_02"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(1, 7)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"transition_top"
+
+[sub_resource type="Resource" id="TileDef_58"]
+script = ExtResource("3")
+id = &"special_transition_top_03"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(2, 7)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"transition_top"
+
+[sub_resource type="Resource" id="TileDef_59"]
+script = ExtResource("3")
+id = &"special_transition_top_04"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(3, 7)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"transition_top"
+
+[sub_resource type="Resource" id="TileDef_60"]
+script = ExtResource("3")
+id = &"special_transition_top_05"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(4, 7)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"transition_top"
+
+[sub_resource type="Resource" id="TileDef_61"]
+script = ExtResource("3")
+id = &"special_transition_top_06"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(5, 7)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"transition_top"
+
+[sub_resource type="Resource" id="TileDef_62"]
+script = ExtResource("3")
+id = &"special_transition_top_07"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(6, 7)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"transition_top"
+
+[sub_resource type="Resource" id="TileDef_63"]
+script = ExtResource("3")
+id = &"special_transition_top_08"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(7, 7)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"transition_top"
+
+[sub_resource type="Resource" id="TileDef_64"]
+script = ExtResource("3")
+id = &"special_transition_right_01"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(0, 8)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"transition_right"
+
+[sub_resource type="Resource" id="TileDef_65"]
+script = ExtResource("3")
+id = &"special_transition_right_02"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(1, 8)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"transition_right"
+
+[sub_resource type="Resource" id="TileDef_66"]
+script = ExtResource("3")
+id = &"special_transition_right_03"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(2, 8)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"transition_right"
+
+[sub_resource type="Resource" id="TileDef_67"]
+script = ExtResource("3")
+id = &"special_transition_right_04"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(3, 8)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"transition_right"
+
+[sub_resource type="Resource" id="TileDef_68"]
+script = ExtResource("3")
+id = &"special_transition_right_05"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(4, 8)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"transition_right"
+
+[sub_resource type="Resource" id="TileDef_69"]
+script = ExtResource("3")
+id = &"special_transition_right_06"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(5, 8)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"transition_right"
+
+[sub_resource type="Resource" id="TileDef_70"]
+script = ExtResource("3")
+id = &"special_transition_right_07"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(6, 8)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"transition_right"
+
+[sub_resource type="Resource" id="TileDef_71"]
+script = ExtResource("3")
+id = &"special_transition_right_08"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(7, 8)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"transition_right"
+
+[sub_resource type="Resource" id="TileDef_72"]
+script = ExtResource("3")
+id = &"special_transition_bottom_01"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(0, 9)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"transition_bottom"
+
+[sub_resource type="Resource" id="TileDef_73"]
+script = ExtResource("3")
+id = &"special_transition_bottom_02"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(1, 9)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"transition_bottom"
+
+[sub_resource type="Resource" id="TileDef_74"]
+script = ExtResource("3")
+id = &"special_transition_bottom_03"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(2, 9)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"transition_bottom"
+
+[sub_resource type="Resource" id="TileDef_75"]
+script = ExtResource("3")
+id = &"special_transition_bottom_04"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(3, 9)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"transition_bottom"
+
+[sub_resource type="Resource" id="TileDef_76"]
+script = ExtResource("3")
+id = &"special_transition_bottom_05"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(4, 9)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"transition_bottom"
+
+[sub_resource type="Resource" id="TileDef_77"]
+script = ExtResource("3")
+id = &"special_transition_bottom_06"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(5, 9)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"transition_bottom"
+
+[sub_resource type="Resource" id="TileDef_78"]
+script = ExtResource("3")
+id = &"special_transition_bottom_07"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(6, 9)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"transition_bottom"
+
+[sub_resource type="Resource" id="TileDef_79"]
+script = ExtResource("3")
+id = &"special_transition_bottom_08"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(7, 9)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"transition_bottom"
+
+[sub_resource type="Resource" id="TileDef_80"]
+script = ExtResource("3")
+id = &"special_transition_left_01"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(0, 10)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"transition_left"
+
+[sub_resource type="Resource" id="TileDef_81"]
+script = ExtResource("3")
+id = &"special_transition_left_02"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(1, 10)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"transition_left"
+
+[sub_resource type="Resource" id="TileDef_82"]
+script = ExtResource("3")
+id = &"special_transition_left_03"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(2, 10)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"transition_left"
+
+[sub_resource type="Resource" id="TileDef_83"]
+script = ExtResource("3")
+id = &"special_transition_left_04"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(3, 10)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"transition_left"
+
+[sub_resource type="Resource" id="TileDef_84"]
+script = ExtResource("3")
+id = &"special_transition_left_05"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(4, 10)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"transition_left"
+
+[sub_resource type="Resource" id="TileDef_85"]
+script = ExtResource("3")
+id = &"special_transition_left_06"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(5, 10)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"transition_left"
+
+[sub_resource type="Resource" id="TileDef_86"]
+script = ExtResource("3")
+id = &"special_transition_left_07"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(6, 10)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"transition_left"
+
+[sub_resource type="Resource" id="TileDef_87"]
+script = ExtResource("3")
+id = &"special_transition_left_08"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(7, 10)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
+tile_role = 1
+category = &"transition_left"
+
+[sub_resource type="Resource" id="TileDef_88"]
+script = ExtResource("3")
+id = &"special_debug_01"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(0, 11)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = true
+tile_role = 3
+category = &"debug"
+
+[sub_resource type="Resource" id="TileDef_89"]
+script = ExtResource("3")
+id = &"special_debug_02"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(1, 11)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = false
+tile_role = 3
+category = &"debug"
+
+[sub_resource type="Resource" id="TileDef_90"]
+script = ExtResource("3")
+id = &"special_debug_03"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(2, 11)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = false
+tile_role = 3
+category = &"debug"
+
+[sub_resource type="Resource" id="TileDef_91"]
+script = ExtResource("3")
+id = &"special_debug_04"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(3, 11)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = false
+tile_role = 3
+category = &"debug"
+
+[sub_resource type="Resource" id="TileDef_92"]
+script = ExtResource("3")
+id = &"special_debug_05"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(4, 11)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = false
+tile_role = 3
+category = &"debug"
+
+[sub_resource type="Resource" id="TileDef_93"]
+script = ExtResource("3")
+id = &"special_debug_06"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(5, 11)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = false
+tile_role = 3
+category = &"debug"
+
+[sub_resource type="Resource" id="TileDef_94"]
+script = ExtResource("3")
+id = &"special_debug_07"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(6, 11)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = false
+tile_role = 3
+category = &"debug"
+
+[sub_resource type="Resource" id="TileDef_95"]
+script = ExtResource("3")
+id = &"special_debug_08"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(7, 11)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = false
+tile_role = 3
+category = &"debug"
+
+[resource]
+script = ExtResource("1")
+id = &"special_chunk_atlas"
+biome_id = &""
+atlas_kind = 1
+source_id = 10
+atlas_texture = ExtResource("2")
+tile_size = Vector2i(64, 64)
+atlas_columns = 8
+variants_per_signature = 8
+fallback_row = 11
+layout_mode = 1
+category_rows = Array[StringName]([&"wall", &"floor", &"platform", &"door", &"pillar", &"background", &"decoration", &"transition_top", &"transition_right", &"transition_bottom", &"transition_left", &"debug"])
+tiles = Array[Resource]([SubResource("TileDef_0"), SubResource("TileDef_1"), SubResource("TileDef_2"), SubResource("TileDef_3"), SubResource("TileDef_4"), SubResource("TileDef_5"), SubResource("TileDef_6"), SubResource("TileDef_7"), SubResource("TileDef_8"), SubResource("TileDef_9"), SubResource("TileDef_10"), SubResource("TileDef_11"), SubResource("TileDef_12"), SubResource("TileDef_13"), SubResource("TileDef_14"), SubResource("TileDef_15"), SubResource("TileDef_16"), SubResource("TileDef_17"), SubResource("TileDef_18"), SubResource("TileDef_19"), SubResource("TileDef_20"), SubResource("TileDef_21"), SubResource("TileDef_22"), SubResource("TileDef_23"), SubResource("TileDef_24"), SubResource("TileDef_25"), SubResource("TileDef_26"), SubResource("TileDef_27"), SubResource("TileDef_28"), SubResource("TileDef_29"), SubResource("TileDef_30"), SubResource("TileDef_31"), SubResource("TileDef_32"), SubResource("TileDef_33"), SubResource("TileDef_34"), SubResource("TileDef_35"), SubResource("TileDef_36"), SubResource("TileDef_37"), SubResource("TileDef_38"), SubResource("TileDef_39"), SubResource("TileDef_40"), SubResource("TileDef_41"), SubResource("TileDef_42"), SubResource("TileDef_43"), SubResource("TileDef_44"), SubResource("TileDef_45"), SubResource("TileDef_46"), SubResource("TileDef_47"), SubResource("TileDef_48"), SubResource("TileDef_49"), SubResource("TileDef_50"), SubResource("TileDef_51"), SubResource("TileDef_52"), SubResource("TileDef_53"), SubResource("TileDef_54"), SubResource("TileDef_55"), SubResource("TileDef_56"), SubResource("TileDef_57"), SubResource("TileDef_58"), SubResource("TileDef_59"), SubResource("TileDef_60"), SubResource("TileDef_61"), SubResource("TileDef_62"), SubResource("TileDef_63"), SubResource("TileDef_64"), SubResource("TileDef_65"), SubResource("TileDef_66"), SubResource("TileDef_67"), SubResource("TileDef_68"), SubResource("TileDef_69"), SubResource("TileDef_70"), SubResource("TileDef_71"), SubResource("TileDef_72"), SubResource("TileDef_73"), SubResource("TileDef_74"), SubResource("TileDef_75"), SubResource("TileDef_76"), SubResource("TileDef_77"), SubResource("TileDef_78"), SubResource("TileDef_79"), SubResource("TileDef_80"), SubResource("TileDef_81"), SubResource("TileDef_82"), SubResource("TileDef_83"), SubResource("TileDef_84"), SubResource("TileDef_85"), SubResource("TileDef_86"), SubResource("TileDef_87"), SubResource("TileDef_88"), SubResource("TileDef_89"), SubResource("TileDef_90"), SubResource("TileDef_91"), SubResource("TileDef_92"), SubResource("TileDef_93"), SubResource("TileDef_94"), SubResource("TileDef_95")])
+fallback_tile = SubResource("TileDef_88")

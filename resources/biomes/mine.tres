@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="BiomeConfig" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/BiomeConfig.gd" id="1"]
+[ext_resource type="Resource" path="res://resources/tile_atlases/mine_atlas_def.tres" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = &"mine"
+display_name = "Mine"
+tile_atlas = ExtResource("2")
+open_chance_main_path = 0.68
+open_chance_special = 0.52
+open_chance_cave = 0.42
+open_chance_solid = 0.16
+depth_min = -999
+depth_max = 4

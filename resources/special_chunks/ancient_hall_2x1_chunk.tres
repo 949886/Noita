@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="SpecialChunkDef" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/SpecialChunkDef.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/special_chunks/AncientHall2x1Chunk.tscn" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = &"ancient_hall_2x1_chunk"
+display_name = "Ancient Hall 2x1 Chunk"
+chunk_kind = 6
+scene = ExtResource("2")
+allowed_biomes = Array[StringName]([&"mine", &"deep"])
+tags = Array[StringName]([])
+size_in_chunks = Vector2i(2, 1)
+weight = 1.0
+target_count = 1
+unique_per_world = false
+min_depth = 1
+max_depth = 7
+can_overlap_main_path = false
+require_near_main_path = true
+transition_style = 3
+auto_fill_transition_border = true
+top_profile = Array[int]([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+right_profile = Array[int]([0, 0, 0, 1, 1, 0, 0, 0])
+bottom_profile = Array[int]([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+left_profile = Array[int]([0, 0, 0, 1, 1, 0, 0, 0])
