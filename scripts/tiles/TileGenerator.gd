@@ -127,6 +127,9 @@ static func make_image(biome_id: StringName, top: int, right: int, bottom: int, 
 	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 	rng.seed = local_seed
 
+	if top == TileDef.Edge.AIR and right == TileDef.Edge.AIR and bottom == TileDef.Edge.AIR and left == TileDef.Edge.AIR:
+		return make_air_image(biome_id, signature, variant)
+
 	for y: int in range(TILE_SIZE):
 		for x: int in range(TILE_SIZE):
 			var checker: int = ((x / 4) + (y / 4) + variant) % 2
@@ -134,7 +137,12 @@ static func make_image(biome_id: StringName, top: int, right: int, bottom: int, 
 			var c: Color = solid_a.lerp(solid_b, 0.35 + 0.2 * float(checker) + noise)
 			image.set_pixel(x, y, c)
 
-	_carve_circle(image, Vector2i(32, 32), 15, air)
+	# SSSS should be a true solid block. Only signatures with at least one OPEN edge
+	# carve a center room and edge corridors. This prevents solid filler tiles from
+	# looking like hollow donuts.
+	var has_open_edge: bool = top == TileDef.Edge.OPEN or right == TileDef.Edge.OPEN or bottom == TileDef.Edge.OPEN or left == TileDef.Edge.OPEN
+	if has_open_edge:
+		_carve_circle(image, Vector2i(32, 32), 15, air)
 	if top == TileDef.Edge.OPEN:
 		_carve_rect(image, Rect2i(22, 0, 20, 34), air)
 	if right == TileDef.Edge.OPEN:
@@ -151,13 +159,36 @@ static func make_image(biome_id: StringName, top: int, right: int, bottom: int, 
 			continue
 		image.set_pixel(px, py, accent.lerp(solid_a, rng.randf()))
 
-	var border: Color = Color(0, 0, 0, 0.22)
-	for i: int in range(TILE_SIZE):
-		image.set_pixel(i, 0, image.get_pixel(i, 0).lerp(border, 0.3))
-		image.set_pixel(i, TILE_SIZE - 1, image.get_pixel(i, TILE_SIZE - 1).lerp(border, 0.3))
-		image.set_pixel(0, i, image.get_pixel(0, i).lerp(border, 0.3))
-		image.set_pixel(TILE_SIZE - 1, i, image.get_pixel(TILE_SIZE - 1, i).lerp(border, 0.3))
+	# Do not apply any universal outline or border shade here. Biome tiles must
+	# visually run all the way to their 64x64 boundaries so adjacent TileMap cells
+	# stitch together without dark seams. Only the carved cave/air regions create
+	# visible empty space.
 
+	return image
+
+static func make_air_image(biome_id: StringName, signature: String, variant: int) -> Image:
+	# AAAA is the only AIR signature. It represents interior empty space, not a one-sided seam.
+	var image: Image = Image.create(TILE_SIZE, TILE_SIZE, false, Image.FORMAT_RGBA8)
+	var air: Color = Color(0.025, 0.022, 0.033, 1.0)
+	var dust: Color = Color(0.30, 0.27, 0.22, 1.0)
+	if biome_id == &"snow":
+		air = Color(0.035, 0.048, 0.075, 1.0)
+		dust = Color(0.78, 0.92, 1.0, 1.0)
+	elif biome_id == &"deep":
+		air = Color(0.016, 0.012, 0.023, 1.0)
+		dust = Color(0.42, 0.25, 0.56, 1.0)
+	image.fill(air)
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.seed = absi(hash("air_%s_%s_%d" % [str(biome_id), signature, variant]))
+	for i: int in range(42):
+		var px: int = rng.randi_range(2, TILE_SIZE - 3)
+		var py: int = rng.randi_range(2, TILE_SIZE - 3)
+		if rng.randf() < 0.55:
+			image.set_pixel(px, py, dust)
+		else:
+			_carve_circle(image, Vector2i(px, py), 1, dust)
+	# AAAA is also borderless: air pockets should merge into larger continuous
+	# caverns instead of showing a per-cell frame.
 	return image
 
 static func make_debug_image(_signature: String) -> Image:
@@ -180,27 +211,27 @@ static func make_collision_rects(top: int, right: int, bottom: int, left: int) -
 	var openings: int = 0
 	var edges: Array[int] = [top, right, bottom, left]
 	for e: int in edges:
-		if e == TileDef.Edge.OPEN:
+		if e != TileDef.Edge.SOLID:
 			openings += 1
 	if openings == 0:
 		rects.append(Rect2i(0, 0, TILE_SIZE, TILE_SIZE))
 		return rects
 	var side: int = 22
-	if top != TileDef.Edge.OPEN and left != TileDef.Edge.OPEN:
+	if top == TileDef.Edge.SOLID and left == TileDef.Edge.SOLID:
 		rects.append(Rect2i(0, 0, side, side))
-	if top != TileDef.Edge.OPEN and right != TileDef.Edge.OPEN:
+	if top == TileDef.Edge.SOLID and right == TileDef.Edge.SOLID:
 		rects.append(Rect2i(TILE_SIZE - side, 0, side, side))
-	if bottom != TileDef.Edge.OPEN and left != TileDef.Edge.OPEN:
+	if bottom == TileDef.Edge.SOLID and left == TileDef.Edge.SOLID:
 		rects.append(Rect2i(0, TILE_SIZE - side, side, side))
-	if bottom != TileDef.Edge.OPEN and right != TileDef.Edge.OPEN:
+	if bottom == TileDef.Edge.SOLID and right == TileDef.Edge.SOLID:
 		rects.append(Rect2i(TILE_SIZE - side, TILE_SIZE - side, side, side))
-	if top != TileDef.Edge.OPEN:
+	if top == TileDef.Edge.SOLID:
 		rects.append(Rect2i(22, 0, 20, 18))
-	if bottom != TileDef.Edge.OPEN:
+	if bottom == TileDef.Edge.SOLID:
 		rects.append(Rect2i(22, 46, 20, 18))
-	if left != TileDef.Edge.OPEN:
+	if left == TileDef.Edge.SOLID:
 		rects.append(Rect2i(0, 22, 18, 20))
-	if right != TileDef.Edge.OPEN:
+	if right == TileDef.Edge.SOLID:
 		rects.append(Rect2i(46, 22, 18, 20))
 	return rects
 

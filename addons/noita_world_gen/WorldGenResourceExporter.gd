@@ -131,24 +131,24 @@ func _apply_default_biome_depths_and_chances(config: BiomeConfig) -> void:
 		&"mine":
 			config.depth_min = -999
 			config.depth_max = 4
-			config.open_chance_main_path = 0.68
-			config.open_chance_special = 0.52
-			config.open_chance_cave = 0.42
-			config.open_chance_solid = 0.16
+			config.open_chance_main_path = 0.82
+			config.open_chance_special = 0.64
+			config.open_chance_cave = 0.62
+			config.open_chance_solid = 0.28
 		&"snow":
 			config.depth_min = 5
 			config.depth_max = 9
-			config.open_chance_main_path = 0.62
-			config.open_chance_special = 0.50
-			config.open_chance_cave = 0.38
-			config.open_chance_solid = 0.14
+			config.open_chance_main_path = 0.86
+			config.open_chance_special = 0.68
+			config.open_chance_cave = 0.68
+			config.open_chance_solid = 0.32
 		&"deep":
 			config.depth_min = 10
 			config.depth_max = 999
-			config.open_chance_main_path = 0.58
-			config.open_chance_special = 0.48
-			config.open_chance_cave = 0.34
-			config.open_chance_solid = 0.12
+			config.open_chance_main_path = 0.78
+			config.open_chance_special = 0.60
+			config.open_chance_cave = 0.56
+			config.open_chance_solid = 0.24
 
 func _ensure_dir(path: String) -> void:
 	var absolute_parts: PackedStringArray = path.replace("res://", "").split("/", false)

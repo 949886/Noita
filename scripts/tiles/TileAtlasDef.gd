@@ -24,7 +24,7 @@ enum LayoutMode {
 @export var tile_size: Vector2i = Vector2i(64, 64)
 @export var atlas_columns: int = 8
 @export var variants_per_signature: int = 8
-@export var fallback_row: int = 16
+@export var fallback_row: int = TileConstants.FALLBACK_ROW
 @export_enum("Signature Rows", "Category Rows") var layout_mode: int = LayoutMode.SIGNATURE_ROWS
 @export var signature_rows: Array[StringName] = []
 @export var category_rows: Array[StringName] = []

@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=3 uid="uid://worlddemo001"]
+[gd_scene load_steps=7 format=3 uid="uid://worlddemo001"]
 
 [ext_resource type="Script" path="res://scripts/world/WorldManager.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="2"]
 [ext_resource type="PackedScene" path="res://scenes/DebugOverlay.tscn" id="3"]
 [ext_resource type="Resource" path="res://resources/world_gen/default_world_gen_config.tres" id="4"]
 [ext_resource type="TileSet" path="res://resources/tilesets/generated_tileset.tres" id="5"]
+[ext_resource type="Script" path="res://scripts/debug/WorldDebugDrawer.gd" id="6"]
 
 [node name="World" type="Node2D"]
 script = ExtResource("1")
@@ -21,5 +22,9 @@ texture_filter = 1
 
 [node name="Player" parent="." instance=ExtResource("2")]
 position = Vector2(256, 256)
+
+[node name="WorldDebugDrawer" type="Node2D" parent="."]
+visible = true
+script = ExtResource("6")
 
 [node name="DebugOverlay" parent="." instance=ExtResource("3")]

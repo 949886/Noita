@@ -144,6 +144,14 @@ texture_region_size = Vector2i(64, 64)
 5:16/0 = 0
 6:16/0 = 0
 7:16/0 = 0
+0:17/0 = 0
+1:17/0 = 0
+2:17/0 = 0
+3:17/0 = 0
+4:17/0 = 0
+5:17/0 = 0
+6:17/0 = 0
+7:17/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_snow"]
 texture = ExtResource("2")
@@ -284,6 +292,14 @@ texture_region_size = Vector2i(64, 64)
 5:16/0 = 0
 6:16/0 = 0
 7:16/0 = 0
+0:17/0 = 0
+1:17/0 = 0
+2:17/0 = 0
+3:17/0 = 0
+4:17/0 = 0
+5:17/0 = 0
+6:17/0 = 0
+7:17/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_deep"]
 texture = ExtResource("3")
@@ -424,6 +440,14 @@ texture_region_size = Vector2i(64, 64)
 5:16/0 = 0
 6:16/0 = 0
 7:16/0 = 0
+0:17/0 = 0
+1:17/0 = 0
+2:17/0 = 0
+3:17/0 = 0
+4:17/0 = 0
+5:17/0 = 0
+6:17/0 = 0
+7:17/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_special_chunk"]
 texture = ExtResource("4")

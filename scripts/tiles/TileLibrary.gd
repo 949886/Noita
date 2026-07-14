@@ -6,6 +6,7 @@ var atlas_by_biome: Dictionary = {}
 var atlas_by_id: Dictionary = {}
 var biome_configs: Dictionary = {}
 var fallback_count: int = 0
+var compatible_match_count: int = 0
 
 func load_from_config(config: WorldGenConfig) -> void:
 	tiles_by_biome.clear()
@@ -13,6 +14,7 @@ func load_from_config(config: WorldGenConfig) -> void:
 	atlas_by_id.clear()
 	biome_configs.clear()
 	fallback_count = 0
+	compatible_match_count = 0
 	for biome_config: BiomeConfig in config.biome_configs:
 		if biome_config == null or biome_config.tile_atlas == null:
 			continue
@@ -72,7 +74,17 @@ func get_source_id_for_atlas(atlas_id: StringName) -> int:
 func get_biome_config(biome_id: StringName) -> BiomeConfig:
 	return biome_configs.get(biome_id, biome_configs.get(&"mine", null)) as BiomeConfig
 
+func find_exact_candidates(biome_id: StringName, constraints: Dictionary) -> Array[TileDef]:
+	return _find_candidates_internal(biome_id, constraints, true)
+
+func find_compatible_candidates(biome_id: StringName, constraints: Dictionary) -> Array[TileDef]:
+	return _find_candidates_internal(biome_id, constraints, false)
+
 func find_candidates(biome_id: StringName, constraints: Dictionary) -> Array[TileDef]:
+	# Public helper kept for older debug code. Runtime selection uses exact first, then compatible fallback.
+	return find_compatible_candidates(biome_id, constraints)
+
+func _find_candidates_internal(biome_id: StringName, constraints: Dictionary, exact_only: bool) -> Array[TileDef]:
 	var result: Array[TileDef] = []
 	var source: Array = get_tiles_for_biome(biome_id)
 	for item in source:
@@ -85,7 +97,12 @@ func find_candidates(biome_id: StringName, constraints: Dictionary) -> Array[Til
 		for side in constraints.keys():
 			var side_name: StringName = StringName(str(side))
 			var needed_edge: int = int(constraints[side])
-			if not TileDef.edge_compatible(tile.edge(side_name), needed_edge):
+			var tile_edge: int = tile.edge(side_name)
+			if exact_only:
+				if tile_edge != needed_edge:
+					ok = false
+					break
+			elif not TileDef.edge_compatible(tile_edge, needed_edge):
 				ok = false
 				break
 		if ok:
@@ -93,11 +110,17 @@ func find_candidates(biome_id: StringName, constraints: Dictionary) -> Array[Til
 	return result
 
 func pick_matching_tile(biome_id: StringName, constraints: Dictionary, rng: RandomNumberGenerator) -> TileDef:
-	var candidates: Array[TileDef] = find_candidates(biome_id, constraints)
-	if candidates.is_empty():
-		fallback_count += 1
-		return get_fallback_tile(biome_id)
-	return WeightedPicker.pick(candidates, rng) as TileDef
+	# AIR uses exact-first selection so AAAA is chosen whenever it is actually available.
+	# Compatible fallback is only used when an atlas is missing an exact signature.
+	var exact_candidates: Array[TileDef] = find_exact_candidates(biome_id, constraints)
+	if not exact_candidates.is_empty():
+		return WeightedPicker.pick(exact_candidates, rng) as TileDef
+	var compatible_candidates: Array[TileDef] = find_compatible_candidates(biome_id, constraints)
+	if not compatible_candidates.is_empty():
+		compatible_match_count += 1
+		return WeightedPicker.pick(compatible_candidates, rng) as TileDef
+	fallback_count += 1
+	return get_fallback_tile(biome_id)
 
 func get_fallback_tile(biome_id: StringName) -> TileDef:
 	var atlas_def: TileAtlasDef = get_atlas_for_biome(biome_id)

@@ -1,21 +1,34 @@
 ; Engine configuration file.
-; Godot 4.7 demo project.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
 
 config_version=5
 
 [application]
+
 config/name="Noita Wang TileMapLayer Demo"
 run/main_scene="res://scenes/World.tscn"
 config/features=PackedStringArray("4.7")
 config/icon="res://icon.svg"
 
 [display]
+
 window/size/viewport_width=1280
 window/size/viewport_height=720
 window/stretch/mode="canvas_items"
 
-[rendering]
-textures/canvas_textures/default_texture_filter=0
+[dotnet]
+
+project/assembly_name="Noita Wang TileMapLayer Demo"
 
 [editor_plugins]
+
 enabled=PackedStringArray("res://addons/noita_world_gen/plugin.cfg")
+
+[rendering]
+
+textures/canvas_textures/default_texture_filter=0

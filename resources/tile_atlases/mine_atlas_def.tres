@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="TileAtlasDef" load_steps=133 format=3]
+[gd_resource type="Resource" script_class="TileAtlasDef" load_steps=141 format=3]
 
 [ext_resource type="Script" path="res://scripts/tiles/TileAtlasDef.gd" id="1"]
 [ext_resource type="Texture2D" path="res://resources/tilesets/atlases/mine_atlas.png" id="2"]
@@ -1670,13 +1670,117 @@ is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_128"]
 script = ExtResource("3")
+id = &"mine_AAAA_01"
+top = 2
+right = 2
+bottom = 2
+left = 2
+weight = 1.0
+atlas_coords = Vector2i(0, 16)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = false
+
+[sub_resource type="Resource" id="TileDef_129"]
+script = ExtResource("3")
+id = &"mine_AAAA_02"
+top = 2
+right = 2
+bottom = 2
+left = 2
+weight = 1.0
+atlas_coords = Vector2i(1, 16)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = false
+
+[sub_resource type="Resource" id="TileDef_130"]
+script = ExtResource("3")
+id = &"mine_AAAA_03"
+top = 2
+right = 2
+bottom = 2
+left = 2
+weight = 0.0
+atlas_coords = Vector2i(2, 16)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = false
+
+[sub_resource type="Resource" id="TileDef_131"]
+script = ExtResource("3")
+id = &"mine_AAAA_04"
+top = 2
+right = 2
+bottom = 2
+left = 2
+weight = 0.0
+atlas_coords = Vector2i(3, 16)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = false
+
+[sub_resource type="Resource" id="TileDef_132"]
+script = ExtResource("3")
+id = &"mine_AAAA_05"
+top = 2
+right = 2
+bottom = 2
+left = 2
+weight = 0.0
+atlas_coords = Vector2i(4, 16)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = false
+
+[sub_resource type="Resource" id="TileDef_133"]
+script = ExtResource("3")
+id = &"mine_AAAA_06"
+top = 2
+right = 2
+bottom = 2
+left = 2
+weight = 0.0
+atlas_coords = Vector2i(5, 16)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = false
+
+[sub_resource type="Resource" id="TileDef_134"]
+script = ExtResource("3")
+id = &"mine_AAAA_07"
+top = 2
+right = 2
+bottom = 2
+left = 2
+weight = 0.0
+atlas_coords = Vector2i(6, 16)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = false
+
+[sub_resource type="Resource" id="TileDef_135"]
+script = ExtResource("3")
+id = &"mine_AAAA_08"
+top = 2
+right = 2
+bottom = 2
+left = 2
+weight = 0.0
+atlas_coords = Vector2i(7, 16)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = false
+
+[sub_resource type="Resource" id="TileDef_136"]
+script = ExtResource("3")
 id = &"mine_fallback"
 top = 0
 right = 0
 bottom = 0
 left = 0
 weight = 1.0
-atlas_coords = Vector2i(0, 16)
+atlas_coords = Vector2i(0, 17)
 alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
 is_fallback = true
@@ -1690,8 +1794,8 @@ atlas_texture = ExtResource("2")
 tile_size = Vector2i(64, 64)
 atlas_columns = 8
 variants_per_signature = 8
-fallback_row = 16
+fallback_row = 17
 layout_mode = 0
-signature_rows = Array[StringName]([&"SSSS", &"SSSO", &"SSOS", &"SSOO", &"SOSS", &"SOSO", &"SOOS", &"SOOO", &"OSSS", &"OSSO", &"OSOS", &"OSOO", &"OOSS", &"OOSO", &"OOOS", &"OOOO"])
-tiles = Array[Resource]([SubResource("TileDef_0"), SubResource("TileDef_1"), SubResource("TileDef_2"), SubResource("TileDef_3"), SubResource("TileDef_4"), SubResource("TileDef_5"), SubResource("TileDef_6"), SubResource("TileDef_7"), SubResource("TileDef_8"), SubResource("TileDef_9"), SubResource("TileDef_10"), SubResource("TileDef_11"), SubResource("TileDef_12"), SubResource("TileDef_13"), SubResource("TileDef_14"), SubResource("TileDef_15"), SubResource("TileDef_16"), SubResource("TileDef_17"), SubResource("TileDef_18"), SubResource("TileDef_19"), SubResource("TileDef_20"), SubResource("TileDef_21"), SubResource("TileDef_22"), SubResource("TileDef_23"), SubResource("TileDef_24"), SubResource("TileDef_25"), SubResource("TileDef_26"), SubResource("TileDef_27"), SubResource("TileDef_28"), SubResource("TileDef_29"), SubResource("TileDef_30"), SubResource("TileDef_31"), SubResource("TileDef_32"), SubResource("TileDef_33"), SubResource("TileDef_34"), SubResource("TileDef_35"), SubResource("TileDef_36"), SubResource("TileDef_37"), SubResource("TileDef_38"), SubResource("TileDef_39"), SubResource("TileDef_40"), SubResource("TileDef_41"), SubResource("TileDef_42"), SubResource("TileDef_43"), SubResource("TileDef_44"), SubResource("TileDef_45"), SubResource("TileDef_46"), SubResource("TileDef_47"), SubResource("TileDef_48"), SubResource("TileDef_49"), SubResource("TileDef_50"), SubResource("TileDef_51"), SubResource("TileDef_52"), SubResource("TileDef_53"), SubResource("TileDef_54"), SubResource("TileDef_55"), SubResource("TileDef_56"), SubResource("TileDef_57"), SubResource("TileDef_58"), SubResource("TileDef_59"), SubResource("TileDef_60"), SubResource("TileDef_61"), SubResource("TileDef_62"), SubResource("TileDef_63"), SubResource("TileDef_64"), SubResource("TileDef_65"), SubResource("TileDef_66"), SubResource("TileDef_67"), SubResource("TileDef_68"), SubResource("TileDef_69"), SubResource("TileDef_70"), SubResource("TileDef_71"), SubResource("TileDef_72"), SubResource("TileDef_73"), SubResource("TileDef_74"), SubResource("TileDef_75"), SubResource("TileDef_76"), SubResource("TileDef_77"), SubResource("TileDef_78"), SubResource("TileDef_79"), SubResource("TileDef_80"), SubResource("TileDef_81"), SubResource("TileDef_82"), SubResource("TileDef_83"), SubResource("TileDef_84"), SubResource("TileDef_85"), SubResource("TileDef_86"), SubResource("TileDef_87"), SubResource("TileDef_88"), SubResource("TileDef_89"), SubResource("TileDef_90"), SubResource("TileDef_91"), SubResource("TileDef_92"), SubResource("TileDef_93"), SubResource("TileDef_94"), SubResource("TileDef_95"), SubResource("TileDef_96"), SubResource("TileDef_97"), SubResource("TileDef_98"), SubResource("TileDef_99"), SubResource("TileDef_100"), SubResource("TileDef_101"), SubResource("TileDef_102"), SubResource("TileDef_103"), SubResource("TileDef_104"), SubResource("TileDef_105"), SubResource("TileDef_106"), SubResource("TileDef_107"), SubResource("TileDef_108"), SubResource("TileDef_109"), SubResource("TileDef_110"), SubResource("TileDef_111"), SubResource("TileDef_112"), SubResource("TileDef_113"), SubResource("TileDef_114"), SubResource("TileDef_115"), SubResource("TileDef_116"), SubResource("TileDef_117"), SubResource("TileDef_118"), SubResource("TileDef_119"), SubResource("TileDef_120"), SubResource("TileDef_121"), SubResource("TileDef_122"), SubResource("TileDef_123"), SubResource("TileDef_124"), SubResource("TileDef_125"), SubResource("TileDef_126"), SubResource("TileDef_127")])
-fallback_tile = SubResource("TileDef_128")
+signature_rows = Array[StringName]([&"SSSS", &"SSSO", &"SSOS", &"SSOO", &"SOSS", &"SOSO", &"SOOS", &"SOOO", &"OSSS", &"OSSO", &"OSOS", &"OSOO", &"OOSS", &"OOSO", &"OOOS", &"OOOO", &"AAAA"])
+tiles = Array[Resource]([SubResource("TileDef_0"), SubResource("TileDef_1"), SubResource("TileDef_2"), SubResource("TileDef_3"), SubResource("TileDef_4"), SubResource("TileDef_5"), SubResource("TileDef_6"), SubResource("TileDef_7"), SubResource("TileDef_8"), SubResource("TileDef_9"), SubResource("TileDef_10"), SubResource("TileDef_11"), SubResource("TileDef_12"), SubResource("TileDef_13"), SubResource("TileDef_14"), SubResource("TileDef_15"), SubResource("TileDef_16"), SubResource("TileDef_17"), SubResource("TileDef_18"), SubResource("TileDef_19"), SubResource("TileDef_20"), SubResource("TileDef_21"), SubResource("TileDef_22"), SubResource("TileDef_23"), SubResource("TileDef_24"), SubResource("TileDef_25"), SubResource("TileDef_26"), SubResource("TileDef_27"), SubResource("TileDef_28"), SubResource("TileDef_29"), SubResource("TileDef_30"), SubResource("TileDef_31"), SubResource("TileDef_32"), SubResource("TileDef_33"), SubResource("TileDef_34"), SubResource("TileDef_35"), SubResource("TileDef_36"), SubResource("TileDef_37"), SubResource("TileDef_38"), SubResource("TileDef_39"), SubResource("TileDef_40"), SubResource("TileDef_41"), SubResource("TileDef_42"), SubResource("TileDef_43"), SubResource("TileDef_44"), SubResource("TileDef_45"), SubResource("TileDef_46"), SubResource("TileDef_47"), SubResource("TileDef_48"), SubResource("TileDef_49"), SubResource("TileDef_50"), SubResource("TileDef_51"), SubResource("TileDef_52"), SubResource("TileDef_53"), SubResource("TileDef_54"), SubResource("TileDef_55"), SubResource("TileDef_56"), SubResource("TileDef_57"), SubResource("TileDef_58"), SubResource("TileDef_59"), SubResource("TileDef_60"), SubResource("TileDef_61"), SubResource("TileDef_62"), SubResource("TileDef_63"), SubResource("TileDef_64"), SubResource("TileDef_65"), SubResource("TileDef_66"), SubResource("TileDef_67"), SubResource("TileDef_68"), SubResource("TileDef_69"), SubResource("TileDef_70"), SubResource("TileDef_71"), SubResource("TileDef_72"), SubResource("TileDef_73"), SubResource("TileDef_74"), SubResource("TileDef_75"), SubResource("TileDef_76"), SubResource("TileDef_77"), SubResource("TileDef_78"), SubResource("TileDef_79"), SubResource("TileDef_80"), SubResource("TileDef_81"), SubResource("TileDef_82"), SubResource("TileDef_83"), SubResource("TileDef_84"), SubResource("TileDef_85"), SubResource("TileDef_86"), SubResource("TileDef_87"), SubResource("TileDef_88"), SubResource("TileDef_89"), SubResource("TileDef_90"), SubResource("TileDef_91"), SubResource("TileDef_92"), SubResource("TileDef_93"), SubResource("TileDef_94"), SubResource("TileDef_95"), SubResource("TileDef_96"), SubResource("TileDef_97"), SubResource("TileDef_98"), SubResource("TileDef_99"), SubResource("TileDef_100"), SubResource("TileDef_101"), SubResource("TileDef_102"), SubResource("TileDef_103"), SubResource("TileDef_104"), SubResource("TileDef_105"), SubResource("TileDef_106"), SubResource("TileDef_107"), SubResource("TileDef_108"), SubResource("TileDef_109"), SubResource("TileDef_110"), SubResource("TileDef_111"), SubResource("TileDef_112"), SubResource("TileDef_113"), SubResource("TileDef_114"), SubResource("TileDef_115"), SubResource("TileDef_116"), SubResource("TileDef_117"), SubResource("TileDef_118"), SubResource("TileDef_119"), SubResource("TileDef_120"), SubResource("TileDef_121"), SubResource("TileDef_122"), SubResource("TileDef_123"), SubResource("TileDef_124"), SubResource("TileDef_125"), SubResource("TileDef_126"), SubResource("TileDef_127"), SubResource("TileDef_128"), SubResource("TileDef_129"), SubResource("TileDef_130"), SubResource("TileDef_131"), SubResource("TileDef_132"), SubResource("TileDef_133"), SubResource("TileDef_134"), SubResource("TileDef_135")])
+fallback_tile = SubResource("TileDef_136")

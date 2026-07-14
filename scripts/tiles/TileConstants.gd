@@ -6,12 +6,16 @@ const TILES_PER_CHUNK: int = 8
 const CHUNK_SIZE: int = TILE_SIZE * TILES_PER_CHUNK
 
 # Atlas layout: each row is one edge signature, each column is a visual variant.
+# Edge v2 keeps the original 16 S/O Wang signatures and adds only one AIR signature: AAAA.
 const VARIANTS_PER_SIGNATURE: int = 8
 const GENERATED_VARIANTS_PER_SIGNATURE: int = 2
 const ATLAS_COLUMNS: int = VARIANTS_PER_SIGNATURE
-const SIGNATURE_ROW_COUNT: int = 16
+const BASE_SIGNATURE_ROW_COUNT: int = 16
+const AIR_SIGNATURE_ROW: int = 16
+const SIGNATURE_ROW_COUNT: int = 17
 const FALLBACK_ROW: int = SIGNATURE_ROW_COUNT
 const ATLAS_ROWS: int = SIGNATURE_ROW_COUNT + 1
+const AIR_SIGNATURE: String = "AAAA"
 
 # SpecialChunk atlas uses category rows rather than Wang edge signature rows.
 # Rows 7-10 contain direction-aware transition tiles used to soften the seam
@@ -42,13 +46,18 @@ static func display_name_for_biome(biome_id: StringName) -> String:
 		&"deep": return "Deep"
 		_: return str(biome_id).capitalize()
 
-static func signature_order() -> Array[String]:
+static func base_signature_order() -> Array[String]:
 	return [
 		"SSSS", "SSSO", "SSOS", "SSOO",
 		"SOSS", "SOSO", "SOOS", "SOOO",
 		"OSSS", "OSSO", "OSOS", "OSOO",
 		"OOSS", "OOSO", "OOOS", "OOOO"
 	]
+
+static func signature_order() -> Array[String]:
+	var signatures: Array[String] = base_signature_order()
+	signatures.append(AIR_SIGNATURE)
+	return signatures
 
 static func special_chunk_categories() -> Array[StringName]:
 	return [

@@ -26,7 +26,8 @@ static func coords(style: int, usage: int, direction: int) -> Vector2i:
 	return Vector2i(_column(style, usage), _row(direction))
 
 static func usage_for_edge(edge_value: int) -> int:
-	if edge_value == TileDef.Edge.OPEN:
+	# Until the atlas gets dedicated AIR transition art, OPEN and AIR both use the door/opening transition.
+	if edge_value == TileDef.Edge.OPEN or edge_value == TileDef.Edge.AIR:
 		return Usage.DOOR
 	return Usage.WALL
 

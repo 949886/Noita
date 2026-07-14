@@ -3,11 +3,14 @@ extends Resource
 
 # Metadata for one tile inside a TileAtlasDef.
 # Wang tiles use the Edge fields for procedural matching; SpecialChunk tiles use category/role and are hand-painted in scenes.
+# Edge v2 deliberately keeps only three states:
+# SOLID = blocked material, OPEN = normal cave opening, AIR = full empty-space tile.
+# AIR is only authored as AAAA in the biome atlases; it is not used as a one-sided chunk seam profile.
 
 enum Edge {
 	SOLID,
 	OPEN,
-	NARROW,
+	AIR,
 }
 
 enum TileRole {
@@ -18,10 +21,10 @@ enum TileRole {
 }
 
 @export var id: StringName = &""
-@export_enum("Solid", "Open", "Narrow") var top: int = Edge.SOLID
-@export_enum("Solid", "Open", "Narrow") var right: int = Edge.SOLID
-@export_enum("Solid", "Open", "Narrow") var bottom: int = Edge.SOLID
-@export_enum("Solid", "Open", "Narrow") var left: int = Edge.SOLID
+@export_enum("Solid", "Open", "Air") var top: int = Edge.SOLID
+@export_enum("Solid", "Open", "Air") var right: int = Edge.SOLID
+@export_enum("Solid", "Open", "Air") var bottom: int = Edge.SOLID
+@export_enum("Solid", "Open", "Air") var left: int = Edge.SOLID
 @export var weight: float = 1.0
 @export var tags: Array[StringName] = []
 @export var atlas_coords: Vector2i = Vector2i.ZERO
@@ -69,8 +72,8 @@ static func edge_to_char(edge_value: int) -> String:
 			return "S"
 		Edge.OPEN:
 			return "O"
-		Edge.NARROW:
-			return "N"
+		Edge.AIR:
+			return "A"
 		_:
 			return "?"
 
@@ -80,8 +83,8 @@ static func char_to_edge(edge_char: String) -> int:
 			return Edge.SOLID
 		"O":
 			return Edge.OPEN
-		"N":
-			return Edge.NARROW
+		"A":
+			return Edge.AIR
 		_:
 			return Edge.SOLID
 
@@ -92,5 +95,11 @@ static func signature_to_edges(signature: String) -> Array[int]:
 	return result
 
 static func edge_compatible(a: int, b: int) -> bool:
-	# First pass uses exact matching. NARROW is reserved for the next content pass.
-	return a == b
+	# SOLID remains strict so walls do not accidentally connect to air.
+	# OPEN and AIR are compatible, which lets large air pockets blend with normal cave openings.
+	if a == Edge.SOLID or b == Edge.SOLID:
+		return a == b
+	return true
+
+static func is_air(edge_value: int) -> bool:
+	return edge_value == Edge.AIR
