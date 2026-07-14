@@ -187,11 +187,41 @@ func _make_default_special_chunk(
 	chunk.require_near_main_path = true
 	chunk.transition_style = transition_style
 	chunk.auto_fill_transition_border = true
+	_apply_default_special_chunk_structure_preferences(chunk)
 	chunk.top_profile = _solid_profile(size_in_chunks.x * TileConstants.TILES_PER_CHUNK)
 	chunk.bottom_profile = _solid_profile(size_in_chunks.x * TileConstants.TILES_PER_CHUNK)
 	chunk.left_profile = _side_door_profile(size_in_chunks.y * TileConstants.TILES_PER_CHUNK)
 	chunk.right_profile = _side_door_profile(size_in_chunks.y * TileConstants.TILES_PER_CHUNK)
 	return chunk
+
+func _apply_default_special_chunk_structure_preferences(chunk: SpecialChunkDef) -> void:
+	chunk.prefer_structure_tags.clear()
+	chunk.avoid_structure_tags.clear()
+	chunk.avoid_structure_tags.append(&"chamber_interior")
+	chunk.avoid_chamber_interior = true
+	chunk.placement_weight = 1.0
+	match chunk.chunk_kind:
+		SpecialChunkDef.ChunkKind.TREASURE:
+			chunk.prefer_branch_end = true
+			chunk.prefer_chamber_edge = false
+			chunk.prefer_structure_tags.append(&"branch_end")
+			chunk.prefer_structure_tags.append(&"path_shoulder")
+			chunk.placement_weight = 1.25
+		SpecialChunkDef.ChunkKind.SHRINE:
+			chunk.prefer_branch_end = true
+			chunk.prefer_chamber_edge = true
+			chunk.prefer_structure_tags.append(&"branch_end")
+			chunk.prefer_structure_tags.append(&"chamber_edge")
+			chunk.placement_weight = 1.35
+		SpecialChunkDef.ChunkKind.HALL:
+			chunk.prefer_branch_end = false
+			chunk.prefer_chamber_edge = true
+			chunk.prefer_structure_tags.append(&"chamber_edge")
+			chunk.prefer_structure_tags.append(&"branch_end")
+			chunk.placement_weight = 1.15
+		_:
+			chunk.prefer_branch_end = true
+			chunk.prefer_chamber_edge = false
 
 func _solid_profile(length: int) -> Array[int]:
 	var result: Array[int] = []

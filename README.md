@@ -300,3 +300,34 @@ The v2 pass now:
 - merges required path openings with the tile's existing openings, so the pass opens only what is needed and avoids closing previously valid cave connections.
 
 The goal is unchanged: if a chunk has openings on two or more different sides, those sides should be locally reachable. The visual result should be less grid-like than v1 and should produce fewer obvious cross structures inside ordinary cave/solid chunks.
+
+## SpecialChunk + WorldStructure Integration v1
+
+SpecialChunk placement is now structure-aware. Instead of sampling only around the
+main path, each SpecialChunkDef can declare soft placement preferences:
+
+- `prefer_structure_tags`
+- `avoid_structure_tags`
+- `prefer_branch_end`
+- `prefer_chamber_edge`
+- `avoid_chamber_interior`
+- `placement_weight`
+
+The planner scores candidate chunk origins against `WorldStructure` tags. Example
+intent:
+
+- Mine treasure chunks prefer `branch_end` / `path_shoulder`.
+- Snow shrines prefer snow `branch_end` and `chamber_edge`.
+- Ancient halls prefer `chamber_edge` / `branch_end`.
+
+After planning, placements are written back into `WorldStructure`:
+
+- occupied chunks get `special_chunk_occupied` and `special_<id>` tags;
+- neighboring chunks that face an OPEN SpecialChunk profile get
+  `special_chunk_gateway`, `near_special_chunk`, and an intended connection toward
+  the authored entrance.
+
+This means the normal chunk generator and MST connectivity carve pass can carve a
+real path toward SpecialChunk entrances instead of treating them as isolated scene
+overrides. The world debug drawer now outlines SpecialChunk placements in magenta
+and shows gateway labels such as `GW right -> mine_treasure_chunk`.

@@ -72,7 +72,13 @@ func _validate_special_chunks(config: WorldGenConfig, messages: Array[String]) -
 			messages.append("WARNING: SpecialChunk %s horizontal profile length mismatch." % str(chunk_def.id))
 		if chunk_def.left_profile.size() != expected_vertical or chunk_def.right_profile.size() != expected_vertical:
 			messages.append("WARNING: SpecialChunk %s vertical profile length mismatch." % str(chunk_def.id))
-		messages.append("OK: SpecialChunk %s size=%s style=%d." % [str(chunk_def.id), str(chunk_def.size_in_chunks), chunk_def.transition_style])
+		if chunk_def.allowed_biomes.is_empty():
+			messages.append("WARNING: SpecialChunk %s has no allowed_biomes." % str(chunk_def.id))
+		if chunk_def.placement_weight <= 0.0:
+			messages.append("WARNING: SpecialChunk %s placement_weight should be > 0." % str(chunk_def.id))
+		if chunk_def.prefer_structure_tags.is_empty() and not chunk_def.prefer_branch_end and not chunk_def.prefer_chamber_edge:
+			messages.append("WARNING: SpecialChunk %s has no structure placement preference." % str(chunk_def.id))
+		messages.append("OK: SpecialChunk %s size=%s style=%d prefs=%s." % [str(chunk_def.id), str(chunk_def.size_in_chunks), chunk_def.transition_style, str(chunk_def.prefer_structure_tags)])
 
 func _validate_tileset(config: WorldGenConfig, messages: Array[String]) -> void:
 	if config.tile_set == null:

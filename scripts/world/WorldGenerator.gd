@@ -34,6 +34,10 @@ func generate_chunk(coord: Vector2i) -> ChunkData:
 		data.chamber_id = structure_node.chamber_id
 		data.chamber_origin = structure_node.chamber_origin
 		data.chamber_size = structure_node.chamber_size
+		data.special_chunk_id = structure_node.special_chunk_id
+		data.special_chunk_origin = structure_node.special_chunk_origin
+		data.special_chunk_size = structure_node.special_chunk_size
+		data.special_chunk_gateway_side = structure_node.special_chunk_gateway_side
 	data.structure_source = "structure_v1" if world_structure != null and world_structure.has_node(coord) else "fallback"
 	data.intended_connection_count = _count_intended_connections(coord)
 	var profiles: Dictionary = edge_profile.get_profiles_for_chunk(coord)

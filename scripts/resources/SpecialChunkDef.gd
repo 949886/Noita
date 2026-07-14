@@ -31,6 +31,14 @@ enum TransitionStyle {
 @export var scene: PackedScene
 @export var allowed_biomes: Array[StringName] = []
 @export var tags: Array[StringName] = []
+# Structure-aware placement controls. These are soft rules used by SpecialChunkPlanner
+# to place authored chunks at branch ends, chamber edges, or other macro-structure nodes.
+@export var prefer_structure_tags: Array[StringName] = []
+@export var avoid_structure_tags: Array[StringName] = []
+@export var prefer_branch_end: bool = true
+@export var prefer_chamber_edge: bool = false
+@export var avoid_chamber_interior: bool = true
+@export var placement_weight: float = 1.0
 @export var size_in_chunks: Vector2i = Vector2i.ONE
 @export var weight: float = 1.0
 @export var target_count: int = 1

@@ -50,3 +50,66 @@ func tags_for(coord: Vector2i) -> Array[StringName]:
 func tag_string_for(coord: Vector2i) -> String:
 	var node: WorldStructureNode = get_node(coord)
 	return node.tag_string() if node != null else "fallback"
+
+func mark_special_chunk_placement(placement: SpecialChunkPlacement) -> void:
+	# Write SpecialChunk placement data back into the macro-structure graph.
+	# Normal generation can then treat neighbor chunks as gateways and carve paths
+	# toward authored entrances instead of leaving SpecialChunks as isolated overrides.
+	if placement == null or placement.chunk_def == null:
+		return
+	_mark_special_chunk_occupied_nodes(placement)
+	_mark_special_chunk_gateways(placement)
+
+func _mark_special_chunk_occupied_nodes(placement: SpecialChunkPlacement) -> void:
+	for yy: int in range(placement.origin_chunk.y, placement.origin_chunk.y + placement.size_in_chunks.y):
+		for xx: int in range(placement.origin_chunk.x, placement.origin_chunk.x + placement.size_in_chunks.x):
+			var coord := Vector2i(xx, yy)
+			var node: WorldStructureNode = get_node(coord)
+			if node == null:
+				continue
+			node.chunk_type = BiomeMap.ChunkType.SPECIAL
+			node.add_tag(&"special_chunk_occupied")
+			node.add_tag(StringName("special_%s" % str(placement.chunk_def.id)))
+			node.special_chunk_id = placement.chunk_def.id
+			node.special_chunk_origin = placement.origin_chunk
+			node.special_chunk_size = placement.size_in_chunks
+
+func _mark_special_chunk_gateways(placement: SpecialChunkPlacement) -> void:
+	var def: SpecialChunkDef = placement.chunk_def
+	var tiles_per_chunk: int = TileConstants.TILES_PER_CHUNK
+	for local_y: int in range(placement.size_in_chunks.y):
+		if _special_profile_slice_has_open(def.left_profile, local_y, tiles_per_chunk):
+			_mark_special_gateway(placement, Vector2i(placement.origin_chunk.x - 1, placement.origin_chunk.y + local_y), &"right")
+		if _special_profile_slice_has_open(def.right_profile, local_y, tiles_per_chunk):
+			_mark_special_gateway(placement, Vector2i(placement.origin_chunk.x + placement.size_in_chunks.x, placement.origin_chunk.y + local_y), &"left")
+	for local_x: int in range(placement.size_in_chunks.x):
+		if _special_profile_slice_has_open(def.top_profile, local_x, tiles_per_chunk):
+			_mark_special_gateway(placement, Vector2i(placement.origin_chunk.x + local_x, placement.origin_chunk.y - 1), &"bottom")
+		if _special_profile_slice_has_open(def.bottom_profile, local_x, tiles_per_chunk):
+			_mark_special_gateway(placement, Vector2i(placement.origin_chunk.x + local_x, placement.origin_chunk.y + placement.size_in_chunks.y), &"top")
+
+func _mark_special_gateway(placement: SpecialChunkPlacement, coord: Vector2i, side_to_special: StringName) -> void:
+	var node: WorldStructureNode = get_node(coord)
+	if node == null:
+		return
+	if node.has_tag(&"special_chunk_occupied"):
+		return
+	node.add_tag(&"near_special_chunk")
+	node.add_tag(&"special_chunk_gateway")
+	node.add_tag(StringName("gateway_%s" % str(placement.chunk_def.id)))
+	node.special_chunk_id = placement.chunk_def.id
+	node.special_chunk_origin = placement.origin_chunk
+	node.special_chunk_size = placement.size_in_chunks
+	node.special_chunk_gateway_side = side_to_special
+	node.set_connection(side_to_special, true)
+	if node.chunk_type == BiomeMap.ChunkType.SOLID:
+		node.chunk_type = BiomeMap.ChunkType.BRANCH
+
+func _special_profile_slice_has_open(profile: Array[int], local_chunk_index: int, tiles_per_chunk: int) -> bool:
+	var start: int = local_chunk_index * tiles_per_chunk
+	var end: int = mini(start + tiles_per_chunk, profile.size())
+	for i: int in range(start, end):
+		var edge_value: int = int(profile[i])
+		if edge_value == TileDef.Edge.OPEN or edge_value == TileDef.Edge.AIR:
+			return true
+	return false

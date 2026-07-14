@@ -54,7 +54,7 @@ func _ready() -> void:
 	world_structure = WorldStructureBuilder.new(world_seed, active_config).build()
 	var planning_biome_map: BiomeMap = BiomeMap.new(world_seed, active_config)
 	planning_biome_map.world_structure = world_structure
-	special_chunk_planner = SpecialChunkPlanner.new(world_seed, active_config, planning_biome_map)
+	special_chunk_planner = SpecialChunkPlanner.new(world_seed, active_config, planning_biome_map, world_structure)
 	special_chunks_parent = get_node_or_null("SpecialChunks") as Node2D
 	if special_chunks_parent == null:
 		special_chunks_parent = Node2D.new()
@@ -117,6 +117,13 @@ func _build_debug_snapshot(center: Vector2i) -> Dictionary:
 		var placement: SpecialChunkPlacement = special_chunk_planner.get_chunk_at(center)
 		if placement != null and placement.chunk_def != null:
 			special_info = "%s @ %s" % [str(placement.chunk_def.id), str(placement.origin_chunk)]
+	elif world_structure != null:
+		var special_node: WorldStructureNode = world_structure.get_node(center)
+		if special_node != null and special_node.special_chunk_id != &"":
+			if special_node.has_tag(&"special_chunk_gateway"):
+				special_info = "gateway %s via %s" % [str(special_node.special_chunk_id), str(special_node.special_chunk_gateway_side)]
+			else:
+				special_info = "near %s" % str(special_node.special_chunk_id)
 	var chunk_type_text: String = "unknown"
 	if current_chunk != null:
 		chunk_type_text = BiomeMap.chunk_type_name(current_chunk.chunk_type)
@@ -266,7 +273,7 @@ func _regenerate_world(advance_seed: bool) -> void:
 	world_structure = WorldStructureBuilder.new(world_seed, active_config).build()
 	var planning_biome_map: BiomeMap = BiomeMap.new(world_seed, active_config)
 	planning_biome_map.world_structure = world_structure
-	special_chunk_planner = SpecialChunkPlanner.new(world_seed, active_config, planning_biome_map)
+	special_chunk_planner = SpecialChunkPlanner.new(world_seed, active_config, planning_biome_map, world_structure)
 	special_chunk_manager = SpecialChunkManager.new(special_chunk_planner, active_config.tile_set, special_chunks_parent)
 	generator = WorldGenerator.new(world_seed, tile_library, active_config, special_chunk_planner, world_structure)
 	_update_loaded_chunks(true)

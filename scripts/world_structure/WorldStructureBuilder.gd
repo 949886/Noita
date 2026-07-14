@@ -183,7 +183,12 @@ func _mark_chamber(origin: Vector2i, size: Vector2i) -> void:
 			node.chamber_origin = origin
 			node.chamber_size = size
 			node.add_tag(&"chamber")
-			node.add_tag(&"chamber_interior")
+			if size.x <= 2 and size.y <= 2:
+				# Current demo chambers are small; every occupied chunk is useful as a visible edge anchor.
+				node.add_tag(&"chamber_edge")
+			else:
+				var is_edge: bool = x == origin.x or y == origin.y or x == origin.x + size.x - 1 or y == origin.y + size.y - 1
+				node.add_tag(&"chamber_edge" if is_edge else &"chamber_interior")
 			node.add_tag(StringName("chamber_%dx%d" % [size.x, size.y]))
 			var right := coord + Vector2i.RIGHT
 			var bottom := coord + Vector2i.DOWN

@@ -28,6 +28,10 @@ var chamber_carve_open_tiles: int = 0
 # Number of cells opened by ChunkConnectivityCarvePass to connect entrances on different chunk sides.
 var connectivity_path_tiles: int = 0
 var connected_open_sides: int = 0
+var special_chunk_id: StringName = &""
+var special_chunk_origin: Vector2i = Vector2i.ZERO
+var special_chunk_size: Vector2i = Vector2i.ONE
+var special_chunk_gateway_side: StringName = &""
 
 func chunk_type_name() -> String:
 	return BiomeMap.chunk_type_name(chunk_type)
