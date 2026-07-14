@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c1cs1i8la4kvd"
-path="res://.godot/imported/special_chunk_atlas.png-6e1aa534030d9bde6852958e81c74769.ctex"
+uid="uid://kx8voptxcvpe"
+path="res://.godot/imported/crystal_grotto_atlas.png-89de2af042f97baedb1d6a8c36129955.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://resources/tilesets/atlases/special_chunk_atlas.png"
-dest_files=["res://.godot/imported/special_chunk_atlas.png-6e1aa534030d9bde6852958e81c74769.ctex"]
+source_file="res://resources/tilesets/atlases/crystal_grotto_atlas.png"
+dest_files=["res://.godot/imported/crystal_grotto_atlas.png-89de2af042f97baedb1d6a8c36129955.ctex"]
 
 [params]
 

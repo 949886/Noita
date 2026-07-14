@@ -17,6 +17,7 @@ func validate_all() -> Array[String]:
 	messages.append("OK: WorldGenConfig loaded.")
 	_validate_world_config(config, messages)
 	_validate_biome_atlases(config, messages)
+	_validate_special_atlases(config, messages)
 	_validate_special_chunks(config, messages)
 	_validate_tileset(config, messages)
 	messages.append("Validation complete.")
@@ -57,6 +58,28 @@ func _validate_biome_atlases(config: WorldGenConfig, messages: Array[String]) ->
 		else:
 			messages.append("OK: Biome %s atlas rows=%d source_id=%d." % [str(biome_config.id), atlas.signature_rows.size(), atlas.source_id])
 
+
+func _validate_special_atlases(config: WorldGenConfig, messages: Array[String]) -> void:
+	for atlas: TileAtlasDef in config.extra_tile_atlases:
+		if atlas == null:
+			continue
+		if atlas.atlas_kind != TileAtlasDef.AtlasKind.SPECIAL_CHUNK:
+			continue
+		var has_door_open: bool = false
+		var has_deco_open: bool = false
+		for tile: TileDef in atlas.tiles:
+			if tile == null:
+				continue
+			if tile.category == &"door" and tile.signature() == "OOOO":
+				has_door_open = true
+			if (tile.category == &"background" or tile.category == &"decoration") and tile.signature() == "OOOO":
+				has_deco_open = true
+		if not has_door_open:
+			messages.append("WARNING: Special atlas %s has no OOOO door tile; ENVIRONMENT_WANG_FILL may seal doors." % str(atlas.id))
+		if not has_deco_open:
+			messages.append("WARNING: Special atlas %s has no open background/decoration tile; authored details may seal cave fill." % str(atlas.id))
+		messages.append("OK: Special atlas %s source_id=%d categories=%d." % [str(atlas.id), atlas.source_id, atlas.category_rows.size()])
+
 func _validate_special_chunks(config: WorldGenConfig, messages: Array[String]) -> void:
 	for chunk_def: SpecialChunkDef in config.special_chunk_defs:
 		if chunk_def == null:
@@ -78,14 +101,14 @@ func _validate_special_chunks(config: WorldGenConfig, messages: Array[String]) -
 			messages.append("WARNING: SpecialChunk %s placement_weight should be > 0." % str(chunk_def.id))
 		if chunk_def.prefer_structure_tags.is_empty() and not chunk_def.prefer_branch_end and not chunk_def.prefer_chamber_edge:
 			messages.append("WARNING: SpecialChunk %s has no structure placement preference." % str(chunk_def.id))
-		messages.append("OK: SpecialChunk %s size=%s style=%d prefs=%s." % [str(chunk_def.id), str(chunk_def.size_in_chunks), chunk_def.transition_style, str(chunk_def.prefer_structure_tags)])
+		messages.append("OK: SpecialChunk %s size=%s style=%d fill=%d prefs=%s." % [str(chunk_def.id), str(chunk_def.size_in_chunks), chunk_def.transition_style, chunk_def.fill_mode, str(chunk_def.prefer_structure_tags)])
 
 func _validate_tileset(config: WorldGenConfig, messages: Array[String]) -> void:
 	if config.tile_set == null:
 		messages.append("WARNING: Config tile_set is null; runtime will build one if allowed.")
 		return
 	messages.append("OK: TileSet assigned. Source count: %d." % config.tile_set.get_source_count())
-	var required_sources: Array[int] = [0, 1, 2, TileConstants.SOURCE_SPECIAL_CHUNK]
+	var required_sources: Array[int] = [0, 1, 2, TileConstants.SOURCE_SPECIAL_CHUNK, TileConstants.SOURCE_CRYSTAL_GROTTO, TileConstants.SOURCE_COMMON]
 	for source_id: int in required_sources:
 		if config.tile_set.has_source(source_id):
 			messages.append("OK: TileSet source %d exists." % source_id)

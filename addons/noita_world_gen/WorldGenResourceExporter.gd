@@ -73,6 +73,49 @@ func generate_all(editor_interface: EditorInterface = null) -> Array[String]:
 	else:
 		messages.append("Failed to save special-chunk atlas: %s" % special_atlas_path)
 
+	# Dedicated test atlas for CrystalGrottoChunk. It uses the same category-row
+	# contract as the default SpecialChunk atlas but lives in its own TileSet source.
+	var crystal_atlas_def: TileAtlasDef = TileGenerator.generate_special_chunk_atlas_def()
+	crystal_atlas_def.id = &"crystal_grotto_atlas"
+	crystal_atlas_def.source_id = 11
+	var crystal_atlas_path: String = "%s/crystal_grotto_atlas.png" % ATLAS_DIR
+	# Always rebuild the test atlas so category-edge and transparency changes are
+	# reflected when the resource generation tool is run.
+	var crystal_image: Image = TileGenerator.build_special_chunk_atlas_image(crystal_atlas_def)
+	var crystal_png_error: Error = crystal_image.save_png(crystal_atlas_path)
+	if crystal_png_error == OK:
+		if editor_interface != null:
+			editor_interface.get_resource_filesystem().scan()
+		var crystal_texture: Texture2D = ResourceLoader.load(crystal_atlas_path) as Texture2D
+		if crystal_texture == null:
+			crystal_texture = ImageTexture.create_from_image(crystal_image)
+		crystal_atlas_def.atlas_texture = crystal_texture
+		ResourceSaver.save(crystal_atlas_def, "%s/crystal_grotto_atlas_def.tres" % TILE_ATLAS_DEF_DIR)
+		config.extra_tile_atlases.append(crystal_atlas_def)
+		messages.append("Generated crystal-grotto test atlas and TileAtlasDef.")
+	else:
+		messages.append("Failed to save crystal-grotto atlas: %s" % crystal_atlas_path)
+
+	# Common atlas for cross-biome authoring helpers such as common_air.
+	# common_air is used by SpecialChunk scenes to mark continuous room interior
+	# space that ENVIRONMENT_WANG_FILL must not overwrite.
+	var common_atlas_def: TileAtlasDef = TileGenerator.generate_common_atlas_def()
+	var common_atlas_image: Image = TileGenerator.build_common_atlas_image(common_atlas_def)
+	var common_atlas_path: String = "%s/common_atlas.png" % ATLAS_DIR
+	var common_png_error: Error = common_atlas_image.save_png(common_atlas_path)
+	if common_png_error == OK:
+		if editor_interface != null:
+			editor_interface.get_resource_filesystem().scan()
+		var common_texture: Texture2D = ResourceLoader.load(common_atlas_path) as Texture2D
+		if common_texture == null:
+			common_texture = ImageTexture.create_from_image(common_atlas_image)
+		common_atlas_def.atlas_texture = common_texture
+		ResourceSaver.save(common_atlas_def, "%s/common_atlas_def.tres" % TILE_ATLAS_DEF_DIR)
+		config.extra_tile_atlases.append(common_atlas_def)
+		messages.append("Generated common helper atlas and TileAtlasDef.")
+	else:
+		messages.append("Failed to save common atlas: %s" % common_atlas_path)
+
 	# These resources reference the included editable example scenes.
 	var treasure_chunk: SpecialChunkDef = _make_default_special_chunk(
 		&"mine_treasure_chunk",
@@ -116,6 +159,30 @@ func generate_all(editor_interface: EditorInterface = null) -> Array[String]:
 	)
 	ResourceSaver.save(snow_shrine_chunk, "%s/snow_shrine_chunk.tres" % SPECIAL_CHUNK_DIR)
 	config.special_chunk_defs.append(snow_shrine_chunk)
+	var crystal_chunk: SpecialChunkDef = _make_default_special_chunk(
+		&"crystal_grotto_chunk",
+		"Crystal Grotto Chunk",
+		SpecialChunkDef.ChunkKind.DECORATIVE,
+		"res://scenes/special_chunks/CrystalGrottoChunk.tscn",
+		[&"snow", &"deep"],
+		Vector2i.ONE,
+		2,
+		6,
+		14,
+		SpecialChunkDef.TransitionStyle.DEEP
+	)
+	crystal_chunk.tags.append(&"crystal")
+	crystal_chunk.tags.append(&"grotto")
+	crystal_chunk.prefer_chamber_edge = true
+	crystal_chunk.prefer_branch_end = true
+	crystal_chunk.prefer_structure_tags.clear()
+	crystal_chunk.prefer_structure_tags.append(&"chamber_edge")
+	crystal_chunk.prefer_structure_tags.append(&"branch_end")
+	crystal_chunk.placement_weight = 1.4
+	crystal_chunk.fill_mode = SpecialChunkDef.FillMode.ENVIRONMENT_WANG_FILL
+	crystal_chunk.auto_fill_transition_border = false
+	ResourceSaver.save(crystal_chunk, "%s/crystal_grotto_chunk.tres" % SPECIAL_CHUNK_DIR)
+	config.special_chunk_defs.append(crystal_chunk)
 	messages.append("Generated default SpecialChunkDef resources.")
 
 	config.tile_set = TileSetBuilder.build_from_config(config, false)
@@ -186,7 +253,8 @@ func _make_default_special_chunk(
 	chunk.can_overlap_main_path = false
 	chunk.require_near_main_path = true
 	chunk.transition_style = transition_style
-	chunk.auto_fill_transition_border = true
+	chunk.fill_mode = SpecialChunkDef.FillMode.ENVIRONMENT_WANG_FILL
+	chunk.auto_fill_transition_border = false
 	_apply_default_special_chunk_structure_preferences(chunk)
 	chunk.top_profile = _solid_profile(size_in_chunks.x * TileConstants.TILES_PER_CHUNK)
 	chunk.bottom_profile = _solid_profile(size_in_chunks.x * TileConstants.TILES_PER_CHUNK)

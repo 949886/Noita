@@ -7,6 +7,8 @@ var id: StringName = &""
 var chunk_def: SpecialChunkDef
 var origin_chunk: Vector2i = Vector2i.ZERO
 var size_in_chunks: Vector2i = Vector2i.ONE
+var biome_id: StringName = &"mine"
+var seed: int = 0
 
 func contains_chunk(coord: Vector2i) -> bool:
 	return coord.x >= origin_chunk.x \

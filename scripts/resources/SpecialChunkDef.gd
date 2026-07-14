@@ -25,6 +25,15 @@ enum TransitionStyle {
 	RUINS,
 }
 
+# FillMode is mutually exclusive. TRANSITION_BORDER uses the authored special atlas
+# transition tiles, while ENVIRONMENT_WANG_FILL fills every empty cell with biome
+# Wang tiles inferred from neighboring authored/empty cells and external profiles.
+enum FillMode {
+	NONE,
+	TRANSITION_BORDER,
+	ENVIRONMENT_WANG_FILL,
+}
+
 @export var id: StringName = &""
 @export var display_name: String = ""
 @export_enum("Treasure", "Shop", "Altar", "Portal", "Boss Entrance", "Puzzle", "Hall", "Shrine", "Decorative") var chunk_kind: int = ChunkKind.DECORATIVE
@@ -48,6 +57,9 @@ enum TransitionStyle {
 @export var can_overlap_main_path: bool = false
 @export var require_near_main_path: bool = false
 @export_enum("Rock", "Snow", "Deep", "Ruins") var transition_style: int = TransitionStyle.ROCK
+@export_enum("None", "Transition Border", "Environment Wang Fill") var fill_mode: int = FillMode.TRANSITION_BORDER
+# Deprecated compatibility flag. Runtime auto-fill uses fill_mode, so this flag is
+# ignored when fill_mode is ENVIRONMENT_WANG_FILL or NONE.
 @export var auto_fill_transition_border: bool = true
 
 # External profiles are measured in tile edges, not pixels.

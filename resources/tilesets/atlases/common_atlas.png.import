@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c1cs1i8la4kvd"
-path="res://.godot/imported/special_chunk_atlas.png-6e1aa534030d9bde6852958e81c74769.ctex"
+uid="uid://dmhsqtk8ttt36"
+path="res://.godot/imported/common_atlas.png-8b547cce0d713d27b79b1e59fdb1adbe.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://resources/tilesets/atlases/special_chunk_atlas.png"
-dest_files=["res://.godot/imported/special_chunk_atlas.png-6e1aa534030d9bde6852958e81c74769.ctex"]
+source_file="res://resources/tilesets/atlases/common_atlas.png"
+dest_files=["res://.godot/imported/common_atlas.png-8b547cce0d713d27b79b1e59fdb1adbe.ctex"]
 
 [params]
 

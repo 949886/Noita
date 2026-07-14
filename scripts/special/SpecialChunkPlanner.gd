@@ -163,6 +163,8 @@ func _place(chunk_def: SpecialChunkDef, origin: Vector2i, index: int) -> void:
 	placement.chunk_def = chunk_def
 	placement.origin_chunk = origin
 	placement.size_in_chunks = chunk_def.size_in_chunks
+	placement.biome_id = biome_map.get_biome(origin)
+	placement.seed = world_seed
 	placements.append(placement)
 	for yy: int in range(origin.y, origin.y + placement.size_in_chunks.y):
 		for xx: int in range(origin.x, origin.x + placement.size_in_chunks.x):

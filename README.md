@@ -331,3 +331,94 @@ This means the normal chunk generator and MST connectivity carve pass can carve 
 real path toward SpecialChunk entrances instead of treating them as isolated scene
 overrides. The world debug drawer now outlines SpecialChunk placements in magenta
 and shows gateway labels such as `GW right -> mine_treasure_chunk`.
+
+## SpecialChunk Environment Wang Fill
+
+This version adds a mutually-exclusive SpecialChunk fill mode system:
+
+- `NONE`: never auto-fill authored scenes.
+- `TRANSITION_BORDER`: only fills empty edge cells with directional SpecialChunk transition tiles.
+- `ENVIRONMENT_WANG_FILL`: fills every empty cell inside the SpecialChunk bounds with ordinary biome Wang tiles.
+
+`ENVIRONMENT_WANG_FILL` is designed for the workflow where the world reserves a SpecialChunk area first, then the authored scene draws only its core structure, and all remaining empty cells are inferred from the surrounding environment.
+
+The fill pass:
+
+1. Scans the original `Ground` layer and marks existing cells as authored.
+2. For each empty cell, infers a S/O Wang signature from its four neighbors:
+   - authored neighbor = `SOLID`
+   - empty neighbor = `OPEN`
+   - outside the SpecialChunk bounds = the matching `SpecialChunkDef` edge profile
+3. Uses the placement biome to choose the source atlas:
+   - mine = source `0`
+   - snow = source `1`
+   - deep = source `2`
+4. Writes only into empty cells; hand-authored tiles are never overwritten.
+
+A new `CrystalGrottoChunk` is included to test this workflow. It uses a dedicated `crystal_grotto_atlas.png` / source `11` for its authored crystal tiles, while the empty area around it is filled by the surrounding biome Wang atlas at runtime.
+
+## SpecialChunk Environment Wang Fill edge metadata fix
+
+`ENVIRONMENT_WANG_FILL` no longer treats every authored SpecialChunk tile as a solid wall. When an empty cell is filled, the filler now reads the neighboring authored tile's edge metadata:
+
+- `wall` / `pillar` behave as `SSSS` and remain solid anchors.
+- `floor` behaves as `OOSO` so it is open above/sides and solid below.
+- `platform`, `door`, `background`, `decoration`, and `debug` behave as `OOOO` for environment fill.
+- directional transition rows treat columns `0-3` as wall-like and columns `4-7` as door-like.
+
+This means doors and decorative crystal tiles will no longer seal the generated cave fill around them, while real wall/pillar tiles still shape the surrounding Wang tiles.
+
+## SpecialChunk Environment Wang Fill v2
+
+`ENVIRONMENT_WANG_FILL` now uses a small edge-map generator instead of treating every empty neighbor as `OPEN`.
+
+The new pass works like this:
+
+1. Scans the original `Ground` layer and keeps all hand-authored cells.
+2. Writes hard edge constraints from:
+   - the `SpecialChunkDef` external profiles,
+   - authored Ground tile edge metadata,
+   - optional `Markers/FillTerminals` markers.
+3. Leaves empty-to-empty edges unconstrained at first.
+4. Generates those unconstrained edges with deterministic biome-aware noise.
+5. Connects boundary openings and FillTerminal markers with an MST-style wandering path.
+6. Converts the resulting edge map into ordinary biome Wang signatures.
+
+This avoids the earlier problem where large empty areas became all `OOOO` tiles. Empty space inside a SpecialChunk now fills more like a natural cave, while still preserving authored structure and boundary connectivity.
+
+`CrystalGrottoChunk` now demonstrates the recommended authoring style:
+
+- `Ground` contains only terrain-affecting structure tiles.
+- Decorative doors, crystals, glows, and altar shapes are regular `Polygon2D` nodes under `Props`.
+- `Markers/FillTerminals` tells the environment fill where generated cave paths should connect.
+
+This keeps SpecialChunk editing simple while avoiding opaque tile backgrounds around decorative objects.
+
+## Update: SpecialChunk props and environment decoration split
+
+`CrystalGrottoChunk` now uses ordinary Node2D geometry only for the small interactive crystal core. Large decorative shapes were removed from `Props` so they no longer cover the environment Wang fill.
+
+Non-interactive grotto detail is authored as sparse transparent atlas tiles on the `Ground` layer. These tiles keep `OPEN`-like edge metadata, so they decorate the cave without sealing doors or blocking `ENVIRONMENT_WANG_FILL`.
+
+Recommended SpecialChunk authoring rule:
+
+- Use `Ground: TileMapLayer` for terrain, walls, floors, pillars, platforms, and non-interactive environment decoration.
+- Use ordinary `Node2D` props only for interactive objects such as crystals, chests, switches, gates, or altar triggers.
+- Avoid large geometric props for background/environment decoration; they can hide the generated Wang terrain.
+
+
+## Common Atlas v1 / Common Air
+
+This version adds `res://resources/tilesets/atlases/common_atlas.png` as TileSet source `20`.
+The first tile, `common_air` at atlas coords `(0, 0)`, is a transparent `AAAA` helper tile.
+SpecialChunk scenes can paint `common_air` on `Ground` to explicitly mark room interior air.
+`ENVIRONMENT_WANG_FILL` still fills only truly empty cells, so the authoring rule is:
+
+```text
+special/crystal tile = authored structure or decoration
+common_air          = keep this as continuous room air
+empty cell          = fill with surrounding biome Wang tile
+Node2D prop         = interactive object placeholder
+```
+
+`CrystalGrottoChunk` now uses `common_air` to keep the room core continuous while allowing the outer empty cells to be filled by biome Wang terrain.

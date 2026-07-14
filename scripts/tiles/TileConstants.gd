@@ -21,6 +21,11 @@ const AIR_SIGNATURE: String = "AAAA"
 # Rows 7-10 contain direction-aware transition tiles used to soften the seam
 # between authored SpecialChunks and neighboring Wang chunks.
 const SOURCE_SPECIAL_CHUNK: int = 10
+const SOURCE_CRYSTAL_GROTTO: int = 11
+const SOURCE_COMMON: int = 20
+const COMMON_AIR_COORDS: Vector2i = Vector2i(0, 0)
+const COMMON_ATLAS_COLUMNS: int = 8
+const COMMON_ATLAS_ROWS: int = 4
 const SPECIAL_ATLAS_COLUMNS: int = 8
 const SPECIAL_TRANSITION_TOP_ROW: int = 7
 const SPECIAL_TRANSITION_RIGHT_ROW: int = 8
@@ -58,6 +63,14 @@ static func signature_order() -> Array[String]:
 	var signatures: Array[String] = base_signature_order()
 	signatures.append(AIR_SIGNATURE)
 	return signatures
+
+static func common_categories() -> Array[StringName]:
+	return [
+		&"air",
+		&"mask",
+		&"helper",
+		&"debug",
+	]
 
 static func special_chunk_categories() -> Array[StringName]:
 	return [

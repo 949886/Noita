@@ -1,970 +1,1464 @@
-[gd_resource type="Resource" script_class="TileAtlasDef" format=3 uid="uid://vxqf5nnubtcr"]
+[gd_resource type="Resource" script_class="TileAtlasDef" load_steps=141 format=3]
 
-[ext_resource type="Script" uid="uid://bp7kp32an8bqv" path="res://scripts/tiles/TileAtlasDef.gd" id="1"]
-[ext_resource type="Texture2D" uid="uid://c10as5kkq82wt" path="res://resources/tilesets/atlases/deep_atlas.png" id="2"]
-[ext_resource type="Script" uid="uid://dobca3dl2wbvt" path="res://scripts/tiles/TileDef.gd" id="3"]
-
-[sub_resource type="Resource" id="TileDef_136"]
-script = ExtResource("3")
-id = &"deep_fallback"
-atlas_coords = Vector2i(0, 17)
-collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
-is_fallback = true
+[ext_resource type="Script" path="res://scripts/tiles/TileAtlasDef.gd" id="1"]
+[ext_resource type="Texture2D" path="res://resources/tilesets/atlases/deep_atlas.png" id="2"]
+[ext_resource type="Script" path="res://scripts/tiles/TileDef.gd" id="3"]
 
 [sub_resource type="Resource" id="TileDef_0"]
 script = ExtResource("3")
 id = &"deep_SSSS_01"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(0, 0)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_1"]
 script = ExtResource("3")
 id = &"deep_SSSS_02"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
 atlas_coords = Vector2i(1, 0)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_2"]
 script = ExtResource("3")
 id = &"deep_SSSS_03"
+top = 0
+right = 0
+bottom = 0
+left = 0
 weight = 0.0
 atlas_coords = Vector2i(2, 0)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_3"]
 script = ExtResource("3")
 id = &"deep_SSSS_04"
+top = 0
+right = 0
+bottom = 0
+left = 0
 weight = 0.0
 atlas_coords = Vector2i(3, 0)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_4"]
 script = ExtResource("3")
 id = &"deep_SSSS_05"
+top = 0
+right = 0
+bottom = 0
+left = 0
 weight = 0.0
 atlas_coords = Vector2i(4, 0)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_5"]
 script = ExtResource("3")
 id = &"deep_SSSS_06"
+top = 0
+right = 0
+bottom = 0
+left = 0
 weight = 0.0
 atlas_coords = Vector2i(5, 0)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_6"]
 script = ExtResource("3")
 id = &"deep_SSSS_07"
+top = 0
+right = 0
+bottom = 0
+left = 0
 weight = 0.0
 atlas_coords = Vector2i(6, 0)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_7"]
 script = ExtResource("3")
 id = &"deep_SSSS_08"
+top = 0
+right = 0
+bottom = 0
+left = 0
 weight = 0.0
 atlas_coords = Vector2i(7, 0)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_8"]
 script = ExtResource("3")
 id = &"deep_SSSO_01"
+top = 0
+right = 0
+bottom = 0
 left = 1
+weight = 1.0
 atlas_coords = Vector2i(0, 1)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(42, 0, 22, 22), Rect2i(42, 42, 22, 22), Rect2i(22, 0, 20, 18), Rect2i(22, 46, 20, 18), Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_9"]
 script = ExtResource("3")
 id = &"deep_SSSO_02"
+top = 0
+right = 0
+bottom = 0
 left = 1
+weight = 1.0
 atlas_coords = Vector2i(1, 1)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(42, 0, 22, 22), Rect2i(42, 42, 22, 22), Rect2i(22, 0, 20, 18), Rect2i(22, 46, 20, 18), Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_10"]
 script = ExtResource("3")
 id = &"deep_SSSO_03"
+top = 0
+right = 0
+bottom = 0
 left = 1
 weight = 0.0
 atlas_coords = Vector2i(2, 1)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(42, 0, 22, 22), Rect2i(42, 42, 22, 22), Rect2i(22, 0, 20, 18), Rect2i(22, 46, 20, 18), Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_11"]
 script = ExtResource("3")
 id = &"deep_SSSO_04"
+top = 0
+right = 0
+bottom = 0
 left = 1
 weight = 0.0
 atlas_coords = Vector2i(3, 1)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(42, 0, 22, 22), Rect2i(42, 42, 22, 22), Rect2i(22, 0, 20, 18), Rect2i(22, 46, 20, 18), Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_12"]
 script = ExtResource("3")
 id = &"deep_SSSO_05"
+top = 0
+right = 0
+bottom = 0
 left = 1
 weight = 0.0
 atlas_coords = Vector2i(4, 1)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(42, 0, 22, 22), Rect2i(42, 42, 22, 22), Rect2i(22, 0, 20, 18), Rect2i(22, 46, 20, 18), Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_13"]
 script = ExtResource("3")
 id = &"deep_SSSO_06"
+top = 0
+right = 0
+bottom = 0
 left = 1
 weight = 0.0
 atlas_coords = Vector2i(5, 1)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(42, 0, 22, 22), Rect2i(42, 42, 22, 22), Rect2i(22, 0, 20, 18), Rect2i(22, 46, 20, 18), Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_14"]
 script = ExtResource("3")
 id = &"deep_SSSO_07"
+top = 0
+right = 0
+bottom = 0
 left = 1
 weight = 0.0
 atlas_coords = Vector2i(6, 1)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(42, 0, 22, 22), Rect2i(42, 42, 22, 22), Rect2i(22, 0, 20, 18), Rect2i(22, 46, 20, 18), Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_15"]
 script = ExtResource("3")
 id = &"deep_SSSO_08"
+top = 0
+right = 0
+bottom = 0
 left = 1
 weight = 0.0
 atlas_coords = Vector2i(7, 1)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(42, 0, 22, 22), Rect2i(42, 42, 22, 22), Rect2i(22, 0, 20, 18), Rect2i(22, 46, 20, 18), Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_16"]
 script = ExtResource("3")
 id = &"deep_SSOS_01"
+top = 0
+right = 0
 bottom = 1
+left = 0
+weight = 1.0
 atlas_coords = Vector2i(0, 2)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 0, 22, 22), Rect2i(42, 0, 22, 22), Rect2i(22, 0, 20, 18), Rect2i(0, 22, 18, 20), Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_17"]
 script = ExtResource("3")
 id = &"deep_SSOS_02"
+top = 0
+right = 0
 bottom = 1
+left = 0
+weight = 1.0
 atlas_coords = Vector2i(1, 2)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 0, 22, 22), Rect2i(42, 0, 22, 22), Rect2i(22, 0, 20, 18), Rect2i(0, 22, 18, 20), Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_18"]
 script = ExtResource("3")
 id = &"deep_SSOS_03"
+top = 0
+right = 0
 bottom = 1
+left = 0
 weight = 0.0
 atlas_coords = Vector2i(2, 2)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 0, 22, 22), Rect2i(42, 0, 22, 22), Rect2i(22, 0, 20, 18), Rect2i(0, 22, 18, 20), Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_19"]
 script = ExtResource("3")
 id = &"deep_SSOS_04"
+top = 0
+right = 0
 bottom = 1
+left = 0
 weight = 0.0
 atlas_coords = Vector2i(3, 2)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 0, 22, 22), Rect2i(42, 0, 22, 22), Rect2i(22, 0, 20, 18), Rect2i(0, 22, 18, 20), Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_20"]
 script = ExtResource("3")
 id = &"deep_SSOS_05"
+top = 0
+right = 0
 bottom = 1
+left = 0
 weight = 0.0
 atlas_coords = Vector2i(4, 2)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 0, 22, 22), Rect2i(42, 0, 22, 22), Rect2i(22, 0, 20, 18), Rect2i(0, 22, 18, 20), Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_21"]
 script = ExtResource("3")
 id = &"deep_SSOS_06"
+top = 0
+right = 0
 bottom = 1
+left = 0
 weight = 0.0
 atlas_coords = Vector2i(5, 2)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 0, 22, 22), Rect2i(42, 0, 22, 22), Rect2i(22, 0, 20, 18), Rect2i(0, 22, 18, 20), Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_22"]
 script = ExtResource("3")
 id = &"deep_SSOS_07"
+top = 0
+right = 0
 bottom = 1
+left = 0
 weight = 0.0
 atlas_coords = Vector2i(6, 2)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 0, 22, 22), Rect2i(42, 0, 22, 22), Rect2i(22, 0, 20, 18), Rect2i(0, 22, 18, 20), Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_23"]
 script = ExtResource("3")
 id = &"deep_SSOS_08"
+top = 0
+right = 0
 bottom = 1
+left = 0
 weight = 0.0
 atlas_coords = Vector2i(7, 2)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 0, 22, 22), Rect2i(42, 0, 22, 22), Rect2i(22, 0, 20, 18), Rect2i(0, 22, 18, 20), Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_24"]
 script = ExtResource("3")
 id = &"deep_SSOO_01"
+top = 0
+right = 0
 bottom = 1
 left = 1
+weight = 1.0
 atlas_coords = Vector2i(0, 3)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(42, 0, 22, 22), Rect2i(22, 0, 20, 18), Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_25"]
 script = ExtResource("3")
 id = &"deep_SSOO_02"
+top = 0
+right = 0
 bottom = 1
 left = 1
+weight = 1.0
 atlas_coords = Vector2i(1, 3)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(42, 0, 22, 22), Rect2i(22, 0, 20, 18), Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_26"]
 script = ExtResource("3")
 id = &"deep_SSOO_03"
+top = 0
+right = 0
 bottom = 1
 left = 1
 weight = 0.0
 atlas_coords = Vector2i(2, 3)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(42, 0, 22, 22), Rect2i(22, 0, 20, 18), Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_27"]
 script = ExtResource("3")
 id = &"deep_SSOO_04"
+top = 0
+right = 0
 bottom = 1
 left = 1
 weight = 0.0
 atlas_coords = Vector2i(3, 3)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(42, 0, 22, 22), Rect2i(22, 0, 20, 18), Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_28"]
 script = ExtResource("3")
 id = &"deep_SSOO_05"
+top = 0
+right = 0
 bottom = 1
 left = 1
 weight = 0.0
 atlas_coords = Vector2i(4, 3)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(42, 0, 22, 22), Rect2i(22, 0, 20, 18), Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_29"]
 script = ExtResource("3")
 id = &"deep_SSOO_06"
+top = 0
+right = 0
 bottom = 1
 left = 1
 weight = 0.0
 atlas_coords = Vector2i(5, 3)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(42, 0, 22, 22), Rect2i(22, 0, 20, 18), Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_30"]
 script = ExtResource("3")
 id = &"deep_SSOO_07"
+top = 0
+right = 0
 bottom = 1
 left = 1
 weight = 0.0
 atlas_coords = Vector2i(6, 3)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(42, 0, 22, 22), Rect2i(22, 0, 20, 18), Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_31"]
 script = ExtResource("3")
 id = &"deep_SSOO_08"
+top = 0
+right = 0
 bottom = 1
 left = 1
 weight = 0.0
 atlas_coords = Vector2i(7, 3)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(42, 0, 22, 22), Rect2i(22, 0, 20, 18), Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_32"]
 script = ExtResource("3")
 id = &"deep_SOSS_01"
+top = 0
 right = 1
+bottom = 0
+left = 0
+weight = 1.0
 atlas_coords = Vector2i(0, 4)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 0, 22, 22), Rect2i(0, 42, 22, 22), Rect2i(22, 0, 20, 18), Rect2i(22, 46, 20, 18), Rect2i(0, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_33"]
 script = ExtResource("3")
 id = &"deep_SOSS_02"
+top = 0
 right = 1
+bottom = 0
+left = 0
+weight = 1.0
 atlas_coords = Vector2i(1, 4)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 0, 22, 22), Rect2i(0, 42, 22, 22), Rect2i(22, 0, 20, 18), Rect2i(22, 46, 20, 18), Rect2i(0, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_34"]
 script = ExtResource("3")
 id = &"deep_SOSS_03"
+top = 0
 right = 1
+bottom = 0
+left = 0
 weight = 0.0
 atlas_coords = Vector2i(2, 4)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 0, 22, 22), Rect2i(0, 42, 22, 22), Rect2i(22, 0, 20, 18), Rect2i(22, 46, 20, 18), Rect2i(0, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_35"]
 script = ExtResource("3")
 id = &"deep_SOSS_04"
+top = 0
 right = 1
+bottom = 0
+left = 0
 weight = 0.0
 atlas_coords = Vector2i(3, 4)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 0, 22, 22), Rect2i(0, 42, 22, 22), Rect2i(22, 0, 20, 18), Rect2i(22, 46, 20, 18), Rect2i(0, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_36"]
 script = ExtResource("3")
 id = &"deep_SOSS_05"
+top = 0
 right = 1
+bottom = 0
+left = 0
 weight = 0.0
 atlas_coords = Vector2i(4, 4)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 0, 22, 22), Rect2i(0, 42, 22, 22), Rect2i(22, 0, 20, 18), Rect2i(22, 46, 20, 18), Rect2i(0, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_37"]
 script = ExtResource("3")
 id = &"deep_SOSS_06"
+top = 0
 right = 1
+bottom = 0
+left = 0
 weight = 0.0
 atlas_coords = Vector2i(5, 4)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 0, 22, 22), Rect2i(0, 42, 22, 22), Rect2i(22, 0, 20, 18), Rect2i(22, 46, 20, 18), Rect2i(0, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_38"]
 script = ExtResource("3")
 id = &"deep_SOSS_07"
+top = 0
 right = 1
+bottom = 0
+left = 0
 weight = 0.0
 atlas_coords = Vector2i(6, 4)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 0, 22, 22), Rect2i(0, 42, 22, 22), Rect2i(22, 0, 20, 18), Rect2i(22, 46, 20, 18), Rect2i(0, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_39"]
 script = ExtResource("3")
 id = &"deep_SOSS_08"
+top = 0
 right = 1
+bottom = 0
+left = 0
 weight = 0.0
 atlas_coords = Vector2i(7, 4)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 0, 22, 22), Rect2i(0, 42, 22, 22), Rect2i(22, 0, 20, 18), Rect2i(22, 46, 20, 18), Rect2i(0, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_40"]
 script = ExtResource("3")
 id = &"deep_SOSO_01"
+top = 0
 right = 1
+bottom = 0
 left = 1
+weight = 1.0
 atlas_coords = Vector2i(0, 5)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(22, 0, 20, 18), Rect2i(22, 46, 20, 18)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_41"]
 script = ExtResource("3")
 id = &"deep_SOSO_02"
+top = 0
 right = 1
+bottom = 0
 left = 1
+weight = 1.0
 atlas_coords = Vector2i(1, 5)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(22, 0, 20, 18), Rect2i(22, 46, 20, 18)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_42"]
 script = ExtResource("3")
 id = &"deep_SOSO_03"
+top = 0
 right = 1
+bottom = 0
 left = 1
 weight = 0.0
 atlas_coords = Vector2i(2, 5)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(22, 0, 20, 18), Rect2i(22, 46, 20, 18)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_43"]
 script = ExtResource("3")
 id = &"deep_SOSO_04"
+top = 0
 right = 1
+bottom = 0
 left = 1
 weight = 0.0
 atlas_coords = Vector2i(3, 5)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(22, 0, 20, 18), Rect2i(22, 46, 20, 18)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_44"]
 script = ExtResource("3")
 id = &"deep_SOSO_05"
+top = 0
 right = 1
+bottom = 0
 left = 1
 weight = 0.0
 atlas_coords = Vector2i(4, 5)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(22, 0, 20, 18), Rect2i(22, 46, 20, 18)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_45"]
 script = ExtResource("3")
 id = &"deep_SOSO_06"
+top = 0
 right = 1
+bottom = 0
 left = 1
 weight = 0.0
 atlas_coords = Vector2i(5, 5)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(22, 0, 20, 18), Rect2i(22, 46, 20, 18)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_46"]
 script = ExtResource("3")
 id = &"deep_SOSO_07"
+top = 0
 right = 1
+bottom = 0
 left = 1
 weight = 0.0
 atlas_coords = Vector2i(6, 5)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(22, 0, 20, 18), Rect2i(22, 46, 20, 18)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_47"]
 script = ExtResource("3")
 id = &"deep_SOSO_08"
+top = 0
 right = 1
+bottom = 0
 left = 1
 weight = 0.0
 atlas_coords = Vector2i(7, 5)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(22, 0, 20, 18), Rect2i(22, 46, 20, 18)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_48"]
 script = ExtResource("3")
 id = &"deep_SOOS_01"
+top = 0
 right = 1
 bottom = 1
+left = 0
+weight = 1.0
 atlas_coords = Vector2i(0, 6)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 0, 22, 22), Rect2i(22, 0, 20, 18), Rect2i(0, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_49"]
 script = ExtResource("3")
 id = &"deep_SOOS_02"
+top = 0
 right = 1
 bottom = 1
+left = 0
+weight = 1.0
 atlas_coords = Vector2i(1, 6)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 0, 22, 22), Rect2i(22, 0, 20, 18), Rect2i(0, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_50"]
 script = ExtResource("3")
 id = &"deep_SOOS_03"
+top = 0
 right = 1
 bottom = 1
+left = 0
 weight = 0.0
 atlas_coords = Vector2i(2, 6)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 0, 22, 22), Rect2i(22, 0, 20, 18), Rect2i(0, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_51"]
 script = ExtResource("3")
 id = &"deep_SOOS_04"
+top = 0
 right = 1
 bottom = 1
+left = 0
 weight = 0.0
 atlas_coords = Vector2i(3, 6)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 0, 22, 22), Rect2i(22, 0, 20, 18), Rect2i(0, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_52"]
 script = ExtResource("3")
 id = &"deep_SOOS_05"
+top = 0
 right = 1
 bottom = 1
+left = 0
 weight = 0.0
 atlas_coords = Vector2i(4, 6)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 0, 22, 22), Rect2i(22, 0, 20, 18), Rect2i(0, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_53"]
 script = ExtResource("3")
 id = &"deep_SOOS_06"
+top = 0
 right = 1
 bottom = 1
+left = 0
 weight = 0.0
 atlas_coords = Vector2i(5, 6)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 0, 22, 22), Rect2i(22, 0, 20, 18), Rect2i(0, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_54"]
 script = ExtResource("3")
 id = &"deep_SOOS_07"
+top = 0
 right = 1
 bottom = 1
+left = 0
 weight = 0.0
 atlas_coords = Vector2i(6, 6)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 0, 22, 22), Rect2i(22, 0, 20, 18), Rect2i(0, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_55"]
 script = ExtResource("3")
 id = &"deep_SOOS_08"
+top = 0
 right = 1
 bottom = 1
+left = 0
 weight = 0.0
 atlas_coords = Vector2i(7, 6)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 0, 22, 22), Rect2i(22, 0, 20, 18), Rect2i(0, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_56"]
 script = ExtResource("3")
 id = &"deep_SOOO_01"
+top = 0
 right = 1
 bottom = 1
 left = 1
+weight = 1.0
 atlas_coords = Vector2i(0, 7)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(22, 0, 20, 18)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_57"]
 script = ExtResource("3")
 id = &"deep_SOOO_02"
+top = 0
 right = 1
 bottom = 1
 left = 1
+weight = 1.0
 atlas_coords = Vector2i(1, 7)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(22, 0, 20, 18)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_58"]
 script = ExtResource("3")
 id = &"deep_SOOO_03"
+top = 0
 right = 1
 bottom = 1
 left = 1
 weight = 0.0
 atlas_coords = Vector2i(2, 7)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(22, 0, 20, 18)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_59"]
 script = ExtResource("3")
 id = &"deep_SOOO_04"
+top = 0
 right = 1
 bottom = 1
 left = 1
 weight = 0.0
 atlas_coords = Vector2i(3, 7)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(22, 0, 20, 18)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_60"]
 script = ExtResource("3")
 id = &"deep_SOOO_05"
+top = 0
 right = 1
 bottom = 1
 left = 1
 weight = 0.0
 atlas_coords = Vector2i(4, 7)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(22, 0, 20, 18)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_61"]
 script = ExtResource("3")
 id = &"deep_SOOO_06"
+top = 0
 right = 1
 bottom = 1
 left = 1
 weight = 0.0
 atlas_coords = Vector2i(5, 7)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(22, 0, 20, 18)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_62"]
 script = ExtResource("3")
 id = &"deep_SOOO_07"
+top = 0
 right = 1
 bottom = 1
 left = 1
 weight = 0.0
 atlas_coords = Vector2i(6, 7)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(22, 0, 20, 18)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_63"]
 script = ExtResource("3")
 id = &"deep_SOOO_08"
+top = 0
 right = 1
 bottom = 1
 left = 1
 weight = 0.0
 atlas_coords = Vector2i(7, 7)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(22, 0, 20, 18)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_64"]
 script = ExtResource("3")
 id = &"deep_OSSS_01"
 top = 1
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
 atlas_coords = Vector2i(0, 8)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 42, 22, 22), Rect2i(42, 42, 22, 22), Rect2i(22, 46, 20, 18), Rect2i(0, 22, 18, 20), Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_65"]
 script = ExtResource("3")
 id = &"deep_OSSS_02"
 top = 1
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
 atlas_coords = Vector2i(1, 8)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 42, 22, 22), Rect2i(42, 42, 22, 22), Rect2i(22, 46, 20, 18), Rect2i(0, 22, 18, 20), Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_66"]
 script = ExtResource("3")
 id = &"deep_OSSS_03"
 top = 1
+right = 0
+bottom = 0
+left = 0
 weight = 0.0
 atlas_coords = Vector2i(2, 8)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 42, 22, 22), Rect2i(42, 42, 22, 22), Rect2i(22, 46, 20, 18), Rect2i(0, 22, 18, 20), Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_67"]
 script = ExtResource("3")
 id = &"deep_OSSS_04"
 top = 1
+right = 0
+bottom = 0
+left = 0
 weight = 0.0
 atlas_coords = Vector2i(3, 8)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 42, 22, 22), Rect2i(42, 42, 22, 22), Rect2i(22, 46, 20, 18), Rect2i(0, 22, 18, 20), Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_68"]
 script = ExtResource("3")
 id = &"deep_OSSS_05"
 top = 1
+right = 0
+bottom = 0
+left = 0
 weight = 0.0
 atlas_coords = Vector2i(4, 8)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 42, 22, 22), Rect2i(42, 42, 22, 22), Rect2i(22, 46, 20, 18), Rect2i(0, 22, 18, 20), Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_69"]
 script = ExtResource("3")
 id = &"deep_OSSS_06"
 top = 1
+right = 0
+bottom = 0
+left = 0
 weight = 0.0
 atlas_coords = Vector2i(5, 8)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 42, 22, 22), Rect2i(42, 42, 22, 22), Rect2i(22, 46, 20, 18), Rect2i(0, 22, 18, 20), Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_70"]
 script = ExtResource("3")
 id = &"deep_OSSS_07"
 top = 1
+right = 0
+bottom = 0
+left = 0
 weight = 0.0
 atlas_coords = Vector2i(6, 8)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 42, 22, 22), Rect2i(42, 42, 22, 22), Rect2i(22, 46, 20, 18), Rect2i(0, 22, 18, 20), Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_71"]
 script = ExtResource("3")
 id = &"deep_OSSS_08"
 top = 1
+right = 0
+bottom = 0
+left = 0
 weight = 0.0
 atlas_coords = Vector2i(7, 8)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 42, 22, 22), Rect2i(42, 42, 22, 22), Rect2i(22, 46, 20, 18), Rect2i(0, 22, 18, 20), Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_72"]
 script = ExtResource("3")
 id = &"deep_OSSO_01"
 top = 1
+right = 0
+bottom = 0
 left = 1
+weight = 1.0
 atlas_coords = Vector2i(0, 9)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(42, 42, 22, 22), Rect2i(22, 46, 20, 18), Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_73"]
 script = ExtResource("3")
 id = &"deep_OSSO_02"
 top = 1
+right = 0
+bottom = 0
 left = 1
+weight = 1.0
 atlas_coords = Vector2i(1, 9)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(42, 42, 22, 22), Rect2i(22, 46, 20, 18), Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_74"]
 script = ExtResource("3")
 id = &"deep_OSSO_03"
 top = 1
+right = 0
+bottom = 0
 left = 1
 weight = 0.0
 atlas_coords = Vector2i(2, 9)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(42, 42, 22, 22), Rect2i(22, 46, 20, 18), Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_75"]
 script = ExtResource("3")
 id = &"deep_OSSO_04"
 top = 1
+right = 0
+bottom = 0
 left = 1
 weight = 0.0
 atlas_coords = Vector2i(3, 9)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(42, 42, 22, 22), Rect2i(22, 46, 20, 18), Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_76"]
 script = ExtResource("3")
 id = &"deep_OSSO_05"
 top = 1
+right = 0
+bottom = 0
 left = 1
 weight = 0.0
 atlas_coords = Vector2i(4, 9)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(42, 42, 22, 22), Rect2i(22, 46, 20, 18), Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_77"]
 script = ExtResource("3")
 id = &"deep_OSSO_06"
 top = 1
+right = 0
+bottom = 0
 left = 1
 weight = 0.0
 atlas_coords = Vector2i(5, 9)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(42, 42, 22, 22), Rect2i(22, 46, 20, 18), Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_78"]
 script = ExtResource("3")
 id = &"deep_OSSO_07"
 top = 1
+right = 0
+bottom = 0
 left = 1
 weight = 0.0
 atlas_coords = Vector2i(6, 9)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(42, 42, 22, 22), Rect2i(22, 46, 20, 18), Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_79"]
 script = ExtResource("3")
 id = &"deep_OSSO_08"
 top = 1
+right = 0
+bottom = 0
 left = 1
 weight = 0.0
 atlas_coords = Vector2i(7, 9)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(42, 42, 22, 22), Rect2i(22, 46, 20, 18), Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_80"]
 script = ExtResource("3")
 id = &"deep_OSOS_01"
 top = 1
+right = 0
 bottom = 1
+left = 0
+weight = 1.0
 atlas_coords = Vector2i(0, 10)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 22, 18, 20), Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_81"]
 script = ExtResource("3")
 id = &"deep_OSOS_02"
 top = 1
+right = 0
 bottom = 1
+left = 0
+weight = 1.0
 atlas_coords = Vector2i(1, 10)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 22, 18, 20), Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_82"]
 script = ExtResource("3")
 id = &"deep_OSOS_03"
 top = 1
+right = 0
 bottom = 1
+left = 0
 weight = 0.0
 atlas_coords = Vector2i(2, 10)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 22, 18, 20), Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_83"]
 script = ExtResource("3")
 id = &"deep_OSOS_04"
 top = 1
+right = 0
 bottom = 1
+left = 0
 weight = 0.0
 atlas_coords = Vector2i(3, 10)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 22, 18, 20), Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_84"]
 script = ExtResource("3")
 id = &"deep_OSOS_05"
 top = 1
+right = 0
 bottom = 1
+left = 0
 weight = 0.0
 atlas_coords = Vector2i(4, 10)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 22, 18, 20), Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_85"]
 script = ExtResource("3")
 id = &"deep_OSOS_06"
 top = 1
+right = 0
 bottom = 1
+left = 0
 weight = 0.0
 atlas_coords = Vector2i(5, 10)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 22, 18, 20), Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_86"]
 script = ExtResource("3")
 id = &"deep_OSOS_07"
 top = 1
+right = 0
 bottom = 1
+left = 0
 weight = 0.0
 atlas_coords = Vector2i(6, 10)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 22, 18, 20), Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_87"]
 script = ExtResource("3")
 id = &"deep_OSOS_08"
 top = 1
+right = 0
 bottom = 1
+left = 0
 weight = 0.0
 atlas_coords = Vector2i(7, 10)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 22, 18, 20), Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_88"]
 script = ExtResource("3")
 id = &"deep_OSOO_01"
 top = 1
+right = 0
 bottom = 1
 left = 1
+weight = 1.0
 atlas_coords = Vector2i(0, 11)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_89"]
 script = ExtResource("3")
 id = &"deep_OSOO_02"
 top = 1
+right = 0
 bottom = 1
 left = 1
+weight = 1.0
 atlas_coords = Vector2i(1, 11)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_90"]
 script = ExtResource("3")
 id = &"deep_OSOO_03"
 top = 1
+right = 0
 bottom = 1
 left = 1
 weight = 0.0
 atlas_coords = Vector2i(2, 11)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_91"]
 script = ExtResource("3")
 id = &"deep_OSOO_04"
 top = 1
+right = 0
 bottom = 1
 left = 1
 weight = 0.0
 atlas_coords = Vector2i(3, 11)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_92"]
 script = ExtResource("3")
 id = &"deep_OSOO_05"
 top = 1
+right = 0
 bottom = 1
 left = 1
 weight = 0.0
 atlas_coords = Vector2i(4, 11)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_93"]
 script = ExtResource("3")
 id = &"deep_OSOO_06"
 top = 1
+right = 0
 bottom = 1
 left = 1
 weight = 0.0
 atlas_coords = Vector2i(5, 11)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_94"]
 script = ExtResource("3")
 id = &"deep_OSOO_07"
 top = 1
+right = 0
 bottom = 1
 left = 1
 weight = 0.0
 atlas_coords = Vector2i(6, 11)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_95"]
 script = ExtResource("3")
 id = &"deep_OSOO_08"
 top = 1
+right = 0
 bottom = 1
 left = 1
 weight = 0.0
 atlas_coords = Vector2i(7, 11)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(46, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_96"]
 script = ExtResource("3")
 id = &"deep_OOSS_01"
 top = 1
 right = 1
+bottom = 0
+left = 0
+weight = 1.0
 atlas_coords = Vector2i(0, 12)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 42, 22, 22), Rect2i(22, 46, 20, 18), Rect2i(0, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_97"]
 script = ExtResource("3")
 id = &"deep_OOSS_02"
 top = 1
 right = 1
+bottom = 0
+left = 0
+weight = 1.0
 atlas_coords = Vector2i(1, 12)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 42, 22, 22), Rect2i(22, 46, 20, 18), Rect2i(0, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_98"]
 script = ExtResource("3")
 id = &"deep_OOSS_03"
 top = 1
 right = 1
+bottom = 0
+left = 0
 weight = 0.0
 atlas_coords = Vector2i(2, 12)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 42, 22, 22), Rect2i(22, 46, 20, 18), Rect2i(0, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_99"]
 script = ExtResource("3")
 id = &"deep_OOSS_04"
 top = 1
 right = 1
+bottom = 0
+left = 0
 weight = 0.0
 atlas_coords = Vector2i(3, 12)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 42, 22, 22), Rect2i(22, 46, 20, 18), Rect2i(0, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_100"]
 script = ExtResource("3")
 id = &"deep_OOSS_05"
 top = 1
 right = 1
+bottom = 0
+left = 0
 weight = 0.0
 atlas_coords = Vector2i(4, 12)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 42, 22, 22), Rect2i(22, 46, 20, 18), Rect2i(0, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_101"]
 script = ExtResource("3")
 id = &"deep_OOSS_06"
 top = 1
 right = 1
+bottom = 0
+left = 0
 weight = 0.0
 atlas_coords = Vector2i(5, 12)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 42, 22, 22), Rect2i(22, 46, 20, 18), Rect2i(0, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_102"]
 script = ExtResource("3")
 id = &"deep_OOSS_07"
 top = 1
 right = 1
+bottom = 0
+left = 0
 weight = 0.0
 atlas_coords = Vector2i(6, 12)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 42, 22, 22), Rect2i(22, 46, 20, 18), Rect2i(0, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_103"]
 script = ExtResource("3")
 id = &"deep_OOSS_08"
 top = 1
 right = 1
+bottom = 0
+left = 0
 weight = 0.0
 atlas_coords = Vector2i(7, 12)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 42, 22, 22), Rect2i(22, 46, 20, 18), Rect2i(0, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_104"]
 script = ExtResource("3")
 id = &"deep_OOSO_01"
 top = 1
 right = 1
+bottom = 0
 left = 1
+weight = 1.0
 atlas_coords = Vector2i(0, 13)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(22, 46, 20, 18)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_105"]
 script = ExtResource("3")
 id = &"deep_OOSO_02"
 top = 1
 right = 1
+bottom = 0
 left = 1
+weight = 1.0
 atlas_coords = Vector2i(1, 13)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(22, 46, 20, 18)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_106"]
 script = ExtResource("3")
 id = &"deep_OOSO_03"
 top = 1
 right = 1
+bottom = 0
 left = 1
 weight = 0.0
 atlas_coords = Vector2i(2, 13)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(22, 46, 20, 18)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_107"]
 script = ExtResource("3")
 id = &"deep_OOSO_04"
 top = 1
 right = 1
+bottom = 0
 left = 1
 weight = 0.0
 atlas_coords = Vector2i(3, 13)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(22, 46, 20, 18)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_108"]
 script = ExtResource("3")
 id = &"deep_OOSO_05"
 top = 1
 right = 1
+bottom = 0
 left = 1
 weight = 0.0
 atlas_coords = Vector2i(4, 13)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(22, 46, 20, 18)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_109"]
 script = ExtResource("3")
 id = &"deep_OOSO_06"
 top = 1
 right = 1
+bottom = 0
 left = 1
 weight = 0.0
 atlas_coords = Vector2i(5, 13)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(22, 46, 20, 18)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_110"]
 script = ExtResource("3")
 id = &"deep_OOSO_07"
 top = 1
 right = 1
+bottom = 0
 left = 1
 weight = 0.0
 atlas_coords = Vector2i(6, 13)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(22, 46, 20, 18)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_111"]
 script = ExtResource("3")
 id = &"deep_OOSO_08"
 top = 1
 right = 1
+bottom = 0
 left = 1
 weight = 0.0
 atlas_coords = Vector2i(7, 13)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(22, 46, 20, 18)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_112"]
 script = ExtResource("3")
@@ -972,8 +1466,12 @@ id = &"deep_OOOS_01"
 top = 1
 right = 1
 bottom = 1
+left = 0
+weight = 1.0
 atlas_coords = Vector2i(0, 14)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_113"]
 script = ExtResource("3")
@@ -981,8 +1479,12 @@ id = &"deep_OOOS_02"
 top = 1
 right = 1
 bottom = 1
+left = 0
+weight = 1.0
 atlas_coords = Vector2i(1, 14)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_114"]
 script = ExtResource("3")
@@ -990,9 +1492,12 @@ id = &"deep_OOOS_03"
 top = 1
 right = 1
 bottom = 1
+left = 0
 weight = 0.0
 atlas_coords = Vector2i(2, 14)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_115"]
 script = ExtResource("3")
@@ -1000,9 +1505,12 @@ id = &"deep_OOOS_04"
 top = 1
 right = 1
 bottom = 1
+left = 0
 weight = 0.0
 atlas_coords = Vector2i(3, 14)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_116"]
 script = ExtResource("3")
@@ -1010,9 +1518,12 @@ id = &"deep_OOOS_05"
 top = 1
 right = 1
 bottom = 1
+left = 0
 weight = 0.0
 atlas_coords = Vector2i(4, 14)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_117"]
 script = ExtResource("3")
@@ -1020,9 +1531,12 @@ id = &"deep_OOOS_06"
 top = 1
 right = 1
 bottom = 1
+left = 0
 weight = 0.0
 atlas_coords = Vector2i(5, 14)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_118"]
 script = ExtResource("3")
@@ -1030,9 +1544,12 @@ id = &"deep_OOOS_07"
 top = 1
 right = 1
 bottom = 1
+left = 0
 weight = 0.0
 atlas_coords = Vector2i(6, 14)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_119"]
 script = ExtResource("3")
@@ -1040,9 +1557,12 @@ id = &"deep_OOOS_08"
 top = 1
 right = 1
 bottom = 1
+left = 0
 weight = 0.0
 atlas_coords = Vector2i(7, 14)
+alternative_tile = 0
 collision_rects = Array[Rect2i]([Rect2i(0, 22, 18, 20)])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_120"]
 script = ExtResource("3")
@@ -1051,7 +1571,11 @@ top = 1
 right = 1
 bottom = 1
 left = 1
+weight = 1.0
 atlas_coords = Vector2i(0, 15)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_121"]
 script = ExtResource("3")
@@ -1060,7 +1584,11 @@ top = 1
 right = 1
 bottom = 1
 left = 1
+weight = 1.0
 atlas_coords = Vector2i(1, 15)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_122"]
 script = ExtResource("3")
@@ -1071,6 +1599,9 @@ bottom = 1
 left = 1
 weight = 0.0
 atlas_coords = Vector2i(2, 15)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_123"]
 script = ExtResource("3")
@@ -1081,6 +1612,9 @@ bottom = 1
 left = 1
 weight = 0.0
 atlas_coords = Vector2i(3, 15)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_124"]
 script = ExtResource("3")
@@ -1091,6 +1625,9 @@ bottom = 1
 left = 1
 weight = 0.0
 atlas_coords = Vector2i(4, 15)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_125"]
 script = ExtResource("3")
@@ -1101,6 +1638,9 @@ bottom = 1
 left = 1
 weight = 0.0
 atlas_coords = Vector2i(5, 15)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_126"]
 script = ExtResource("3")
@@ -1111,6 +1651,9 @@ bottom = 1
 left = 1
 weight = 0.0
 atlas_coords = Vector2i(6, 15)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_127"]
 script = ExtResource("3")
@@ -1121,6 +1664,9 @@ bottom = 1
 left = 1
 weight = 0.0
 atlas_coords = Vector2i(7, 15)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_128"]
 script = ExtResource("3")
@@ -1129,7 +1675,11 @@ top = 2
 right = 2
 bottom = 2
 left = 2
+weight = 1.0
 atlas_coords = Vector2i(0, 16)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_129"]
 script = ExtResource("3")
@@ -1138,7 +1688,11 @@ top = 2
 right = 2
 bottom = 2
 left = 2
+weight = 1.0
 atlas_coords = Vector2i(1, 16)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_130"]
 script = ExtResource("3")
@@ -1149,6 +1703,9 @@ bottom = 2
 left = 2
 weight = 0.0
 atlas_coords = Vector2i(2, 16)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_131"]
 script = ExtResource("3")
@@ -1159,6 +1716,9 @@ bottom = 2
 left = 2
 weight = 0.0
 atlas_coords = Vector2i(3, 16)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_132"]
 script = ExtResource("3")
@@ -1169,6 +1729,9 @@ bottom = 2
 left = 2
 weight = 0.0
 atlas_coords = Vector2i(4, 16)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_133"]
 script = ExtResource("3")
@@ -1179,6 +1742,9 @@ bottom = 2
 left = 2
 weight = 0.0
 atlas_coords = Vector2i(5, 16)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_134"]
 script = ExtResource("3")
@@ -1189,6 +1755,9 @@ bottom = 2
 left = 2
 weight = 0.0
 atlas_coords = Vector2i(6, 16)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = false
 
 [sub_resource type="Resource" id="TileDef_135"]
 script = ExtResource("3")
@@ -1199,6 +1768,22 @@ bottom = 2
 left = 2
 weight = 0.0
 atlas_coords = Vector2i(7, 16)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = false
+
+[sub_resource type="Resource" id="TileDef_136"]
+script = ExtResource("3")
+id = &"deep_fallback"
+top = 0
+right = 0
+bottom = 0
+left = 0
+weight = 1.0
+atlas_coords = Vector2i(0, 17)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([Rect2i(0, 0, 64, 64)])
+is_fallback = true
 
 [resource]
 script = ExtResource("1")
@@ -1206,6 +1791,11 @@ id = &"deep_atlas"
 biome_id = &"deep"
 source_id = 2
 atlas_texture = ExtResource("2")
+tile_size = Vector2i(64, 64)
+atlas_columns = 8
+variants_per_signature = 8
+fallback_row = 17
+layout_mode = 0
 signature_rows = Array[StringName]([&"SSSS", &"SSSO", &"SSOS", &"SSOO", &"SOSS", &"SOSO", &"SOOS", &"SOOO", &"OSSS", &"OSSO", &"OSOS", &"OSOO", &"OOSS", &"OOSO", &"OOOS", &"OOOO", &"AAAA"])
-tiles = Array[ExtResource("3")]([SubResource("TileDef_0"), SubResource("TileDef_1"), SubResource("TileDef_2"), SubResource("TileDef_3"), SubResource("TileDef_4"), SubResource("TileDef_5"), SubResource("TileDef_6"), SubResource("TileDef_7"), SubResource("TileDef_8"), SubResource("TileDef_9"), SubResource("TileDef_10"), SubResource("TileDef_11"), SubResource("TileDef_12"), SubResource("TileDef_13"), SubResource("TileDef_14"), SubResource("TileDef_15"), SubResource("TileDef_16"), SubResource("TileDef_17"), SubResource("TileDef_18"), SubResource("TileDef_19"), SubResource("TileDef_20"), SubResource("TileDef_21"), SubResource("TileDef_22"), SubResource("TileDef_23"), SubResource("TileDef_24"), SubResource("TileDef_25"), SubResource("TileDef_26"), SubResource("TileDef_27"), SubResource("TileDef_28"), SubResource("TileDef_29"), SubResource("TileDef_30"), SubResource("TileDef_31"), SubResource("TileDef_32"), SubResource("TileDef_33"), SubResource("TileDef_34"), SubResource("TileDef_35"), SubResource("TileDef_36"), SubResource("TileDef_37"), SubResource("TileDef_38"), SubResource("TileDef_39"), SubResource("TileDef_40"), SubResource("TileDef_41"), SubResource("TileDef_42"), SubResource("TileDef_43"), SubResource("TileDef_44"), SubResource("TileDef_45"), SubResource("TileDef_46"), SubResource("TileDef_47"), SubResource("TileDef_48"), SubResource("TileDef_49"), SubResource("TileDef_50"), SubResource("TileDef_51"), SubResource("TileDef_52"), SubResource("TileDef_53"), SubResource("TileDef_54"), SubResource("TileDef_55"), SubResource("TileDef_56"), SubResource("TileDef_57"), SubResource("TileDef_58"), SubResource("TileDef_59"), SubResource("TileDef_60"), SubResource("TileDef_61"), SubResource("TileDef_62"), SubResource("TileDef_63"), SubResource("TileDef_64"), SubResource("TileDef_65"), SubResource("TileDef_66"), SubResource("TileDef_67"), SubResource("TileDef_68"), SubResource("TileDef_69"), SubResource("TileDef_70"), SubResource("TileDef_71"), SubResource("TileDef_72"), SubResource("TileDef_73"), SubResource("TileDef_74"), SubResource("TileDef_75"), SubResource("TileDef_76"), SubResource("TileDef_77"), SubResource("TileDef_78"), SubResource("TileDef_79"), SubResource("TileDef_80"), SubResource("TileDef_81"), SubResource("TileDef_82"), SubResource("TileDef_83"), SubResource("TileDef_84"), SubResource("TileDef_85"), SubResource("TileDef_86"), SubResource("TileDef_87"), SubResource("TileDef_88"), SubResource("TileDef_89"), SubResource("TileDef_90"), SubResource("TileDef_91"), SubResource("TileDef_92"), SubResource("TileDef_93"), SubResource("TileDef_94"), SubResource("TileDef_95"), SubResource("TileDef_96"), SubResource("TileDef_97"), SubResource("TileDef_98"), SubResource("TileDef_99"), SubResource("TileDef_100"), SubResource("TileDef_101"), SubResource("TileDef_102"), SubResource("TileDef_103"), SubResource("TileDef_104"), SubResource("TileDef_105"), SubResource("TileDef_106"), SubResource("TileDef_107"), SubResource("TileDef_108"), SubResource("TileDef_109"), SubResource("TileDef_110"), SubResource("TileDef_111"), SubResource("TileDef_112"), SubResource("TileDef_113"), SubResource("TileDef_114"), SubResource("TileDef_115"), SubResource("TileDef_116"), SubResource("TileDef_117"), SubResource("TileDef_118"), SubResource("TileDef_119"), SubResource("TileDef_120"), SubResource("TileDef_121"), SubResource("TileDef_122"), SubResource("TileDef_123"), SubResource("TileDef_124"), SubResource("TileDef_125"), SubResource("TileDef_126"), SubResource("TileDef_127"), SubResource("TileDef_128"), SubResource("TileDef_129"), SubResource("TileDef_130"), SubResource("TileDef_131"), SubResource("TileDef_132"), SubResource("TileDef_133"), SubResource("TileDef_134"), SubResource("TileDef_135")])
+tiles = Array[Resource]([SubResource("TileDef_0"), SubResource("TileDef_1"), SubResource("TileDef_2"), SubResource("TileDef_3"), SubResource("TileDef_4"), SubResource("TileDef_5"), SubResource("TileDef_6"), SubResource("TileDef_7"), SubResource("TileDef_8"), SubResource("TileDef_9"), SubResource("TileDef_10"), SubResource("TileDef_11"), SubResource("TileDef_12"), SubResource("TileDef_13"), SubResource("TileDef_14"), SubResource("TileDef_15"), SubResource("TileDef_16"), SubResource("TileDef_17"), SubResource("TileDef_18"), SubResource("TileDef_19"), SubResource("TileDef_20"), SubResource("TileDef_21"), SubResource("TileDef_22"), SubResource("TileDef_23"), SubResource("TileDef_24"), SubResource("TileDef_25"), SubResource("TileDef_26"), SubResource("TileDef_27"), SubResource("TileDef_28"), SubResource("TileDef_29"), SubResource("TileDef_30"), SubResource("TileDef_31"), SubResource("TileDef_32"), SubResource("TileDef_33"), SubResource("TileDef_34"), SubResource("TileDef_35"), SubResource("TileDef_36"), SubResource("TileDef_37"), SubResource("TileDef_38"), SubResource("TileDef_39"), SubResource("TileDef_40"), SubResource("TileDef_41"), SubResource("TileDef_42"), SubResource("TileDef_43"), SubResource("TileDef_44"), SubResource("TileDef_45"), SubResource("TileDef_46"), SubResource("TileDef_47"), SubResource("TileDef_48"), SubResource("TileDef_49"), SubResource("TileDef_50"), SubResource("TileDef_51"), SubResource("TileDef_52"), SubResource("TileDef_53"), SubResource("TileDef_54"), SubResource("TileDef_55"), SubResource("TileDef_56"), SubResource("TileDef_57"), SubResource("TileDef_58"), SubResource("TileDef_59"), SubResource("TileDef_60"), SubResource("TileDef_61"), SubResource("TileDef_62"), SubResource("TileDef_63"), SubResource("TileDef_64"), SubResource("TileDef_65"), SubResource("TileDef_66"), SubResource("TileDef_67"), SubResource("TileDef_68"), SubResource("TileDef_69"), SubResource("TileDef_70"), SubResource("TileDef_71"), SubResource("TileDef_72"), SubResource("TileDef_73"), SubResource("TileDef_74"), SubResource("TileDef_75"), SubResource("TileDef_76"), SubResource("TileDef_77"), SubResource("TileDef_78"), SubResource("TileDef_79"), SubResource("TileDef_80"), SubResource("TileDef_81"), SubResource("TileDef_82"), SubResource("TileDef_83"), SubResource("TileDef_84"), SubResource("TileDef_85"), SubResource("TileDef_86"), SubResource("TileDef_87"), SubResource("TileDef_88"), SubResource("TileDef_89"), SubResource("TileDef_90"), SubResource("TileDef_91"), SubResource("TileDef_92"), SubResource("TileDef_93"), SubResource("TileDef_94"), SubResource("TileDef_95"), SubResource("TileDef_96"), SubResource("TileDef_97"), SubResource("TileDef_98"), SubResource("TileDef_99"), SubResource("TileDef_100"), SubResource("TileDef_101"), SubResource("TileDef_102"), SubResource("TileDef_103"), SubResource("TileDef_104"), SubResource("TileDef_105"), SubResource("TileDef_106"), SubResource("TileDef_107"), SubResource("TileDef_108"), SubResource("TileDef_109"), SubResource("TileDef_110"), SubResource("TileDef_111"), SubResource("TileDef_112"), SubResource("TileDef_113"), SubResource("TileDef_114"), SubResource("TileDef_115"), SubResource("TileDef_116"), SubResource("TileDef_117"), SubResource("TileDef_118"), SubResource("TileDef_119"), SubResource("TileDef_120"), SubResource("TileDef_121"), SubResource("TileDef_122"), SubResource("TileDef_123"), SubResource("TileDef_124"), SubResource("TileDef_125"), SubResource("TileDef_126"), SubResource("TileDef_127"), SubResource("TileDef_128"), SubResource("TileDef_129"), SubResource("TileDef_130"), SubResource("TileDef_131"), SubResource("TileDef_132"), SubResource("TileDef_133"), SubResource("TileDef_134"), SubResource("TileDef_135")])
 fallback_tile = SubResource("TileDef_136")

@@ -1,26 +1,23 @@
-[gd_scene format=4 uid="uid://ftvjmqqysba3"]
+[gd_scene load_steps=3 format=3 uid="uid://mine_treasure_chunk"]
 
-[ext_resource type="Script" uid="uid://dldlae8r4fk0h" path="res://scripts/special/SpecialChunkNode.gd" id="1"]
-[ext_resource type="TileSet" uid="uid://mrnv4m4j4i2e" path="res://resources/tilesets/generated_tileset.tres" id="2"]
+[ext_resource type="Script" path="res://scripts/special/SpecialChunkNode.gd" id="1"]
+[ext_resource type="TileSet" path="res://resources/tilesets/generated_tileset.tres" id="2"]
 
-[node name="MineTreasureChunk" type="Node2D" unique_id=1981381753]
+[node name="MineTreasureChunk" type="Node2D"]
 script = ExtResource("1")
 chunk_tile_set = ExtResource("2")
 demo_layout = 1
+populate_demo_layout_if_empty = true
 
-[node name="Ground" type="TileMapLayer" parent="." unique_id=1909031012]
-texture_filter = 1
-tile_map_data = PackedByteArray("AAAAAAAACgAAAAoAAAABAAAACgAAAAcAAAACAAAACgAAAAcAAAADAAAACgAAAAcAAAAEAAAACgAAAAcAAAAFAAAACgAAAAcAAAAGAAAACgAAAAcAAAAHAAAACgAAAAgAAAAAAAEACgAAAAoAAAABAAEACgAAAAAAAAACAAEACgAAAAAAAAADAAEACgAAAAAAAAAEAAEACgAAAAAAAAAFAAEACgAAAAAAAAAGAAEACgAAAAAAAAAHAAEACgAAAAgAAAAAAAIACgAAAAoAAAABAAIACgAAAAAAAAACAAIACgAAAAQAAAADAAIACgAAAAUAAAAEAAIACgAAAAUAAAAFAAIACgAAAAQAAAAGAAIACgAAAAAAAAAHAAIACgAAAAgAAAAAAAMACgAEAAoAAAABAAMACgAAAAMAAAACAAMACgAAAAUAAAADAAMACgAAAAYAAAAEAAMACgAAAAYAAAAFAAMACgAAAAUAAAAGAAMACgAAAAMAAAAHAAMACgAEAAgAAAAAAAQACgAEAAoAAAABAAQACgAAAAMAAAACAAQACgAAAAUAAAADAAQACgAAAAIAAAAEAAQACgAAAAIAAAAFAAQACgAAAAUAAAAGAAQACgAAAAMAAAAHAAQACgAEAAgAAAAAAAUACgAAAAoAAAABAAUACgAAAAAAAAACAAUACgAAAAEAAAADAAUACgAAAAEAAAAEAAUACgAAAAEAAAAFAAUACgAAAAEAAAAGAAUACgAAAAAAAAAHAAUACgAAAAgAAAAAAAYACgAAAAoAAAABAAYACgAAAAAAAAACAAYACgAAAAAAAAADAAYACgAAAAAAAAAEAAYACgAAAAAAAAAFAAYACgAAAAAAAAAGAAYACgAAAAAAAAAHAAYACgAAAAgAAAA=")
+[node name="Ground" type="TileMapLayer" parent="."]
 tile_set = ExtResource("2")
+texture_filter = 1
 
-[node name="Markers" type="Node2D" parent="." unique_id=1272794075]
+[node name="Markers" type="Node2D" parent="."]
 
-[node name="ChestMarker" type="Marker2D" parent="Markers" unique_id=1069851303]
+[node name="ChestMarker" type="Marker2D" parent="Markers"]
 position = Vector2(256, 256)
 
-[node name="DebugLabel" type="Label" parent="." unique_id=1033272293]
-offset_left = 12.0
-offset_top = 12.0
-offset_right = 12.0
-offset_bottom = 12.0
-text = "MineTreasureChunk"
+[node name="DebugLabel" type="Label" parent="."]
+position = Vector2(12, 12)
+text = "Mine Treasure Chunk"

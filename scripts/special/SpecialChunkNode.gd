@@ -11,9 +11,13 @@ enum DemoLayout {
 	MINE_TREASURE_1X1,
 	ANCIENT_HALL_2X1,
 	SNOW_SHRINE_1X1,
+	CRYSTAL_GROTTO_1X1,
 }
 
 const SPECIAL_CHUNK_SOURCE_ID: int = TileConstants.SOURCE_SPECIAL_CHUNK
+const CRYSTAL_SPECIAL_SOURCE_ID: int = TileConstants.SOURCE_CRYSTAL_GROTTO
+const COMMON_SOURCE_ID: int = TileConstants.SOURCE_COMMON
+const TILE_COMMON_AIR: Vector2i = TileConstants.COMMON_AIR_COORDS
 const TILE_WALL: Vector2i = Vector2i(0, 0)
 const TILE_FLOOR: Vector2i = Vector2i(0, 1)
 const TILE_PLATFORM: Vector2i = Vector2i(0, 2)
@@ -28,9 +32,14 @@ const TILE_DEBUG: Vector2i = Vector2i(0, TileConstants.SPECIAL_DEBUG_ROW)
 @export var chunk_tile_set: TileSet
 @export var sync_tile_set_in_editor: bool = true
 @export var show_debug_label: bool = true
-@export_enum("None", "Mine Treasure 1x1", "Ancient Hall 2x1 Chunk", "Snow Shrine 1x1") var demo_layout: int = DemoLayout.NONE
+@export_enum("None", "Mine Treasure 1x1", "Ancient Hall 2x1 Chunk", "Snow Shrine 1x1", "Crystal Grotto 1x1") var demo_layout: int = DemoLayout.NONE
 @export var populate_demo_layout_if_empty: bool = true
 @export var auto_fill_transition_border: bool = true
+# Authored tiles can come from the default SpecialChunk atlas (10) or a dedicated
+# test atlas (11). Environment fill always uses the surrounding biome source.
+@export var authored_source_id: int = SPECIAL_CHUNK_SOURCE_ID
+
+var last_environment_fill_count: int = 0
 
 var placement: SpecialChunkPlacement
 var chunk_def: SpecialChunkDef
@@ -45,7 +54,7 @@ func setup_chunk(p_placement: SpecialChunkPlacement, tile_set: TileSet) -> void:
 	chunk_def = placement.chunk_def
 	_sync_authored_tile_set(tile_set)
 	_populate_demo_layout_if_needed()
-	_auto_fill_transition_border_if_needed()
+	_apply_auto_fill_if_needed()
 	_update_debug_label()
 
 func _sync_authored_tile_set(tile_set: TileSet) -> void:
@@ -74,9 +83,14 @@ func _populate_demo_layout_if_needed() -> void:
 			_draw_ancient_hall(layer)
 		DemoLayout.SNOW_SHRINE_1X1:
 			_draw_snow_shrine_chunk(layer)
+		DemoLayout.CRYSTAL_GROTTO_1X1:
+			_draw_crystal_grotto_chunk(layer)
 
 func _set_tile(layer: TileMapLayer, cell: Vector2i, atlas_coords: Vector2i) -> void:
-	layer.set_cell(cell, SPECIAL_CHUNK_SOURCE_ID, atlas_coords, 0)
+	layer.set_cell(cell, authored_source_id, atlas_coords, 0)
+
+func _set_tile_from_source(layer: TileMapLayer, cell: Vector2i, source_id: int, atlas_coords: Vector2i) -> void:
+	layer.set_cell(cell, source_id, atlas_coords, 0)
 
 func _set_tile_if_empty(layer: TileMapLayer, cell: Vector2i, atlas_coords: Vector2i) -> void:
 	if layer.get_cell_source_id(cell) != -1:
@@ -156,12 +170,52 @@ func _draw_snow_shrine_chunk(layer: TileMapLayer) -> void:
 	_set_tile(layer, Vector2i(5, 2), TILE_PILLAR)
 	_update_debug_label()
 
-func _auto_fill_transition_border_if_needed() -> void:
-	if not auto_fill_transition_border:
-		return
+func _draw_crystal_grotto_chunk(layer: TileMapLayer) -> void:
+	# Common air explicitly marks the continuous room interior. Empty cells outside
+	# this authored air mask are still filled by ENVIRONMENT_WANG_FILL with the
+	# surrounding biome Wang tiles. This keeps the room readable while the edges
+	# remain naturally embedded in the cave.
+	for y: int in range(2, 7):
+		for x: int in range(1, 7):
+			_set_tile_from_source(layer, Vector2i(x, y), COMMON_SOURCE_ID, TILE_COMMON_AIR)
+	# Leave a little irregularity so the air mask does not become a perfect card.
+	var air_mask_holes: Array[Vector2i] = [Vector2i(1, 2), Vector2i(6, 2), Vector2i(1, 6), Vector2i(6, 6)]
+	for cell: Vector2i in air_mask_holes:
+		layer.erase_cell(cell)
+
+	var old_source_id: int = authored_source_id
+	authored_source_id = CRYSTAL_SPECIAL_SOURCE_ID
+	# Solid anchors and floor pieces remain Ground tiles because they should affect
+	# the environment fill. Only the core is a separate interactive Node.
+	_set_tile(layer, Vector2i(2, 4), TILE_PILLAR)
+	_set_tile(layer, Vector2i(5, 4), TILE_PILLAR)
+	_set_tile(layer, Vector2i(3, 4), TILE_WALL)
+	_set_tile(layer, Vector2i(4, 4), TILE_WALL)
+	_set_tile(layer, Vector2i(3, 5), TILE_FLOOR)
+	_set_tile(layer, Vector2i(4, 5), TILE_FLOOR)
+	# Sparse environment decoration tiles remain on Ground. They have open-like
+	# edge metadata and transparent art, so they do not seal the room.
+	_set_tile(layer, Vector2i(2, 3), TILE_BACKGROUND)
+	_set_tile(layer, Vector2i(5, 3), TILE_BACKGROUND)
+	_set_tile(layer, Vector2i(2, 6), TILE_DECORATION)
+	_set_tile(layer, Vector2i(5, 6), TILE_DECORATION)
+	authored_source_id = old_source_id
+	_update_debug_label()
+
+func _apply_auto_fill_if_needed() -> void:
+	last_environment_fill_count = 0
 	if chunk_def == null:
 		return
-	if not chunk_def.auto_fill_transition_border:
+	match chunk_def.fill_mode:
+		SpecialChunkDef.FillMode.NONE:
+			return
+		SpecialChunkDef.FillMode.TRANSITION_BORDER:
+			_auto_fill_transition_border_if_needed()
+		SpecialChunkDef.FillMode.ENVIRONMENT_WANG_FILL:
+			_auto_fill_environment_wang_if_needed()
+
+func _auto_fill_transition_border_if_needed() -> void:
+	if not auto_fill_transition_border:
 		return
 	var layer: TileMapLayer = get_node_or_null(ground_layer_path) as TileMapLayer
 	if layer == null:
@@ -172,6 +226,12 @@ func _auto_fill_transition_border_if_needed() -> void:
 	_fill_horizontal_transition(layer, height - 1, width, chunk_def.bottom_profile, SpecialChunkTransitionLookup.Direction.BOTTOM)
 	_fill_vertical_transition(layer, 0, height, chunk_def.left_profile, SpecialChunkTransitionLookup.Direction.LEFT)
 	_fill_vertical_transition(layer, width - 1, height, chunk_def.right_profile, SpecialChunkTransitionLookup.Direction.RIGHT)
+
+func _auto_fill_environment_wang_if_needed() -> void:
+	var layer: TileMapLayer = get_node_or_null(ground_layer_path) as TileMapLayer
+	if layer == null:
+		return
+	last_environment_fill_count = SpecialChunkEnvironmentFill.fill_empty_cells(layer, chunk_def, placement)
 
 func _fill_horizontal_transition(layer: TileMapLayer, y: int, length: int, profile: Array[int], direction: int) -> void:
 	# Skip corners; corner art is more art-directed and is best hand-authored.
@@ -202,6 +262,11 @@ func _update_debug_label() -> void:
 	if not show_debug_label:
 		return
 	if chunk_def != null:
-		label.text = str(chunk_def.display_name)
+		var text: String = str(chunk_def.display_name)
+		if chunk_def.fill_mode == SpecialChunkDef.FillMode.ENVIRONMENT_WANG_FILL:
+			text += "\nfill env-wang: %d" % last_environment_fill_count
+		elif chunk_def.fill_mode == SpecialChunkDef.FillMode.TRANSITION_BORDER:
+			text += "\nfill transition"
+		label.text = text
 	elif name != "":
 		label.text = name

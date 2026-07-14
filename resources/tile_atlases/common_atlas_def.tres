@@ -1,0 +1,52 @@
+[gd_resource type="Resource" script_class="TileAtlasDef" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/tiles/TileAtlasDef.gd" id="1"]
+[ext_resource type="Texture2D" path="res://resources/tilesets/atlases/common_atlas.png" id="2"]
+[ext_resource type="Script" path="res://scripts/tiles/TileDef.gd" id="3"]
+
+[sub_resource type="Resource" id="TileDef_common_air"]
+script = ExtResource("3")
+id = &"common_air"
+top = 2
+right = 2
+bottom = 2
+left = 2
+weight = 1.0
+atlas_coords = Vector2i(0, 0)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = false
+tile_role = 2
+category = &"air"
+
+[sub_resource type="Resource" id="TileDef_common_debug"]
+script = ExtResource("3")
+id = &"common_debug"
+top = 1
+right = 1
+bottom = 1
+left = 1
+weight = 0.0
+atlas_coords = Vector2i(0, 3)
+alternative_tile = 0
+collision_rects = Array[Rect2i]([])
+is_fallback = true
+tile_role = 3
+category = &"debug"
+
+[resource]
+script = ExtResource("1")
+id = &"common_atlas"
+biome_id = &""
+atlas_kind = 2
+source_id = 20
+atlas_texture = ExtResource("2")
+tile_size = Vector2i(64, 64)
+atlas_columns = 8
+variants_per_signature = 8
+fallback_row = 3
+layout_mode = 1
+signature_rows = Array[StringName]([])
+category_rows = Array[StringName]([&"air", &"mask", &"helper", &"debug"])
+tiles = Array[Resource]([SubResource("TileDef_common_air"), SubResource("TileDef_common_debug")])
+fallback_tile = SubResource("TileDef_common_debug")

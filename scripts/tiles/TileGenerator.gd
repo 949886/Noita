@@ -251,6 +251,63 @@ static func _carve_circle(image: Image, center: Vector2i, radius: int, color: Co
 			if dx * dx + dy * dy <= r2:
 				image.set_pixel(x, y, color)
 
+
+static func generate_common_atlas_def() -> TileAtlasDef:
+	var atlas_def: TileAtlasDef = TileAtlasDef.new()
+	atlas_def.id = &"common_atlas"
+	atlas_def.biome_id = &""
+	atlas_def.atlas_kind = TileAtlasDef.AtlasKind.DECORATION
+	atlas_def.source_id = TileConstants.SOURCE_COMMON
+	atlas_def.tile_size = Vector2i(TILE_SIZE, TILE_SIZE)
+	atlas_def.atlas_columns = TileConstants.COMMON_ATLAS_COLUMNS
+	atlas_def.variants_per_signature = TileConstants.COMMON_ATLAS_COLUMNS
+	atlas_def.fallback_row = TileConstants.COMMON_ATLAS_ROWS - 1
+	atlas_def.layout_mode = TileAtlasDef.LayoutMode.CATEGORY_ROWS
+	atlas_def.category_rows.clear()
+	for category: StringName in TileConstants.common_categories():
+		atlas_def.category_rows.append(category)
+	var atlas_image: Image = build_common_atlas_image(atlas_def)
+	atlas_def.atlas_texture = ImageTexture.create_from_image(atlas_image)
+	return atlas_def
+
+static func build_common_atlas_image(atlas_def: TileAtlasDef) -> Image:
+	var atlas_image: Image = Image.create(
+		TileConstants.COMMON_ATLAS_COLUMNS * TILE_SIZE,
+		TileConstants.COMMON_ATLAS_ROWS * TILE_SIZE,
+		false,
+		Image.FORMAT_RGBA8
+	)
+	atlas_image.fill(Color(0, 0, 0, 0))
+	atlas_def.tiles.clear()
+	# row 0, col 0: common_air. It is intentionally transparent and has AAAA
+	# metadata so it marks room interior space without being overwritten by
+	# ENVIRONMENT_WANG_FILL.
+	var air_image: Image = Image.create(TILE_SIZE, TILE_SIZE, false, Image.FORMAT_RGBA8)
+	air_image.fill(Color(0, 0, 0, 0))
+	atlas_image.blit_rect(air_image, Rect2i(Vector2i.ZERO, Vector2i(TILE_SIZE, TILE_SIZE)), Vector2i.ZERO)
+	var air_tile: TileDef = TileDef.new(&"common_air", TileDef.Edge.AIR, TileDef.Edge.AIR, TileDef.Edge.AIR, TileDef.Edge.AIR, 1.0)
+	air_tile.tile_role = TileDef.TileRole.DECORATION
+	air_tile.category = &"air"
+	air_tile.atlas_coords = TileConstants.COMMON_AIR_COORDS
+	air_tile.alternative_tile = 0
+	air_tile.texture = ImageTexture.create_from_image(air_image)
+	atlas_def.tiles.append(air_tile)
+
+	# A visible debug tile is reserved but not used by runtime generation.
+	var debug_image: Image = make_debug_image("common_debug")
+	var debug_coords := Vector2i(0, 3)
+	atlas_image.blit_rect(debug_image, Rect2i(Vector2i.ZERO, Vector2i(TILE_SIZE, TILE_SIZE)), debug_coords * TILE_SIZE)
+	var debug_tile: TileDef = TileDef.new(&"common_debug", TileDef.Edge.OPEN, TileDef.Edge.OPEN, TileDef.Edge.OPEN, TileDef.Edge.OPEN, 0.0)
+	debug_tile.tile_role = TileDef.TileRole.DEBUG
+	debug_tile.category = &"debug"
+	debug_tile.atlas_coords = debug_coords
+	debug_tile.alternative_tile = 0
+	debug_tile.texture = ImageTexture.create_from_image(debug_image)
+	debug_tile.is_fallback = true
+	atlas_def.tiles.append(debug_tile)
+	atlas_def.fallback_tile = debug_tile
+	return atlas_image
+
 static func generate_special_chunk_atlas_def() -> TileAtlasDef:
 	var atlas_def: TileAtlasDef = TileAtlasDef.new()
 	atlas_def.id = &"special_chunk_atlas"
@@ -285,14 +342,23 @@ static func build_special_chunk_atlas_image(atlas_def: TileAtlasDef) -> Image:
 			var coords: Vector2i = TileConstants.special_coords_for_category_variant(row, variant)
 			var image: Image = make_special_chunk_tile_image(category, variant)
 			atlas_image.blit_rect(image, Rect2i(Vector2i.ZERO, Vector2i(TILE_SIZE, TILE_SIZE)), coords * TILE_SIZE)
-			var tile: TileDef = TileDef.new(StringName("special_%s_%02d" % [str(category), variant + 1]), TileDef.Edge.SOLID, TileDef.Edge.SOLID, TileDef.Edge.SOLID, TileDef.Edge.SOLID, 1.0)
+			var tile_edges: Array[int] = _special_category_edges(category, variant)
+			var tile: TileDef = TileDef.new(
+				StringName("special_%s_%02d" % [str(category), variant + 1]),
+				int(tile_edges[0]),
+				int(tile_edges[1]),
+				int(tile_edges[2]),
+				int(tile_edges[3]),
+				1.0
+			)
 			tile.tile_role = TileDef.TileRole.SPECIAL_CHUNK if category != &"debug" else TileDef.TileRole.DEBUG
 			tile.category = category
 			tile.atlas_coords = coords
 			tile.alternative_tile = 0
 			tile.texture = ImageTexture.create_from_image(image)
 			var category_string: String = str(category)
-			if category == &"wall" or category == &"floor" or category == &"platform" or category == &"pillar" or category == &"door" or category_string.begins_with("transition_"):
+			var solid_transition: bool = category_string.begins_with("transition_") and variant < 4
+			if category == &"wall" or category == &"floor" or category == &"pillar" or solid_transition:
 				tile.collision_rects = [Rect2i(0, 0, TILE_SIZE, TILE_SIZE)]
 			atlas_def.tiles.append(tile)
 	var fallback_tile: TileDef = atlas_def.find_first_by_category(&"debug")
@@ -300,6 +366,33 @@ static func build_special_chunk_atlas_image(atlas_def: TileAtlasDef) -> Image:
 		fallback_tile.is_fallback = true
 	atlas_def.fallback_tile = fallback_tile
 	return atlas_image
+
+
+static func _special_category_edges(category: StringName, variant: int) -> Array[int]:
+	# These semantic edges are used by ENVIRONMENT_WANG_FILL. Door/background/
+	# decoration/platform tiles are open-like so authored details do not seal the
+	# generated cave fill; wall/pillar tiles remain solid anchors.
+	match category:
+		&"wall":
+			return TileDef.signature_to_edges("SSSS")
+		&"floor":
+			return TileDef.signature_to_edges("OOSO")
+		&"platform":
+			return TileDef.signature_to_edges("OOOO")
+		&"door":
+			return TileDef.signature_to_edges("OOOO")
+		&"pillar":
+			return TileDef.signature_to_edges("SSSS")
+		&"background":
+			return TileDef.signature_to_edges("OOOO")
+		&"decoration":
+			return TileDef.signature_to_edges("OOOO")
+		&"debug":
+			return TileDef.signature_to_edges("OOOO")
+		_:
+			if str(category).begins_with("transition_"):
+				return TileDef.signature_to_edges("OOOO" if variant >= 4 else "SSSS")
+	return TileDef.signature_to_edges("SSSS")
 
 static func make_special_chunk_tile_image(category: StringName, variant: int) -> Image:
 	var image: Image = Image.create(TILE_SIZE, TILE_SIZE, false, Image.FORMAT_RGBA8)
@@ -381,6 +474,9 @@ static func make_special_chunk_tile_image(category: StringName, variant: int) ->
 		_carve_rect(image, Rect2i(0, 18, TILE_SIZE, 3), light)
 		_carve_rect(image, Rect2i(0, 31, TILE_SIZE, 5), dark)
 	elif category == &"door":
+		# Doors are visual connectors, not opaque terrain. Keep the tile background
+		# transparent so environment Wang fill can visually continue around it.
+		image.fill(Color(0, 0, 0, 0))
 		_carve_rect(image, Rect2i(18, 4, 28, 56), dark)
 		_carve_rect(image, Rect2i(24, 10, 16, 44), base)
 		_carve_rect(image, Rect2i(28, 8, 8, 8), light)
@@ -389,6 +485,13 @@ static func make_special_chunk_tile_image(category: StringName, variant: int) ->
 		_carve_rect(image, Rect2i(20, 0, 24, TILE_SIZE), base)
 		_carve_rect(image, Rect2i(14, 0, 36, 9), light)
 		_carve_rect(image, Rect2i(14, 55, 36, 9), dark)
+	elif category == &"background":
+		# Background/detail tiles should be sparse overlays, not opaque square cards.
+		image.fill(Color(0, 0, 0, 0))
+		for i: int in range(10):
+			var px: int = rng.randi_range(8, TILE_SIZE - 9)
+			var py: int = rng.randi_range(8, TILE_SIZE - 9)
+			_carve_circle(image, Vector2i(px, py), rng.randi_range(1, 3), light)
 	elif category == &"decoration":
 		image.fill(Color(0, 0, 0, 0))
 		_carve_circle(image, Vector2i(32, 32), 14, light)
