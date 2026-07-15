@@ -107,17 +107,17 @@ static func make_image(biome_id: StringName, top: int, right: int, bottom: int, 
 	var image: Image = Image.create(TILE_SIZE, TILE_SIZE, false, Image.FORMAT_RGBA8)
 	var solid_a: Color = Color(0.24, 0.22, 0.22, 1.0)
 	var solid_b: Color = Color(0.16, 0.15, 0.16, 1.0)
-	var air: Color = Color(0.025, 0.022, 0.033, 1.0)
+	var air: Color = Color(0.025, 0.022, 0.033, 0.0)
 	var accent: Color = Color(0.42, 0.36, 0.25, 1.0)
 	if biome_id == &"snow":
 		solid_a = Color(0.72, 0.82, 0.88, 1.0)
 		solid_b = Color(0.43, 0.56, 0.66, 1.0)
-		air = Color(0.035, 0.045, 0.07, 1.0)
+		air = Color(0.035, 0.045, 0.07, 0.0)
 		accent = Color(0.86, 0.95, 1.0, 1.0)
 	elif biome_id == &"deep":
 		solid_a = Color(0.18, 0.14, 0.20, 1.0)
 		solid_b = Color(0.08, 0.07, 0.10, 1.0)
-		air = Color(0.018, 0.014, 0.022, 1.0)
+		air = Color(0.018, 0.014, 0.022, 0.0)
 		accent = Color(0.43, 0.23, 0.52, 1.0)
 
 	var signature: String = TileDef.edges_to_signature(top, right, bottom, left)
