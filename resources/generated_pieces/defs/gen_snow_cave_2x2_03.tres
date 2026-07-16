@@ -15,5 +15,5 @@ tags = Array[StringName]([&"generated", &"cave_room"])
 weight = 1.00
 top_slots = Array[StringName]([&"solid", &"solid"])
 right_slots = Array[StringName]([&"open_medium", &"open_large"])
-bottom_slots = Array[StringName]([&"open_small_double", &"solid"])
+bottom_slots = Array[StringName]([&"double_open_small", &"solid"])
 left_slots = Array[StringName]([&"solid", &"open_small"])

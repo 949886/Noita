@@ -1,19 +1,17 @@
-[gd_resource type="Resource" script_class="PieceDef" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="PieceDef" format=3 uid="uid://4n55ec5x7aff"]
 
-[ext_resource type="Script" path="res://scripts/pieces/PieceDef.gd" id="1"]
-[ext_resource type="Texture2D" path="res://resources/generated_pieces/textures/gen_deep_cave_2x1_01.png" id="2"]
+[ext_resource type="Script" uid="uid://damlaofp4moil" path="res://scripts/pieces/PieceDef.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://buchpcsd52wls" path="res://resources/generated_pieces/textures/gen_deep_cave_2x1_01.png" id="2"]
 
 [resource]
 script = ExtResource("1")
 id = &"gen_deep_cave_2x1_01"
-kind = 0
 texture = ExtResource("2")
 size_px = Vector2i(256, 128)
 size_units = Vector2i(2, 1)
 allowed_biomes = Array[StringName]([&"deep"])
 tags = Array[StringName]([&"generated", &"cave_room"])
-weight = 1.00
 top_slots = Array[StringName]([&"solid", &"open_large"])
 right_slots = Array[StringName]([&"solid"])
-bottom_slots = Array[StringName]([&"open_small_double", &"open_small"])
+bottom_slots = Array[StringName]([&"double_open_small", &"open_small"])
 left_slots = Array[StringName]([&"open_large"])

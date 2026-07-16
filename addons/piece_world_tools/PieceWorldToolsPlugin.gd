@@ -17,7 +17,7 @@ func _generate_test_piece_library() -> void:
 	var generator: Object = gen_script.new()
 	generator.generate_default_library()
 	EditorInterface.get_resource_filesystem().scan()
-	print("Generated open-small-double test piece library. Reopen PieceWorld.tscn or press F3 to regenerate chunks.")
+	print("Generated double-open-small test piece library. Reopen PieceWorld.tscn or press F3 to regenerate chunks.")
 
 func _validate_piece_library() -> void:
 	var errors: int = 0
@@ -83,7 +83,7 @@ func _validate_piece(path: String) -> int:
 
 func _validate_socket_names(piece: PieceDef) -> int:
 	var issues: int = 0
-	var allowed: Array[StringName] = [&"solid", &"open_small", &"open_small_double", &"open_medium", &"open_large", &"room", &"shaft", &"any"]
+	var allowed: Array[StringName] = [&"solid", &"open_small", &"double_open_small", &"open_medium", &"open_large", &"room", &"shaft", &"any"]
 	var all_slots: Array = []
 	all_slots.append_array(piece.top_slots)
 	all_slots.append_array(piece.right_slots)

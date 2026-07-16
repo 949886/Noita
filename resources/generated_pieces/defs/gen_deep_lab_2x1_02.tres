@@ -15,5 +15,5 @@ tags = Array[StringName]([&"generated", &"lab", &"room", &"horizontal"])
 weight = 0.80
 top_slots = Array[StringName]([&"solid", &"solid"])
 right_slots = Array[StringName]([&"open_medium"])
-bottom_slots = Array[StringName]([&"open_small_double", &"open_small"])
+bottom_slots = Array[StringName]([&"double_open_small", &"open_small"])
 left_slots = Array[StringName]([&"open_medium"])

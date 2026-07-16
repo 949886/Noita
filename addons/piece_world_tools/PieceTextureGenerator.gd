@@ -29,7 +29,7 @@ func generate_default_library() -> void:
 		for i: int in range(3):
 			_generate_symbol_piece(biome, i, rng)
 			count += 1
-	print("PieceTextureGenerator wrote open-small-double placeholder pieces: ", count)
+	print("PieceTextureGenerator wrote double-open-small placeholder pieces: ", count)
 
 func _clear_generated_dir(path: String) -> void:
 	var dir: DirAccess = DirAccess.open(path)
@@ -65,7 +65,7 @@ func _generate_cave_piece(biome: StringName, size_units: Vector2i, index: int, r
 		top = [&"solid"]
 		bottom = [&"solid"]
 		left = [&"open_small", &"solid"]
-		right = [&"open_medium", &"open_small_double"]
+		right = [&"open_medium", &"double_open_small"]
 	_carve_cave_cavity(img, rng)
 	_carve_all_open_slots(img, top, right, bottom, left, rng)
 	_add_noise(img, rng, _dark_color(biome), 500 * size_units.x * size_units.y)
@@ -88,7 +88,7 @@ func _generate_symbol_piece(biome: StringName, index: int, rng: RandomNumberGene
 	_add_noise(img, rng, _dark_color(biome), 1600)
 	var top: Array[StringName] = [&"solid", &"open_small"]
 	var right: Array[StringName] = [&"open_large"]
-	var bottom: Array[StringName] = [&"open_small_double", &"solid"]
+	var bottom: Array[StringName] = [&"double_open_small", &"solid"]
 	var left: Array[StringName] = [&"open_large"]
 	_carve_cave_cavity(img, rng)
 	_carve_all_open_slots(img, top, right, bottom, left, rng)
@@ -113,7 +113,7 @@ func _random_slots(count: int, rng: RandomNumberGenerator, open_chance: float) -
 		else:
 			var roll: float = rng.randf()
 			if roll < 0.22: result.append(&"open_small")
-			elif roll < 0.42: result.append(&"open_small_double")
+			elif roll < 0.42: result.append(&"double_open_small")
 			elif roll < 0.78: result.append(&"open_medium")
 			else: result.append(&"open_large")
 	return result
@@ -163,7 +163,7 @@ func _socket_open_patterns(socket: StringName) -> Array[Vector2i]:
 	match socket:
 		&"open_small":
 			result.append(Vector2i(UNIT_SIZE / 2, 34))
-		&"open_small_double":
+		&"double_open_small":
 			result.append(Vector2i(UNIT_SIZE / 4, 28))
 			result.append(Vector2i(UNIT_SIZE * 3 / 4, 28))
 		&"open_medium":

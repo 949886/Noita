@@ -42,13 +42,27 @@ func _place_prefabs(data: PieceChunkData, occupied: Array, rng: RandomNumberGene
 		var candidates: Array[PieceDef] = library.candidates_for(data.biome_id, desired_tags, max_size)
 		if candidates.is_empty():
 			return
-		var piece: PieceDef = library.weighted_pick(candidates, rng)
-		if piece == null:
-			continue
-		var pos: Vector2i = _find_empty_spot(occupied, piece.size_units, rng)
-		if pos.x < 0:
-			continue
-		_add_piece(data, occupied, piece, pos)
+		var best_piece: PieceDef = null
+		var best_pos: Vector2i = Vector2i(-1, -1)
+		var best_score: int = -1
+		for trial: int in range(28):
+			var piece: PieceDef = library.weighted_pick(candidates, rng)
+			if piece == null:
+				continue
+			var pos: Vector2i = _find_empty_spot(occupied, piece.size_units, rng)
+			if pos.x < 0:
+				continue
+			var score: int = _placement_match_score(data, occupied, piece, pos)
+			if score < 0:
+				continue
+			if score > best_score:
+				best_score = score
+				best_piece = piece
+				best_pos = pos
+				if score >= 400:
+					break
+		if best_piece != null and best_pos.x >= 0:
+			_add_piece(data, occupied, best_piece, best_pos)
 
 func _find_empty_spot(occupied: Array, size_units: Vector2i, rng: RandomNumberGenerator) -> Vector2i:
 	var possible: Array[Vector2i] = []
@@ -62,6 +76,87 @@ func _find_empty_spot(occupied: Array, size_units: Vector2i, rng: RandomNumberGe
 	if possible.is_empty():
 		return Vector2i(-1, -1)
 	return possible[rng.randi_range(0, possible.size() - 1)]
+
+func _placement_match_score(data: PieceChunkData, occupied: Array, piece: PieceDef, unit_pos: Vector2i) -> int:
+	var total: int = 0
+	var checked: int = 0
+	for y: int in range(piece.size_units.y):
+		for x: int in range(piece.size_units.x):
+			var cell: Vector2i = unit_pos + Vector2i(x, y)
+			var sides: Array[StringName] = [&"top", &"right", &"bottom", &"left"]
+			for side: StringName in sides:
+				if not _is_outer_piece_side(piece, Vector2i(x, y), side):
+					continue
+				var neighbor_pos: Vector2i = cell + _side_dir(side)
+				if not _unit_in_chunk(neighbor_pos):
+					continue
+				if not occupied[neighbor_pos.y * PieceWorldConstants.CHUNK_UNITS + neighbor_pos.x]:
+					continue
+				var socket_a: StringName = _piece_socket_for_local_side(piece, Vector2i(x, y), side)
+				var neighbor: PiecePlacement = _placement_at_unit(data, neighbor_pos)
+				if neighbor == null:
+					continue
+				var socket_b: StringName = _placement_socket_for_unit_side(neighbor, neighbor_pos, _opposite_side(side))
+				var score: int = PieceSocket.compatibility_score(socket_a, socket_b)
+				if score < 60:
+					return -1
+				total += score
+				checked += 1
+	if checked == 0:
+		return 10
+	return total
+
+func _unit_in_chunk(pos: Vector2i) -> bool:
+	return pos.x >= 0 and pos.y >= 0 and pos.x < PieceWorldConstants.CHUNK_UNITS and pos.y < PieceWorldConstants.CHUNK_UNITS
+
+func _side_dir(side: StringName) -> Vector2i:
+	match side:
+		&"top": return Vector2i(0, -1)
+		&"right": return Vector2i(1, 0)
+		&"bottom": return Vector2i(0, 1)
+		&"left": return Vector2i(-1, 0)
+	return Vector2i.ZERO
+
+func _opposite_side(side: StringName) -> StringName:
+	match side:
+		&"top": return &"bottom"
+		&"right": return &"left"
+		&"bottom": return &"top"
+		&"left": return &"right"
+	return &""
+
+func _is_outer_piece_side(piece: PieceDef, local: Vector2i, side: StringName) -> bool:
+	match side:
+		&"top": return local.y == 0
+		&"right": return local.x == piece.size_units.x - 1
+		&"bottom": return local.y == piece.size_units.y - 1
+		&"left": return local.x == 0
+	return false
+
+func _piece_socket_for_local_side(piece: PieceDef, local: Vector2i, side: StringName) -> StringName:
+	var slots: Array[StringName] = piece.normalized_slots(side)
+	var slot_index: int = local.x if (side == &"top" or side == &"bottom") else local.y
+	if slot_index >= 0 and slot_index < slots.size():
+		return slots[slot_index]
+	return &"solid"
+
+func _placement_at_unit(data: PieceChunkData, unit: Vector2i) -> PiecePlacement:
+	for placement: PiecePlacement in data.placements:
+		var rect: Rect2i = Rect2i(placement.unit_pos, placement.size_units)
+		if rect.has_point(unit):
+			return placement
+	return null
+
+func _placement_socket_for_unit_side(placement: PiecePlacement, unit: Vector2i, side: StringName) -> StringName:
+	if placement.is_glue:
+		var socket_value: Variant = placement.sockets.get(side, &"solid")
+		return StringName(str(socket_value))
+	if placement.piece_def == null:
+		return &"solid"
+	var local: Vector2i = unit - placement.unit_pos
+	if not _is_outer_piece_side(placement.piece_def, local, side):
+		return &"solid"
+	return _piece_socket_for_local_side(placement.piece_def, local, side)
 
 func _add_piece(data: PieceChunkData, occupied: Array, piece: PieceDef, unit_pos: Vector2i) -> void:
 	var placement: PiecePlacement = PiecePlacement.new()
@@ -102,7 +197,11 @@ func _fill_glue(data: PieceChunkData, occupied: Array, rng: RandomNumberGenerato
 		for x: int in range(PieceWorldConstants.CHUNK_UNITS):
 			if occupied[y * PieceWorldConstants.CHUNK_UNITS + x]: continue
 			var sockets: Dictionary = _glue_sockets_for(data, Vector2i(x, y), rng)
-			var glue: Image = GluePieceGenerator.generate(data.biome_id, sockets[&"top"], sockets[&"right"], sockets[&"bottom"], sockets[&"left"], int(_chunk_seed(data.coord) + x * 77 + y * 313))
+			var top_socket: StringName = StringName(str(sockets[&"top"]))
+			var right_socket: StringName = StringName(str(sockets[&"right"]))
+			var bottom_socket: StringName = StringName(str(sockets[&"bottom"]))
+			var left_socket: StringName = StringName(str(sockets[&"left"]))
+			var glue: Image = GluePieceGenerator.generate(data.biome_id, top_socket, right_socket, bottom_socket, left_socket, int(_chunk_seed(data.coord) + x * 77 + y * 313))
 			var rect: Rect2i = Rect2i(Vector2i(x, y) * PieceWorldConstants.UNIT_SIZE, Vector2i.ONE * PieceWorldConstants.UNIT_SIZE)
 			data.visual_image.blit_rect(glue, Rect2i(Vector2i.ZERO, glue.get_size()), rect.position)
 			data.material_image.blit_rect(glue, Rect2i(Vector2i.ZERO, glue.get_size()), rect.position)
@@ -124,24 +223,41 @@ func _glue_sockets_for(data: PieceChunkData, pos: Vector2i, rng: RandomNumberGen
 		&"branch": open_chance = 0.52
 		&"solid": open_chance = 0.18
 	var d: Dictionary = {}
-	d[&"top"] = _edge_socket(data.coord, pos, &"top", open_chance)
-	d[&"right"] = _edge_socket(data.coord, pos, &"right", open_chance)
-	d[&"bottom"] = _edge_socket(data.coord, pos, &"bottom", open_chance)
-	d[&"left"] = _edge_socket(data.coord, pos, &"left", open_chance)
+	var sides: Array[StringName] = [&"top", &"right", &"bottom", &"left"]
+	for side: StringName in sides:
+		var neighbor_pos: Vector2i = pos + _side_dir(side)
+		var socket: StringName = &"solid"
+		if _unit_in_chunk(neighbor_pos):
+			var neighbor: PiecePlacement = _placement_at_unit(data, neighbor_pos)
+			if neighbor != null:
+				socket = _placement_socket_for_unit_side(neighbor, neighbor_pos, _opposite_side(side))
+			else:
+				socket = _edge_socket(data.coord, pos, side, open_chance)
+		else:
+			socket = _edge_socket(data.coord, pos, side, open_chance)
+		d[side] = socket
 	return d
 
 func _edge_socket(chunk_coord: Vector2i, unit_pos: Vector2i, side: StringName, chance: float) -> StringName:
-	var global_a: Vector2i = chunk_coord * PieceWorldConstants.CHUNK_UNITS + unit_pos
-	var key_x: int = global_a.x * 19349663 + global_a.y * 83492791 + world_seed
+	var global_cell: Vector2i = chunk_coord * PieceWorldConstants.CHUNK_UNITS + unit_pos
+	var edge_pos: Vector2i = global_cell
+	var orientation: int = 0
 	match side:
-		&"right": key_x += 17
-		&"bottom": key_x += 31
-		&"left": key_x += -17
-		&"top": key_x += -31
+		&"right":
+			edge_pos.x += 1
+			orientation = 0
+		&"left":
+			orientation = 0
+		&"bottom":
+			edge_pos.y += 1
+			orientation = 1
+		&"top":
+			orientation = 1
+	var key_x: int = edge_pos.x * 19349663 + edge_pos.y * 83492791 + orientation * 265443576 + world_seed
 	var v: float = float(abs(key_x % 10000)) / 10000.0
 	if v < chance * 0.20: return &"open_large"
 	if v < chance * 0.52: return &"open_medium"
-	if v < chance * 0.76: return &"open_small_double"
+	if v < chance * 0.76: return &"double_open_small"
 	if v < chance: return &"open_small"
 	return &"solid"
 
