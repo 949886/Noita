@@ -1,0 +1,24 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/piece_world/PieceWorldManager.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/player/PiecePlayer.gd" id="2"]
+[ext_resource type="Script" path="res://scripts/piece_world/PieceDebugOverlay.gd" id="3"]
+
+[node name="PieceWorld" type="Node2D"]
+script = ExtResource("1")
+player_path = NodePath("Player")
+chunk_container_path = NodePath("ChunkRenderers")
+debug_overlay_path = NodePath("DebugOverlay")
+
+[node name="ChunkRenderers" type="Node2D" parent="."]
+
+[node name="Player" type="CharacterBody2D" parent="."]
+position = Vector2(128, 128)
+script = ExtResource("2")
+
+[node name="Camera2D" type="Camera2D" parent="Player"]
+enabled = true
+zoom = Vector2(0.7, 0.7)
+
+[node name="DebugOverlay" type="CanvasLayer" parent="."]
+script = ExtResource("3")

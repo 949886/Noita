@@ -1,0 +1,71 @@
+[gd_resource type="Resource" script_class="MaterialPalette" load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://scripts/materials/MaterialPalette.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/materials/MaterialEntry.gd" id="2"]
+
+[sub_resource type="Resource" id="MaterialEntry_air"]
+script = ExtResource("2")
+id = &"air"
+color = Color(0, 0, 0, 0)
+solid = false
+liquid = false
+flammable = false
+density = 0.0
+
+[sub_resource type="Resource" id="MaterialEntry_rock"]
+script = ExtResource("2")
+id = &"rock"
+color = Color(0.211765, 0.196078, 0.176471, 1)
+solid = true
+liquid = false
+flammable = false
+density = 3.0
+
+[sub_resource type="Resource" id="MaterialEntry_snow"]
+script = ExtResource("2")
+id = &"snow_rock"
+color = Color(0.666667, 0.745098, 0.839216, 1)
+solid = true
+liquid = false
+flammable = false
+density = 2.0
+
+[sub_resource type="Resource" id="MaterialEntry_deep"]
+script = ExtResource("2")
+id = &"deep_rock"
+color = Color(0.188235, 0.14902, 0.227451, 1)
+solid = true
+liquid = false
+flammable = false
+density = 3.2
+
+[sub_resource type="Resource" id="MaterialEntry_metal"]
+script = ExtResource("2")
+id = &"metal"
+color = Color(0.282353, 0.298039, 0.376471, 1)
+solid = true
+liquid = false
+flammable = false
+density = 7.0
+
+[sub_resource type="Resource" id="MaterialEntry_wood"]
+script = ExtResource("2")
+id = &"wood"
+color = Color(0.360784, 0.223529, 0.098039, 1)
+solid = true
+liquid = false
+flammable = true
+density = 0.7
+
+[sub_resource type="Resource" id="MaterialEntry_water"]
+script = ExtResource("2")
+id = &"water"
+color = Color(0.141176, 0.360784, 0.439216, 1)
+solid = false
+liquid = true
+flammable = false
+density = 1.0
+
+[resource]
+script = ExtResource("1")
+entries = Array[Resource]([SubResource("MaterialEntry_air"), SubResource("MaterialEntry_rock"), SubResource("MaterialEntry_snow"), SubResource("MaterialEntry_deep"), SubResource("MaterialEntry_metal"), SubResource("MaterialEntry_wood"), SubResource("MaterialEntry_water")])
