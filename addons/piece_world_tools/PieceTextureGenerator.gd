@@ -29,7 +29,7 @@ func generate_default_library() -> void:
 		for i: int in range(3):
 			_generate_symbol_piece(biome, i, rng)
 			count += 1
-	print("PieceTextureGenerator wrote slot-correct placeholder pieces: ", count)
+	print("PieceTextureGenerator wrote open-small-double placeholder pieces: ", count)
 
 func _clear_generated_dir(path: String) -> void:
 	var dir: DirAccess = DirAccess.open(path)
@@ -65,7 +65,7 @@ func _generate_cave_piece(biome: StringName, size_units: Vector2i, index: int, r
 		top = [&"solid"]
 		bottom = [&"solid"]
 		left = [&"open_small", &"solid"]
-		right = [&"open_medium", &"open_small"]
+		right = [&"open_medium", &"open_small_double"]
 	_carve_cave_cavity(img, rng)
 	_carve_all_open_slots(img, top, right, bottom, left, rng)
 	_add_noise(img, rng, _dark_color(biome), 500 * size_units.x * size_units.y)
@@ -88,7 +88,7 @@ func _generate_symbol_piece(biome: StringName, index: int, rng: RandomNumberGene
 	_add_noise(img, rng, _dark_color(biome), 1600)
 	var top: Array[StringName] = [&"solid", &"open_small"]
 	var right: Array[StringName] = [&"open_large"]
-	var bottom: Array[StringName] = [&"open_small", &"solid"]
+	var bottom: Array[StringName] = [&"open_small_double", &"solid"]
 	var left: Array[StringName] = [&"open_large"]
 	_carve_cave_cavity(img, rng)
 	_carve_all_open_slots(img, top, right, bottom, left, rng)
@@ -112,8 +112,9 @@ func _random_slots(count: int, rng: RandomNumberGenerator, open_chance: float) -
 			result.append(&"solid")
 		else:
 			var roll: float = rng.randf()
-			if roll < 0.25: result.append(&"open_small")
-			elif roll < 0.75: result.append(&"open_medium")
+			if roll < 0.22: result.append(&"open_small")
+			elif roll < 0.42: result.append(&"open_small_double")
+			elif roll < 0.78: result.append(&"open_medium")
 			else: result.append(&"open_large")
 	return result
 
@@ -130,43 +131,55 @@ func _carve_all_open_slots(img: Image, top: Array[StringName], right: Array[Stri
 func _carve_slot_opening(img: Image, edge: StringName, slot_index: int, socket: StringName, rng: RandomNumberGenerator) -> void:
 	if not _socket_is_open(socket):
 		return
-	var center: Vector2i = _slot_center_on_edge(edge, slot_index, img.get_size())
-	var width: int = _socket_open_width(socket)
-	var depth: int = int(UNIT_SIZE * 0.58)
-	match edge:
-		&"right":
-			_carve_rect(img, Rect2i(Vector2i(img.get_width() - depth, center.y - width / 2), Vector2i(depth, width)))
-			_carve_corridor(img, center, Vector2i(img.get_width() / 2, center.y), width)
-		&"left":
-			_carve_rect(img, Rect2i(Vector2i(0, center.y - width / 2), Vector2i(depth, width)))
-			_carve_corridor(img, center, Vector2i(img.get_width() / 2, center.y), width)
-		&"top":
-			_carve_rect(img, Rect2i(Vector2i(center.x - width / 2, 0), Vector2i(width, depth)))
-			_carve_corridor(img, center, Vector2i(center.x, img.get_height() / 2), width)
-		&"bottom":
-			_carve_rect(img, Rect2i(Vector2i(center.x - width / 2, img.get_height() - depth), Vector2i(width, depth)))
-			_carve_corridor(img, center, Vector2i(center.x, img.get_height() / 2), width)
+	var patterns: Array[Vector2i] = _socket_open_patterns(socket)
+	for pattern: Vector2i in patterns:
+		var center: Vector2i = _opening_center_on_edge(edge, slot_index, pattern.x, img.get_size())
+		var width: int = pattern.y
+		var depth: int = int(UNIT_SIZE * 0.58)
+		match edge:
+			&"right":
+				_carve_rect(img, Rect2i(Vector2i(img.get_width() - depth, center.y - width / 2), Vector2i(depth, width)))
+				_carve_corridor(img, center, Vector2i(img.get_width() / 2, center.y), width)
+			&"left":
+				_carve_rect(img, Rect2i(Vector2i(0, center.y - width / 2), Vector2i(depth, width)))
+				_carve_corridor(img, center, Vector2i(img.get_width() / 2, center.y), width)
+			&"top":
+				_carve_rect(img, Rect2i(Vector2i(center.x - width / 2, 0), Vector2i(width, depth)))
+				_carve_corridor(img, center, Vector2i(center.x, img.get_height() / 2), width)
+			&"bottom":
+				_carve_rect(img, Rect2i(Vector2i(center.x - width / 2, img.get_height() - depth), Vector2i(width, depth)))
+				_carve_corridor(img, center, Vector2i(center.x, img.get_height() / 2), width)
 
-func _slot_center_on_edge(edge: StringName, slot_index: int, size_px: Vector2i) -> Vector2i:
+func _opening_center_on_edge(edge: StringName, slot_index: int, offset_px: int, size_px: Vector2i) -> Vector2i:
 	match edge:
-		&"right": return Vector2i(size_px.x - 1, slot_index * UNIT_SIZE + UNIT_SIZE / 2)
-		&"left": return Vector2i(0, slot_index * UNIT_SIZE + UNIT_SIZE / 2)
-		&"top": return Vector2i(slot_index * UNIT_SIZE + UNIT_SIZE / 2, 0)
-		&"bottom": return Vector2i(slot_index * UNIT_SIZE + UNIT_SIZE / 2, size_px.y - 1)
+		&"right": return Vector2i(size_px.x - 1, slot_index * UNIT_SIZE + offset_px)
+		&"left": return Vector2i(0, slot_index * UNIT_SIZE + offset_px)
+		&"top": return Vector2i(slot_index * UNIT_SIZE + offset_px, 0)
+		&"bottom": return Vector2i(slot_index * UNIT_SIZE + offset_px, size_px.y - 1)
 	return Vector2i.ZERO
+
+func _socket_open_patterns(socket: StringName) -> Array[Vector2i]:
+	var result: Array[Vector2i] = []
+	match socket:
+		&"open_small":
+			result.append(Vector2i(UNIT_SIZE / 2, 34))
+		&"open_small_double":
+			result.append(Vector2i(UNIT_SIZE / 4, 28))
+			result.append(Vector2i(UNIT_SIZE * 3 / 4, 28))
+		&"open_medium":
+			result.append(Vector2i(UNIT_SIZE / 2, 62))
+		&"open_large":
+			result.append(Vector2i(UNIT_SIZE / 2, 92))
+		&"room":
+			result.append(Vector2i(UNIT_SIZE / 2, 86))
+		&"shaft":
+			result.append(Vector2i(UNIT_SIZE / 2, 42))
+		&"any":
+			result.append(Vector2i(UNIT_SIZE / 2, 58))
+	return result
 
 func _socket_is_open(socket: StringName) -> bool:
 	return socket != &"solid" and socket != &""
-
-func _socket_open_width(socket: StringName) -> int:
-	match socket:
-		&"open_small": return 34
-		&"open_medium": return 62
-		&"open_large": return 92
-		&"room": return 86
-		&"shaft": return 42
-		&"any": return 58
-		_: return 0
 
 func _carve_cave_cavity(img: Image, rng: RandomNumberGenerator) -> void:
 	var cx: float = img.get_width() * 0.5 + rng.randf_range(-10.0, 10.0)

@@ -125,3 +125,41 @@ left/right slot count == size_units.y
 ```
 
 This catches the most common PieceDef/image metadata mismatches before testing streaming.
+
+## 2026-07-16 socket upgrade: open_small_double
+
+This build adds a new socket:
+
+```text
+open_small_double
+```
+
+Meaning:
+
+```text
+one 128 px edge slot contains two small openings
+opening centers are approximately at 1/4 and 3/4 of the slot
+```
+
+For a vertical edge slot this means local y positions:
+
+```text
+32 px and 96 px
+```
+
+For a horizontal edge slot this means local x positions:
+
+```text
+32 px and 96 px
+```
+
+The generator and glue generator now use socket opening patterns instead of assuming one socket equals one opening. Examples:
+
+```text
+open_small        -> one small opening at 0.50
+open_small_double -> two small openings at 0.25 and 0.75
+open_medium       -> one medium opening at 0.50
+open_large        -> one large opening at 0.50
+```
+
+`Validate Piece Library` now also checks generated pieces for edge opening counts, including `open_small_double` expecting two separate edge openings.

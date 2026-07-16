@@ -128,8 +128,9 @@ func _edge_socket(chunk_coord: Vector2i, unit_pos: Vector2i, side: StringName, c
 		&"left": key_x += -17
 		&"top": key_x += -31
 	var v: float = float(abs(key_x % 10000)) / 10000.0
-	if v < chance * 0.30: return &"open_large"
-	if v < chance * 0.75: return &"open_medium"
+	if v < chance * 0.20: return &"open_large"
+	if v < chance * 0.52: return &"open_medium"
+	if v < chance * 0.76: return &"open_small_double"
 	if v < chance: return &"open_small"
 	return &"solid"
 

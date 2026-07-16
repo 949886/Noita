@@ -14,6 +14,6 @@ allowed_biomes = Array[StringName]([&"snow"])
 tags = Array[StringName]([&"generated", &"cave_room"])
 weight = 1.00
 top_slots = Array[StringName]([&"solid"])
-right_slots = Array[StringName]([&"open_medium", &"open_small"])
+right_slots = Array[StringName]([&"open_medium", &"open_small_double"])
 bottom_slots = Array[StringName]([&"solid"])
 left_slots = Array[StringName]([&"open_small", &"solid"])

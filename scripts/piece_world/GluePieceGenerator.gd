@@ -46,18 +46,30 @@ static func _carve_rect(img: Image, rect: Rect2i) -> void:
 
 static func _carve_to_center(img: Image, top: StringName, right: StringName, bottom: StringName, left: StringName) -> void:
 	var center: Rect2i = Rect2i(44, 44, 40, 40)
-	var air: Color = Color.TRANSPARENT
 	if PieceSocket.is_open(top) or PieceSocket.is_open(right) or PieceSocket.is_open(bottom) or PieceSocket.is_open(left):
 		_carve_rect(img, center)
-	if PieceSocket.is_open(top):
-		var w: int = PieceSocket.open_width(top, UNIT_SIZE)
-		_carve_rect(img, Rect2i(Vector2i((UNIT_SIZE - w) / 2, 0), Vector2i(w, 64)))
-	if PieceSocket.is_open(right):
-		var w2: int = PieceSocket.open_width(right, UNIT_SIZE)
-		_carve_rect(img, Rect2i(Vector2i(64, (UNIT_SIZE - w2) / 2), Vector2i(64, w2)))
-	if PieceSocket.is_open(bottom):
-		var w3: int = PieceSocket.open_width(bottom, UNIT_SIZE)
-		_carve_rect(img, Rect2i(Vector2i((UNIT_SIZE - w3) / 2, 64), Vector2i(w3, 64)))
-	if PieceSocket.is_open(left):
-		var w4: int = PieceSocket.open_width(left, UNIT_SIZE)
-		_carve_rect(img, Rect2i(Vector2i(0, (UNIT_SIZE - w4) / 2), Vector2i(64, w4)))
+	_carve_socket_patterns(img, &"top", top)
+	_carve_socket_patterns(img, &"right", right)
+	_carve_socket_patterns(img, &"bottom", bottom)
+	_carve_socket_patterns(img, &"left", left)
+
+static func _carve_socket_patterns(img: Image, edge: StringName, socket: StringName) -> void:
+	if not PieceSocket.is_open(socket):
+		return
+	var patterns: Array[Vector2i] = PieceSocket.open_patterns(socket, UNIT_SIZE)
+	for pattern: Vector2i in patterns:
+		var offset_px: int = pattern.x
+		var w: int = pattern.y
+		match edge:
+			&"top":
+				_carve_rect(img, Rect2i(Vector2i(offset_px - w / 2, 0), Vector2i(w, 64)))
+				_carve_rect(img, Rect2i(Vector2i(offset_px - maxi(5, w / 4), 44), Vector2i(maxi(10, w / 2), 28)))
+			&"right":
+				_carve_rect(img, Rect2i(Vector2i(64, offset_px - w / 2), Vector2i(64, w)))
+				_carve_rect(img, Rect2i(Vector2i(44, offset_px - maxi(5, w / 4)), Vector2i(28, maxi(10, w / 2))))
+			&"bottom":
+				_carve_rect(img, Rect2i(Vector2i(offset_px - w / 2, 64), Vector2i(w, 64)))
+				_carve_rect(img, Rect2i(Vector2i(offset_px - maxi(5, w / 4), 56), Vector2i(maxi(10, w / 2), 28)))
+			&"left":
+				_carve_rect(img, Rect2i(Vector2i(0, offset_px - w / 2), Vector2i(64, w)))
+				_carve_rect(img, Rect2i(Vector2i(56, offset_px - maxi(5, w / 4)), Vector2i(28, maxi(10, w / 2))))
