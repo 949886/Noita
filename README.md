@@ -163,3 +163,7 @@ open_large        -> one large opening at 0.50
 ```
 
 `Validate Piece Library` now also checks generated pieces for edge opening counts, including `open_small_double` expecting two separate edge openings.
+
+## Patch: blit image format fix
+
+`PieceChunkGenerator._paste_piece_texture()` now duplicates, decompresses when needed, and converts source piece images to the target chunk image format before `Image.blit_rect()`. This prevents Godot's `format != p_src->format` blit error when imported PNGs use a different internal image format.

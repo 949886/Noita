@@ -78,12 +78,23 @@ func _add_piece(data: PieceChunkData, occupied: Array, piece: PieceDef, unit_pos
 	_paste_piece_texture(data.material_image, piece.material_texture if piece.material_texture != null else piece.texture, placement.pixel_rect(PieceWorldConstants.UNIT_SIZE))
 
 func _paste_piece_texture(target: Image, tex: Texture2D, dst_rect: Rect2i) -> void:
-	if tex == null: return
+	if tex == null:
+		return
 	var img: Image = tex.get_image()
-	if img == null: return
+	if img == null or img.is_empty():
+		return
+	img = img.duplicate()
+	if img.is_compressed():
+		var err: Error = img.decompress()
+		if err != OK:
+			push_warning("Could not decompress piece texture image before blit.")
+			return
+	if img.get_format() != target.get_format():
+		img.convert(target.get_format())
 	if img.get_size() != dst_rect.size:
-		img = img.duplicate()
 		img.resize(dst_rect.size.x, dst_rect.size.y, Image.INTERPOLATE_NEAREST)
+	if img.get_format() != target.get_format():
+		img.convert(target.get_format())
 	target.blit_rect(img, Rect2i(Vector2i.ZERO, img.get_size()), dst_rect.position)
 
 func _fill_glue(data: PieceChunkData, occupied: Array, rng: RandomNumberGenerator) -> void:
