@@ -167,3 +167,46 @@ open_large        -> one large opening at 0.50
 ## Patch: blit image format fix
 
 `PieceChunkGenerator._paste_piece_texture()` now duplicates, decompresses when needed, and converts source piece images to the target chunk image format before `Image.blit_rect()`. This prevents Godot's `format != p_src->format` blit error when imported PNGs use a different internal image format.
+
+
+## Piece fill pipeline update
+
+Chunk generation now uses a three-phase fill pipeline:
+
+1. Anchor pieces are placed first for the chunk type.
+2. Regular non-glue pieces are repeatedly placed using a global best-first search until no legal regular piece can fit.
+3. Programmatic glue pieces are generated only for the remaining empty 128x128 units.
+
+The size bonus treats all multi-unit pieces equally: `2x1`, `1x2`, and `2x2` receive the same bonus. Glue is now a final fallback instead of the main filler.
+
+## Piece generation sequence demo
+
+Open:
+
+```text
+res://scenes/PieceGenerationSequenceDemo.tscn
+```
+
+This scene visualizes one chunk being assembled over time. It uses the same `PieceChunkGenerator` placement order, but starts from an empty 512x512 image and pastes placements one by one:
+
+```text
+Anchor pieces -> Regular pieces -> Glue fallback pieces
+```
+
+Controls:
+
+```text
+Space = pause / play
+Right Arrow = step one placement
+R or F3 = restart same seed
+F4 = seed +1 and restart
+```
+
+Debug colors:
+
+```text
+red = anchor piece
+green = regular piece
+orange = glue piece
+white = next placement
+```

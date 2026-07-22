@@ -11,6 +11,7 @@ var texture: ImageTexture
 var placements: Array[PiecePlacement] = []
 var used_glue_count: int = 0
 var piece_count: int = 0
+var regular_piece_count: int = 0
 
 func tag_string() -> String:
 	var parts: Array[String] = []

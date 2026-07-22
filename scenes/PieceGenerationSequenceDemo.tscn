@@ -1,0 +1,23 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/piece_world/PieceGenerationSequenceDemo.gd" id="1"]
+
+[node name="PieceGenerationSequenceDemo" type="Node2D"]
+script = ExtResource("1")
+step_delay = 0.22
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+centered = false
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(256, 256)
+zoom = Vector2(1.15, 1.15)
+enabled = true
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="InfoLabel" type="Label" parent="CanvasLayer"]
+offset_left = 12.0
+offset_top = 12.0
+offset_right = 792.0
+offset_bottom = 192.0

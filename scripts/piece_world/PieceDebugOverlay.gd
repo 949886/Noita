@@ -25,6 +25,6 @@ func _process(_delta: float) -> void:
 	var data: PieceChunkData = manager.chunk_data_by_coord.get(current, null)
 	if data != null:
 		lines.append("biome/type %s/%s" % [str(data.biome_id), str(data.chunk_type)])
-		lines.append("pieces %d glue %d" % [data.piece_count, data.used_glue_count])
+		lines.append("pieces %d regular %d glue %d" % [data.piece_count, data.regular_piece_count, data.used_glue_count])
 		lines.append(data.tag_string())
 	label.text = "\n".join(lines)
