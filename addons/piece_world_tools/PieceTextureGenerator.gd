@@ -56,16 +56,16 @@ func _generate_cave_piece(biome: StringName, size_units: Vector2i, index: int, r
 	var img: Image = Image.create_empty(size_units.x * UNIT_SIZE, size_units.y * UNIT_SIZE, false, Image.FORMAT_RGBA8)
 	img.fill(_rock_color(biome))
 	_add_noise(img, rng, _dark_color(biome), 1200 * size_units.x * size_units.y)
-	var top: Array[StringName] = _random_slots(size_units.x, rng, 0.35)
-	var bottom: Array[StringName] = _random_slots(size_units.x, rng, 0.40)
-	var left: Array[StringName] = _random_slots(size_units.y, rng, 0.45)
-	var right: Array[StringName] = _random_slots(size_units.y, rng, 0.45)
+	var top: Array[PieceSocket.Socket] = _random_slots(size_units.x, rng, 0.35)
+	var bottom: Array[PieceSocket.Socket] = _random_slots(size_units.x, rng, 0.40)
+	var left: Array[PieceSocket.Socket] = _random_slots(size_units.y, rng, 0.45)
+	var right: Array[PieceSocket.Socket] = _random_slots(size_units.y, rng, 0.45)
 	# Stable regression sample from feedback: two right-side slots must carve two separate right openings.
 	if biome == &"snow" and size_units == Vector2i(1, 2) and index == 5:
-		top = [&"solid"]
-		bottom = [&"solid"]
-		left = [&"open_small", &"solid"]
-		right = [&"open_medium", &"double_open_small"]
+		top = [PieceSocket.SOLID]
+		bottom = [PieceSocket.SOLID]
+		left = [PieceSocket.OPEN_SMALL, PieceSocket.SOLID]
+		right = [PieceSocket.OPEN_MEDIUM, PieceSocket.DOUBLE_OPEN_SMALL]
 	_carve_cave_cavity(img, rng)
 	_carve_all_open_slots(img, top, right, bottom, left, rng)
 	_add_noise(img, rng, _dark_color(biome), 500 * size_units.x * size_units.y)
@@ -79,17 +79,17 @@ func _generate_lab_piece(biome: StringName, index: int, rng: RandomNumberGenerat
 	_fill_rect(img, Rect2i(32, 86, 192, 18), Color8(72, 76, 96, 255))
 	_fill_rect(img, Rect2i(46, 36, 28, 5), Color8(116, 245, 255, 255))
 	_fill_rect(img, Rect2i(182, 36, 28, 5), Color8(116, 245, 255, 255))
-	_save_piece(id, img, "STRUCTURE", Vector2i(2, 1), [biome], [&"generated", &"lab", &"room", &"horizontal"], [&"solid", &"solid"], [&"open_medium"], [&"open_small", &"open_small"], [&"open_medium"], 0.8)
+	_save_piece(id, img, "STRUCTURE", Vector2i(2, 1), [biome], [&"generated", &"lab", &"room", &"horizontal"], [PieceSocket.SOLID, PieceSocket.SOLID], [PieceSocket.OPEN_MEDIUM], [PieceSocket.OPEN_SMALL, PieceSocket.OPEN_SMALL], [PieceSocket.OPEN_MEDIUM], 0.8)
 
 func _generate_symbol_piece(biome: StringName, index: int, rng: RandomNumberGenerator) -> void:
 	var id: StringName = StringName("gen_%s_symbol_2x1_%02d" % [str(biome), index])
 	var img: Image = Image.create_empty(256, 128, false, Image.FORMAT_RGBA8)
 	img.fill(_rock_color(biome))
 	_add_noise(img, rng, _dark_color(biome), 1600)
-	var top: Array[StringName] = [&"solid", &"open_small"]
-	var right: Array[StringName] = [&"open_large"]
-	var bottom: Array[StringName] = [&"double_open_small", &"solid"]
-	var left: Array[StringName] = [&"open_large"]
+	var top: Array[PieceSocket.Socket] = [PieceSocket.SOLID, PieceSocket.OPEN_SMALL]
+	var right: Array[PieceSocket.Socket] = [PieceSocket.OPEN_LARGE]
+	var bottom: Array[PieceSocket.Socket] = [PieceSocket.DOUBLE_OPEN_SMALL, PieceSocket.SOLID]
+	var left: Array[PieceSocket.Socket] = [PieceSocket.OPEN_LARGE]
 	_carve_cave_cavity(img, rng)
 	_carve_all_open_slots(img, top, right, bottom, left, rng)
 	_draw_symbol(img, Vector2i(128, 64), Color8(255, 120, 80, 255))
@@ -103,22 +103,22 @@ func _generate_tank_piece(biome: StringName, index: int, rng: RandomNumberGenera
 	_draw_rect_outline(img, Rect2i(36, 28, 56, 160), Color8(75, 65, 88, 255), 5)
 	_fill_rect(img, Rect2i(30, 28, 6, 170), Color8(92, 57, 25, 255))
 	_fill_rect(img, Rect2i(92, 28, 6, 170), Color8(92, 57, 25, 255))
-	_save_piece(id, img, "STRUCTURE", Vector2i(1, 2), [biome], [&"generated", &"tank", &"vertical"], [&"open_small"], [&"solid", &"solid"], [&"open_small"], [&"solid", &"solid"], 0.6)
+	_save_piece(id, img, "STRUCTURE", Vector2i(1, 2), [biome], [&"generated", &"tank", &"vertical"], [PieceSocket.OPEN_SMALL], [PieceSocket.SOLID, PieceSocket.SOLID], [PieceSocket.OPEN_SMALL], [PieceSocket.SOLID, PieceSocket.SOLID], 0.6)
 
-func _random_slots(count: int, rng: RandomNumberGenerator, open_chance: float) -> Array[StringName]:
-	var result: Array[StringName] = []
+func _random_slots(count: int, rng: RandomNumberGenerator, open_chance: float) -> Array[PieceSocket.Socket]:
+	var result: Array[PieceSocket.Socket] = []
 	for i: int in range(count):
 		if rng.randf() > open_chance:
-			result.append(&"solid")
+			result.append(PieceSocket.SOLID)
 		else:
 			var roll: float = rng.randf()
-			if roll < 0.22: result.append(&"open_small")
-			elif roll < 0.42: result.append(&"double_open_small")
-			elif roll < 0.78: result.append(&"open_medium")
-			else: result.append(&"open_large")
+			if roll < 0.22: result.append(PieceSocket.OPEN_SMALL)
+			elif roll < 0.42: result.append(PieceSocket.DOUBLE_OPEN_SMALL)
+			elif roll < 0.78: result.append(PieceSocket.OPEN_MEDIUM)
+			else: result.append(PieceSocket.OPEN_LARGE)
 	return result
 
-func _carve_all_open_slots(img: Image, top: Array[StringName], right: Array[StringName], bottom: Array[StringName], left: Array[StringName], rng: RandomNumberGenerator) -> void:
+func _carve_all_open_slots(img: Image, top: Array[PieceSocket.Socket], right: Array[PieceSocket.Socket], bottom: Array[PieceSocket.Socket], left: Array[PieceSocket.Socket], rng: RandomNumberGenerator) -> void:
 	for i: int in range(top.size()):
 		_carve_slot_opening(img, &"top", i, top[i], rng)
 	for i: int in range(right.size()):
@@ -128,10 +128,10 @@ func _carve_all_open_slots(img: Image, top: Array[StringName], right: Array[Stri
 	for i: int in range(left.size()):
 		_carve_slot_opening(img, &"left", i, left[i], rng)
 
-func _carve_slot_opening(img: Image, edge: StringName, slot_index: int, socket: StringName, rng: RandomNumberGenerator) -> void:
-	if not _socket_is_open(socket):
+func _carve_slot_opening(img: Image, edge: StringName, slot_index: int, socket: PieceSocket.Socket, rng: RandomNumberGenerator) -> void:
+	if not PieceSocket.is_open(socket):
 		return
-	var patterns: Array[Vector2i] = _socket_open_patterns(socket)
+	var patterns: Array[Vector2i] = PieceSocket.open_patterns(socket, UNIT_SIZE)
 	for pattern: Vector2i in patterns:
 		var center: Vector2i = _opening_center_on_edge(edge, slot_index, pattern.x, img.get_size())
 		var width: int = pattern.y
@@ -157,29 +157,6 @@ func _opening_center_on_edge(edge: StringName, slot_index: int, offset_px: int, 
 		&"top": return Vector2i(slot_index * UNIT_SIZE + offset_px, 0)
 		&"bottom": return Vector2i(slot_index * UNIT_SIZE + offset_px, size_px.y - 1)
 	return Vector2i.ZERO
-
-func _socket_open_patterns(socket: StringName) -> Array[Vector2i]:
-	var result: Array[Vector2i] = []
-	match socket:
-		&"open_small":
-			result.append(Vector2i(UNIT_SIZE / 2, 34))
-		&"double_open_small":
-			result.append(Vector2i(UNIT_SIZE / 4, 28))
-			result.append(Vector2i(UNIT_SIZE * 3 / 4, 28))
-		&"open_medium":
-			result.append(Vector2i(UNIT_SIZE / 2, 62))
-		&"open_large":
-			result.append(Vector2i(UNIT_SIZE / 2, 92))
-		&"room":
-			result.append(Vector2i(UNIT_SIZE / 2, 86))
-		&"shaft":
-			result.append(Vector2i(UNIT_SIZE / 2, 42))
-		&"any":
-			result.append(Vector2i(UNIT_SIZE / 2, 58))
-	return result
-
-func _socket_is_open(socket: StringName) -> bool:
-	return socket != &"solid" and socket != &""
 
 func _carve_cave_cavity(img: Image, rng: RandomNumberGenerator) -> void:
 	var cx: float = img.get_width() * 0.5 + rng.randf_range(-10.0, 10.0)
@@ -220,7 +197,7 @@ func _save_piece(id: StringName, img: Image, kind_name: String, size_units: Vect
 	text += "allowed_biomes = Array[StringName]([%s])\n" % _string_name_list(biomes)
 	text += "tags = Array[StringName]([%s])\n" % _string_name_list(tags)
 	text += "weight = %.2f\n" % weight
-	text += "top_slots = Array[StringName]([%s])\nright_slots = Array[StringName]([%s])\nbottom_slots = Array[StringName]([%s])\nleft_slots = Array[StringName]([%s])\n" % [_string_name_list(top), _string_name_list(right), _string_name_list(bottom), _string_name_list(left)]
+	text += "top_slots = Array[int]([%s])\nright_slots = Array[int]([%s])\nbottom_slots = Array[int]([%s])\nleft_slots = Array[int]([%s])\n" % [_int_list(top), _int_list(right), _int_list(bottom), _int_list(left)]
 	var f: FileAccess = FileAccess.open(DEF_DIR + "/" + str(id) + ".tres", FileAccess.WRITE)
 	f.store_string(text)
 	f.close()
@@ -229,6 +206,12 @@ func _string_name_list(values: Array) -> String:
 	var parts: Array[String] = []
 	for v in values:
 		parts.append("&\"%s\"" % str(v))
+	return ", ".join(parts)
+
+func _int_list(values: Array) -> String:
+	var parts: Array[String] = []
+	for v in values:
+		parts.append(str(int(PieceSocket.from_value(v))))
 	return ", ".join(parts)
 
 func _rock_color(biome: StringName) -> Color:

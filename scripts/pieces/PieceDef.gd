@@ -19,10 +19,10 @@ enum PieceKind {
 @export var allowed_biomes: Array[StringName] = []
 @export var tags: Array[StringName] = []
 @export var weight: float = 1.0
-@export var top_slots: Array[StringName] = []
-@export var right_slots: Array[StringName] = []
-@export var bottom_slots: Array[StringName] = []
-@export var left_slots: Array[StringName] = []
+@export var top_slots: Array[PieceSocket.Socket] = []
+@export var right_slots: Array[PieceSocket.Socket] = []
+@export var bottom_slots: Array[PieceSocket.Socket] = []
+@export var left_slots: Array[PieceSocket.Socket] = []
 
 func allows_biome(biome_id: StringName) -> bool:
 	return allowed_biomes.is_empty() or allowed_biomes.has(biome_id)
@@ -39,18 +39,18 @@ func slot_count_for_side(side: StringName) -> int:
 		_:
 			return 0
 
-func normalized_slots(side: StringName) -> Array[StringName]:
-	var source: Array[StringName] = []
+func normalized_slots(side: StringName) -> Array[PieceSocket.Socket]:
+	var source: Array[PieceSocket.Socket] = []
 	match side:
 		&"top": source = top_slots
 		&"right": source = right_slots
 		&"bottom": source = bottom_slots
 		&"left": source = left_slots
 	var required: int = slot_count_for_side(side)
-	var result: Array[StringName] = []
+	var result: Array[PieceSocket.Socket] = []
 	for i: int in range(required):
 		if i < source.size():
-			result.append(source[i])
+			result.append(PieceSocket.from_value(source[i]))
 		else:
-			result.append(&"solid")
+			result.append(PieceSocket.SOLID)
 	return result

@@ -83,16 +83,15 @@ func _validate_piece(path: String) -> int:
 
 func _validate_socket_names(piece: PieceDef) -> int:
 	var issues: int = 0
-	var allowed: Array[StringName] = [&"solid", &"open_small", &"double_open_small", &"open_medium", &"open_large", &"room", &"shaft", &"any"]
 	var all_slots: Array = []
 	all_slots.append_array(piece.top_slots)
 	all_slots.append_array(piece.right_slots)
 	all_slots.append_array(piece.bottom_slots)
 	all_slots.append_array(piece.left_slots)
 	for socket_value in all_slots:
-		var socket: StringName = socket_value
-		if not allowed.has(socket):
-			push_warning("Unknown socket '%s' in piece %s" % [str(socket), str(piece.id)])
+		var socket: int = PieceSocket.from_value(socket_value)
+		if socket < PieceSocket.Socket.SOLID or socket > PieceSocket.Socket.ANY:
+			push_warning("Unknown socket '%s' in piece %s" % [str(socket_value), str(piece.id)])
 			issues += 1
 	return issues
 
@@ -112,14 +111,14 @@ func _validate_texture_openings(piece: PieceDef) -> int:
 	issues += _validate_edge_slots(piece.id, img, &"left", piece.left_slots)
 	return issues
 
-func _validate_edge_slots(piece_id: StringName, img: Image, edge: StringName, slots: Array[StringName]) -> int:
+func _validate_edge_slots(piece_id: StringName, img: Image, edge: StringName, slots: Array[PieceSocket.Socket]) -> int:
 	var issues: int = 0
 	for i: int in range(slots.size()):
-		var socket: StringName = slots[i]
+		var socket: PieceSocket.Socket = PieceSocket.from_value(slots[i])
 		var expected: int = PieceSocket.opening_count(socket)
 		var actual: int = _count_open_segments(img, edge, i)
 		if expected != actual:
-			push_warning("opening count mismatch in %s %s slot %d: socket=%s expected=%d actual=%d" % [str(piece_id), str(edge), i, str(socket), expected, actual])
+			push_warning("opening count mismatch in %s %s slot %d: socket=%s expected=%d actual=%d" % [str(piece_id), str(edge), i, str(PieceSocket.to_name(socket)), expected, actual])
 			issues += 1
 	return issues
 

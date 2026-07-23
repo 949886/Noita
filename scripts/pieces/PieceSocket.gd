@@ -1,29 +1,71 @@
 class_name PieceSocket
 extends RefCounted
 
-const SOLID: StringName = &"solid"
-const OPEN_SMALL: StringName = &"open_small"
-const DOUBLE_OPEN_SMALL: StringName = &"double_open_small"
-const OPEN_MEDIUM: StringName = &"open_medium"
-const OPEN_LARGE: StringName = &"open_large"
-const ROOM: StringName = &"room"
-const SHAFT: StringName = &"shaft"
-const ANY: StringName = &"any"
+enum Socket {
+	SOLID,
+	OPEN_SMALL,
+	DOUBLE_OPEN_SMALL,
+	OPEN_MEDIUM,
+	OPEN_LARGE,
+	ROOM,
+	SHAFT,
+	ANY,
+}
 
-static func is_open(socket: StringName) -> bool:
-	return socket != SOLID and socket != &""
+const SOLID: Socket = Socket.SOLID
+const OPEN_SMALL: Socket = Socket.OPEN_SMALL
+const DOUBLE_OPEN_SMALL: Socket = Socket.DOUBLE_OPEN_SMALL
+const OPEN_MEDIUM: Socket = Socket.OPEN_MEDIUM
+const OPEN_LARGE: Socket = Socket.OPEN_LARGE
+const ROOM: Socket = Socket.ROOM
+const SHAFT: Socket = Socket.SHAFT
+const ANY: Socket = Socket.ANY
 
-static func is_open_family(socket: StringName) -> bool:
+const _NAME_BY_SOCKET: Dictionary = {
+	Socket.SOLID: &"solid",
+	Socket.OPEN_SMALL: &"open_small",
+	Socket.DOUBLE_OPEN_SMALL: &"double_open_small",
+	Socket.OPEN_MEDIUM: &"open_medium",
+	Socket.OPEN_LARGE: &"open_large",
+	Socket.ROOM: &"room",
+	Socket.SHAFT: &"shaft",
+	Socket.ANY: &"any",
+}
+
+const _SOCKET_BY_NAME: Dictionary = {
+	&"solid": Socket.SOLID,
+	&"open_small": Socket.OPEN_SMALL,
+	&"double_open_small": Socket.DOUBLE_OPEN_SMALL,
+	&"open_medium": Socket.OPEN_MEDIUM,
+	&"open_large": Socket.OPEN_LARGE,
+	&"room": Socket.ROOM,
+	&"shaft": Socket.SHAFT,
+	&"any": Socket.ANY,
+}
+
+static func to_name(socket: Socket) -> StringName:
+	return _NAME_BY_SOCKET.get(socket, &"solid")
+
+static func from_name(socket_name: StringName) -> Socket:
+	return _SOCKET_BY_NAME.get(socket_name, Socket.SOLID)
+
+static func from_value(value: Variant) -> Socket:
+	if typeof(value) == TYPE_STRING_NAME or typeof(value) == TYPE_STRING:
+		return from_name(StringName(str(value)))
+	return int(value)
+
+static func is_open(socket: Socket) -> bool:
+	return socket != SOLID
+
+static func is_open_family(socket: Socket) -> bool:
 	return socket == OPEN_SMALL or socket == DOUBLE_OPEN_SMALL or socket == OPEN_MEDIUM or socket == OPEN_LARGE
 
 # Strict direct seam scoring.
 # double_open_small is intentionally its own direct-match family: it does not directly
 # match open_small, open_medium, or open_large. Use an adapter/glue piece for those transitions.
-static func compatibility_score(a: StringName, b: StringName) -> int:
+static func compatibility_score(a: Socket, b: Socket) -> int:
 	if a == b:
 		return 100
-	if a == &"" or b == &"":
-		return 0
 	if a == ANY or b == ANY:
 		return 80
 	if a == SOLID or b == SOLID:
@@ -42,46 +84,46 @@ static func compatibility_score(a: StringName, b: StringName) -> int:
 		return 70
 	return 0
 
-static func compatible(a: StringName, b: StringName) -> bool:
+static func compatible(a: Socket, b: Socket) -> bool:
 	return compatibility_score(a, b) >= 60
 
-static func weakly_compatible(a: StringName, b: StringName) -> bool:
+static func weakly_compatible(a: Socket, b: Socket) -> bool:
 	return compatibility_score(a, b) > 0
 
-static func open_width(socket: StringName, unit_size: int) -> int:
+static func open_width(socket: Socket, unit_size: int) -> int:
 	match socket:
-		&"open_small": return int(unit_size * 0.28)
-		&"double_open_small": return int(unit_size * 0.22)
-		&"open_medium": return int(unit_size * 0.46)
-		&"open_large": return int(unit_size * 0.72)
-		&"room": return int(unit_size * 0.68)
-		&"shaft": return int(unit_size * 0.34)
-		&"any": return int(unit_size * 0.50)
+		OPEN_SMALL: return int(unit_size * 0.28)
+		DOUBLE_OPEN_SMALL: return int(unit_size * 0.22)
+		OPEN_MEDIUM: return int(unit_size * 0.46)
+		OPEN_LARGE: return int(unit_size * 0.72)
+		ROOM: return int(unit_size * 0.68)
+		SHAFT: return int(unit_size * 0.34)
+		ANY: return int(unit_size * 0.50)
 		_: return 0
 
-static func opening_count(socket: StringName) -> int:
+static func opening_count(socket: Socket) -> int:
 	match socket:
-		&"double_open_small": return 2
-		&"open_small", &"open_medium", &"open_large", &"room", &"shaft", &"any": return 1
+		DOUBLE_OPEN_SMALL: return 2
+		OPEN_SMALL, OPEN_MEDIUM, OPEN_LARGE, ROOM, SHAFT, ANY: return 1
 		_: return 0
 
 # Returns per-slot opening patterns as Vector2i(offset_px_in_slot, opening_width_px).
-static func open_patterns(socket: StringName, unit_size: int) -> Array[Vector2i]:
+static func open_patterns(socket: Socket, unit_size: int) -> Array[Vector2i]:
 	var result: Array[Vector2i] = []
 	match socket:
-		&"open_small":
+		OPEN_SMALL:
 			result.append(Vector2i(unit_size / 2, int(unit_size * 0.27)))
-		&"double_open_small":
+		DOUBLE_OPEN_SMALL:
 			result.append(Vector2i(unit_size / 4, int(unit_size * 0.22)))
 			result.append(Vector2i(unit_size * 3 / 4, int(unit_size * 0.22)))
-		&"open_medium":
+		OPEN_MEDIUM:
 			result.append(Vector2i(unit_size / 2, int(unit_size * 0.48)))
-		&"open_large":
+		OPEN_LARGE:
 			result.append(Vector2i(unit_size / 2, int(unit_size * 0.72)))
-		&"room":
+		ROOM:
 			result.append(Vector2i(unit_size / 2, int(unit_size * 0.68)))
-		&"shaft":
+		SHAFT:
 			result.append(Vector2i(unit_size / 2, int(unit_size * 0.34)))
-		&"any":
+		ANY:
 			result.append(Vector2i(unit_size / 2, int(unit_size * 0.50)))
 	return result

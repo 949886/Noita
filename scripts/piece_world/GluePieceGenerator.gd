@@ -3,7 +3,7 @@ extends RefCounted
 
 const UNIT_SIZE: int = PieceWorldConstants.UNIT_SIZE
 
-static func generate(biome_id: StringName, top: StringName, right: StringName, bottom: StringName, left: StringName, seed_value: int) -> Image:
+static func generate(biome_id: StringName, top: PieceSocket.Socket, right: PieceSocket.Socket, bottom: PieceSocket.Socket, left: PieceSocket.Socket, seed_value: int) -> Image:
 	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 	rng.seed = seed_value
 	var img: Image = Image.create_empty(UNIT_SIZE, UNIT_SIZE, false, Image.FORMAT_RGBA8)
@@ -44,7 +44,7 @@ static func _carve_rect(img: Image, rect: Rect2i) -> void:
 		for x: int in range(maxi(rect.position.x, 0), mini(rect.end.x, UNIT_SIZE)):
 			img.set_pixel(x, y, air)
 
-static func _carve_to_center(img: Image, top: StringName, right: StringName, bottom: StringName, left: StringName) -> void:
+static func _carve_to_center(img: Image, top: PieceSocket.Socket, right: PieceSocket.Socket, bottom: PieceSocket.Socket, left: PieceSocket.Socket) -> void:
 	var center: Rect2i = Rect2i(44, 44, 40, 40)
 	if PieceSocket.is_open(top) or PieceSocket.is_open(right) or PieceSocket.is_open(bottom) or PieceSocket.is_open(left):
 		_carve_rect(img, center)
@@ -53,7 +53,7 @@ static func _carve_to_center(img: Image, top: StringName, right: StringName, bot
 	_carve_socket_patterns(img, &"bottom", bottom)
 	_carve_socket_patterns(img, &"left", left)
 
-static func _carve_socket_patterns(img: Image, edge: StringName, socket: StringName) -> void:
+static func _carve_socket_patterns(img: Image, edge: StringName, socket: PieceSocket.Socket) -> void:
 	if not PieceSocket.is_open(socket):
 		return
 	var patterns: Array[Vector2i] = PieceSocket.open_patterns(socket, UNIT_SIZE)
