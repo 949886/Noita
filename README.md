@@ -210,3 +210,40 @@ green = regular piece
 orange = glue piece
 white = next placement
 ```
+
+## Debug overlay and piece boundary colors
+
+Runtime chunk debug lines represent placement boundaries, not collision or material boundaries.
+
+Color legend:
+
+```text
+cyan       chunk boundary
+red        anchor piece (first structural placements)
+green      regular piece (best-first fill stage)
+orange     glue fallback piece (final gap filling stage)
+```
+
+The outlines are intended for understanding generation order and piece coverage. They are not the final rendered world boundary.
+
+Debug hotkeys are edge-triggered:
+
+```text
+F1 toggle debug outlines
+F3 regenerate current seed
+F4 next seed and regenerate
+```
+
+Holding a key no longer repeatedly toggles/regenerates every frame.
+
+## Biome vertical order
+
+Current prototype layer order:
+
+```text
+lower layer: mine
+above layer: snow
+higher layer: deep
+```
+
+The first generated underground layer now starts as mine before transitioning upward into snow.

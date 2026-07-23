@@ -15,6 +15,9 @@ var current_player_chunk: Vector2i = Vector2i.ZERO
 var debug_draw_enabled: bool = true
 var player: Node2D
 var chunk_container: Node2D
+var f1_down: bool = false
+var f3_down: bool = false
+var f4_down: bool = false
 
 func _ready() -> void:
 	player = get_node_or_null(player_path) as Node2D
@@ -29,15 +32,20 @@ func _ready() -> void:
 	_regenerate()
 
 func _process(_delta: float) -> void:
-	if Input.is_key_pressed(KEY_F1):
-		# simple edge-triggerless toggle protection is omitted; press briefly.
-		debug_draw_enabled = false if debug_draw_enabled else true
+	var f1_now: bool = Input.is_key_pressed(KEY_F1)
+	var f3_now: bool = Input.is_key_pressed(KEY_F3)
+	var f4_now: bool = Input.is_key_pressed(KEY_F4)
+	if f1_now and not f1_down:
+		debug_draw_enabled = not debug_draw_enabled
 		_update_debug_visibility()
-	if Input.is_key_pressed(KEY_F3):
+	if f3_now and not f3_down:
 		_regenerate()
-	if Input.is_key_pressed(KEY_F4):
+	if f4_now and not f4_down:
 		world_seed += 1
 		_regenerate()
+	f1_down = f1_now
+	f3_down = f3_now
+	f4_down = f4_now
 	_update_streaming()
 
 func _regenerate() -> void:

@@ -390,9 +390,12 @@ func _open_chance_for(chunk_type: StringName) -> float:
 		_: return 0.38
 
 func _biome_for(coord: Vector2i) -> StringName:
-	if coord.y < -1: return &"snow"
-	if coord.y > 4: return &"deep"
-	return &"mine"
+	# World layers: mine is the starting layer, snow appears above it.
+	if coord.y < 4:
+		return &"mine"
+	if coord.y < 8:
+		return &"snow"
+	return &"deep"
 
 func _chunk_type_for(coord: Vector2i) -> StringName:
 	var path_x: int = int(round(sin(float(coord.y) * 0.55 + float(world_seed % 100) * 0.01) * 2.0))
