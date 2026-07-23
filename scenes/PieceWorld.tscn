@@ -1,23 +1,26 @@
-[gd_scene format=3 uid="uid://cjgluo7h8cllt"]
+[gd_scene load_steps=5 format=3]
 
-[ext_resource type="Script" uid="uid://b8uddxa0bf05e" path="res://scripts/piece_world/PieceWorldManager.gd" id="1"]
-[ext_resource type="Script" uid="uid://cpkapasoyoux4" path="res://scripts/player/PiecePlayer.gd" id="2"]
-[ext_resource type="Script" uid="uid://msp5iys8uwdc" path="res://scripts/piece_world/PieceDebugOverlay.gd" id="3"]
+[ext_resource type="Script" path="res://scripts/piece_world/PieceWorldManager.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/player/PiecePlayer.gd" id="2"]
+[ext_resource type="Script" path="res://scripts/piece_world/PieceDebugOverlay.gd" id="3"]
+[ext_resource type="Resource" path="res://resources/pieces/piece_library.tres" id="4"]
 
-[node name="PieceWorld" type="Node2D" unique_id=857814505]
+[node name="PieceWorld" type="Node2D"]
 script = ExtResource("1")
+piece_library = ExtResource("4")
 player_path = NodePath("Player")
 chunk_container_path = NodePath("ChunkRenderers")
 debug_overlay_path = NodePath("DebugOverlay")
 
-[node name="ChunkRenderers" type="Node2D" parent="." unique_id=1643027658]
+[node name="ChunkRenderers" type="Node2D" parent="."]
 
-[node name="Player" type="CharacterBody2D" parent="." unique_id=1030861741]
+[node name="Player" type="CharacterBody2D" parent="."]
 position = Vector2(128, 128)
 script = ExtResource("2")
 
-[node name="Camera2D" type="Camera2D" parent="Player" unique_id=1956548203]
+[node name="Camera2D" type="Camera2D" parent="Player"]
+enabled = true
 zoom = Vector2(0.7, 0.7)
 
-[node name="DebugOverlay" type="CanvasLayer" parent="." unique_id=255759312]
+[node name="DebugOverlay" type="CanvasLayer" parent="."]
 script = ExtResource("3")

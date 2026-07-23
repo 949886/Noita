@@ -247,3 +247,23 @@ higher layer: deep
 ```
 
 The first generated underground layer now starts as mine before transitioning upward into snow.
+
+## Android export note
+
+The default `PieceLibrary` is a resource asset:
+
+```text
+res://resources/pieces/piece_library.tres
+```
+
+`PieceWorld.tscn` and `PieceGenerationSequenceDemo.tscn` assign this asset through their exported `piece_library` property. The scripts do not hard-code a `preload()` path for the default library.
+
+The library asset holds direct `PieceDef` resource references, so Android exports can follow the dependency chain normally. This avoids relying on `DirAccess` directory enumeration inside an exported APK/AAB.
+
+If new piece definition files are added, update `piece_library.tres` so the new `PieceDef` is referenced. The old directory scanner remains as a fallback for editor experiments, but exported builds should use the assigned resource asset.
+
+After export, the startup log should say:
+
+```text
+PieceLibrary loaded 60 piece defs
+```

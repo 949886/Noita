@@ -1,7 +1,7 @@
-[gd_resource type="Resource" script_class="PieceDef" format=3 uid="uid://b2lw2ydxoth6a"]
+[gd_resource type="Resource" script_class="PieceDef" load_steps=3 format=3]
 
-[ext_resource type="Script" uid="uid://dqp3hjujyu2w5" path="res://scripts/pieces/PieceDef.gd" id="1"]
-[ext_resource type="Texture2D" uid="uid://543xfy8aqygr" path="res://resources/pieces/textures/symbolroom_alt.png" id="2"]
+[ext_resource type="Script" path="res://scripts/pieces/PieceDef.gd" id="1"]
+[ext_resource type="Texture2D" path="res://resources/pieces/textures/symbolroom_alt.png" id="2"]
 
 [resource]
 script = ExtResource("1")
@@ -12,7 +12,8 @@ size_px = Vector2i(256, 128)
 size_units = Vector2i(2, 1)
 allowed_biomes = Array[StringName]([&"mine", &"deep"])
 tags = Array[StringName]([&"uploaded", &"symbol", &"room"])
-top_slots = Array[int]([0, 0])
+weight = 1.0
+top_slots = Array[int]([1, 0])
 right_slots = Array[int]([4])
-bottom_slots = Array[int]([1, 0])
+bottom_slots = Array[int]([0, 1])
 left_slots = Array[int]([4])

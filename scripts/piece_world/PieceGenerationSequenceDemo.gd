@@ -1,6 +1,7 @@
 class_name PieceGenerationSequenceDemo
 extends Node2D
 
+@export var piece_library: PieceLibrary
 @export var world_seed: int = 12345
 @export var chunk_coord: Vector2i = Vector2i.ZERO
 @export var step_delay: float = 0.22
@@ -84,8 +85,11 @@ func _handle_input() -> void:
 	f4_was_down = f4_down
 
 func _restart_demo() -> void:
-	library = PieceLibrary.new()
-	library.load_from_default_dirs()
+	if piece_library == null:
+		push_error("PieceGenerationSequenceDemo has no PieceLibrary assigned.")
+		return
+	library = piece_library.duplicate(false) as PieceLibrary
+	library.prepare()
 	generator = PieceChunkGenerator.new(world_seed, library)
 	planned_data = generator.generate_chunk(chunk_coord)
 	display_image = Image.create_empty(PieceWorldConstants.CHUNK_SIZE, PieceWorldConstants.CHUNK_SIZE, false, Image.FORMAT_RGBA8)

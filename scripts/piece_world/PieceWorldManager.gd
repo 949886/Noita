@@ -1,6 +1,7 @@
 class_name PieceWorldManager
 extends Node2D
 
+@export var piece_library: PieceLibrary
 @export var world_seed: int = 12345
 @export var load_radius: int = 2
 @export var player_path: NodePath
@@ -53,8 +54,11 @@ func _regenerate() -> void:
 		child.queue_free()
 	loaded_chunks.clear()
 	chunk_data_by_coord.clear()
-	library = PieceLibrary.new()
-	library.load_from_default_dirs()
+	if piece_library == null:
+		push_error("PieceWorldManager has no PieceLibrary assigned.")
+		return
+	library = piece_library.duplicate(false) as PieceLibrary
+	library.prepare()
 	generator = PieceChunkGenerator.new(world_seed, library)
 	_update_streaming()
 

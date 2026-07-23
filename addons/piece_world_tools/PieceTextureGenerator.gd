@@ -8,6 +8,7 @@ extends RefCounted
 const UNIT_SIZE: int = 128
 const TEXTURE_DIR: String = "res://resources/generated_pieces/textures"
 const DEF_DIR: String = "res://resources/generated_pieces/defs"
+const LIBRARY_PATH: String = "res://resources/pieces/piece_library.tres"
 
 func generate_default_library() -> void:
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(TEXTURE_DIR))
@@ -29,6 +30,7 @@ func generate_default_library() -> void:
 		for i: int in range(3):
 			_generate_symbol_piece(biome, i, rng)
 			count += 1
+	_rebuild_piece_library_resource()
 	print("PieceTextureGenerator wrote double-open-small placeholder pieces: ", count)
 
 func _clear_generated_dir(path: String) -> void:
@@ -201,6 +203,49 @@ func _save_piece(id: StringName, img: Image, kind_name: String, size_units: Vect
 	var f: FileAccess = FileAccess.open(DEF_DIR + "/" + str(id) + ".tres", FileAccess.WRITE)
 	f.store_string(text)
 	f.close()
+
+func _rebuild_piece_library_resource() -> void:
+	var def_paths: Array[String] = []
+	def_paths.append_array(_resource_files_in("res://resources/pieces/defs"))
+	def_paths.append_array(_resource_files_in(DEF_DIR))
+	def_paths.sort()
+	var text: String = "[gd_resource type=\"Resource\" script_class=\"PieceLibrary\" load_steps=%d format=3]\n\n" % (def_paths.size() + 2)
+	text += "[ext_resource type=\"Script\" path=\"res://scripts/pieces/PieceLibrary.gd\" id=\"1\"]\n"
+	var ext_id: int = 2
+	for path: String in def_paths:
+		text += "[ext_resource type=\"Resource\" path=\"%s\" id=\"%d\"]\n" % [path, ext_id]
+		ext_id += 1
+	text += "\n[resource]\nscript = ExtResource(\"1\")\n"
+	var refs: Array[String] = []
+	for i: int in range(2, ext_id):
+		refs.append("ExtResource(\"%d\")" % i)
+	text += "pieces = Array[Resource]([%s])\n" % ", ".join(refs)
+	var f: FileAccess = FileAccess.open(LIBRARY_PATH, FileAccess.WRITE)
+	if f == null:
+		push_error("Could not write piece library resource: " + LIBRARY_PATH)
+		return
+	f.store_string(text)
+	f.close()
+
+func _resource_files_in(path: String) -> Array[String]:
+	var result: Array[String] = []
+	var dir: DirAccess = DirAccess.open(path)
+	if dir == null:
+		return result
+	dir.list_dir_begin()
+	while true:
+		var name: String = dir.get_next()
+		if name == "":
+			break
+		if name.begins_with("."):
+			continue
+		var child: String = path + "/" + name
+		if dir.current_is_dir():
+			result.append_array(_resource_files_in(child))
+		elif name.ends_with(".tres") or name.ends_with(".res"):
+			result.append(child)
+	dir.list_dir_end()
+	return result
 
 func _string_name_list(values: Array) -> String:
 	var parts: Array[String] = []
