@@ -1,18 +1,13 @@
 class_name SpecialChunkManager
 extends RefCounted
 
-# Loads and unloads PackedScene-based special chunks.
-# It tracks placements, not individual chunk coordinates, so a 2x1 structure is instantiated once.
+# Loads/unloads special chunks as image-based pieces instead of TileMap scenes.
 var planner: SpecialChunkPlanner
-var tile_set: TileSet
 var parent_node: Node2D
 var loaded_chunks: Dictionary = {}
-var tiles_per_chunk: int = TileConstants.TILES_PER_CHUNK
-var tile_size: int = TileConstants.TILE_SIZE
 
-func _init(p_planner: SpecialChunkPlanner, p_tile_set: TileSet, p_parent_node: Node2D) -> void:
+func _init(p_planner: SpecialChunkPlanner, p_parent_node: Node2D) -> void:
 	planner = p_planner
-	tile_set = p_tile_set
 	parent_node = p_parent_node
 
 func update_loaded_chunks(needed_chunks: Dictionary) -> void:
@@ -34,19 +29,10 @@ func update_loaded_chunks(needed_chunks: Dictionary) -> void:
 			_unload_chunk(existing_id)
 
 func _load_chunk(placement: SpecialChunkPlacement) -> void:
-	var instance: Node2D = null
-	if placement.chunk_def.scene != null:
-		instance = placement.chunk_def.scene.instantiate() as Node2D
-	if instance == null:
-		instance = SpecialChunkNode.new()
+	var instance: SpecialPieceRenderer = SpecialPieceRenderer.new()
 	instance.name = str(placement.id)
-	instance.position = Vector2(
-		placement.origin_chunk.x * tiles_per_chunk * tile_size,
-		placement.origin_chunk.y * tiles_per_chunk * tile_size
-	)
 	parent_node.add_child(instance)
-	if instance.has_method("setup_chunk"):
-		instance.call("setup_chunk", placement, tile_set)
+	instance.setup(placement)
 	loaded_chunks[placement.id] = instance
 
 func _unload_chunk(chunk_id: StringName) -> void:

@@ -170,42 +170,45 @@ func _place(chunk_def: SpecialChunkDef, origin: Vector2i, index: int) -> void:
 		for xx: int in range(origin.x, origin.x + placement.size_in_chunks.x):
 			placement_by_chunk[Vector2i(xx, yy)] = placement
 
-func get_vertical_profile_override(edge_x: int, chunk_y: int, tiles_per_chunk: int) -> Array[int]:
+func get_vertical_profile_override(edge_x: int, chunk_y: int, slots_per_chunk: int) -> Array[PieceSocket.Socket]:
 	var left_coord: Vector2i = Vector2i(edge_x - 1, chunk_y)
 	var right_coord: Vector2i = Vector2i(edge_x, chunk_y)
 	var left_chunk: SpecialChunkPlacement = get_chunk_at(left_coord)
 	var right_chunk: SpecialChunkPlacement = get_chunk_at(right_coord)
 	if left_chunk != null and right_chunk == null:
 		if edge_x == left_chunk.origin_chunk.x + left_chunk.size_in_chunks.x:
-			return _slice_vertical(left_chunk.chunk_def.right_profile, chunk_y - left_chunk.origin_chunk.y, tiles_per_chunk)
+			return _slice_vertical(left_chunk.chunk_def.right_profile, chunk_y - left_chunk.origin_chunk.y, slots_per_chunk)
 	elif right_chunk != null and left_chunk == null:
 		if edge_x == right_chunk.origin_chunk.x:
-			return _slice_vertical(right_chunk.chunk_def.left_profile, chunk_y - right_chunk.origin_chunk.y, tiles_per_chunk)
-	return []
+			return _slice_vertical(right_chunk.chunk_def.left_profile, chunk_y - right_chunk.origin_chunk.y, slots_per_chunk)
+	var empty: Array[PieceSocket.Socket] = []
+	return empty
 
-func get_horizontal_profile_override(chunk_x: int, edge_y: int, tiles_per_chunk: int) -> Array[int]:
+func get_horizontal_profile_override(chunk_x: int, edge_y: int, slots_per_chunk: int) -> Array[PieceSocket.Socket]:
 	var up_coord: Vector2i = Vector2i(chunk_x, edge_y - 1)
 	var down_coord: Vector2i = Vector2i(chunk_x, edge_y)
 	var up_chunk: SpecialChunkPlacement = get_chunk_at(up_coord)
 	var down_chunk: SpecialChunkPlacement = get_chunk_at(down_coord)
 	if up_chunk != null and down_chunk == null:
 		if edge_y == up_chunk.origin_chunk.y + up_chunk.size_in_chunks.y:
-			return _slice_horizontal(up_chunk.chunk_def.bottom_profile, chunk_x - up_chunk.origin_chunk.x, tiles_per_chunk)
+			return _slice_horizontal(up_chunk.chunk_def.bottom_profile, chunk_x - up_chunk.origin_chunk.x, slots_per_chunk)
 	elif down_chunk != null and up_chunk == null:
 		if edge_y == down_chunk.origin_chunk.y:
-			return _slice_horizontal(down_chunk.chunk_def.top_profile, chunk_x - down_chunk.origin_chunk.x, tiles_per_chunk)
-	return []
+			return _slice_horizontal(down_chunk.chunk_def.top_profile, chunk_x - down_chunk.origin_chunk.x, slots_per_chunk)
+	var empty: Array[PieceSocket.Socket] = []
+	return empty
 
-func _slice_horizontal(profile: Array[int], local_chunk_x: int, tiles_per_chunk: int) -> Array[int]:
-	var result: Array[int] = []
-	var start: int = local_chunk_x * tiles_per_chunk
-	for i: int in range(start, mini(start + tiles_per_chunk, profile.size())):
-		result.append(profile[i])
-	return result
+func _slice_horizontal(profile: Array[int], local_chunk_x: int, slots_per_chunk: int) -> Array[PieceSocket.Socket]:
+	return _slice_socket_profile(profile, local_chunk_x, slots_per_chunk)
 
-func _slice_vertical(profile: Array[int], local_chunk_y: int, tiles_per_chunk: int) -> Array[int]:
-	var result: Array[int] = []
-	var start: int = local_chunk_y * tiles_per_chunk
-	for i: int in range(start, mini(start + tiles_per_chunk, profile.size())):
-		result.append(profile[i])
+func _slice_vertical(profile: Array[int], local_chunk_y: int, slots_per_chunk: int) -> Array[PieceSocket.Socket]:
+	return _slice_socket_profile(profile, local_chunk_y, slots_per_chunk)
+
+func _slice_socket_profile(profile: Array[int], local_chunk_index: int, slots_per_chunk: int) -> Array[PieceSocket.Socket]:
+	var result: Array[PieceSocket.Socket] = []
+	var start: int = local_chunk_index * slots_per_chunk
+	for i: int in range(start, mini(start + slots_per_chunk, profile.size())):
+		result.append(PieceSocket.from_value(profile[i]))
+	while result.size() < slots_per_chunk:
+		result.append(PieceSocket.SOLID)
 	return result

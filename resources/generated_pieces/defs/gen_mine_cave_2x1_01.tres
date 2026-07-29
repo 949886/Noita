@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="PieceDef" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/pieces/PieceDef.gd" id="1"]
+[ext_resource type="Texture2D" path="res://resources/generated_pieces/textures/gen_mine_cave_2x1_01.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = &"gen_mine_cave_2x1_01"
+kind = 0
+texture = ExtResource("2")
+size_px = Vector2i(256, 128)
+size_units = Vector2i(2, 1)
+allowed_biomes = Array[StringName]([&"mine"])
+tags = Array[StringName]([&"generated", &"cave_room"])
+weight = 1.00
+top_slots = Array[int]([0, 3])
+right_slots = Array[int]([4])
+bottom_slots = Array[int]([0, 0])
+left_slots = Array[int]([0])

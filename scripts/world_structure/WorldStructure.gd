@@ -2,7 +2,7 @@ class_name WorldStructure
 extends RefCounted
 
 # Deterministic macro structure generated from the world seed.
-# WorldGenerator uses this to turn chunks into main path, branch, chamber or solid chunks.
+# PieceChunkGenerator uses this to turn chunks into main path, branch, chamber or solid chunks.
 
 var nodes: Dictionary = {}
 var main_path_x_by_y: Dictionary = {}
@@ -44,8 +44,12 @@ func are_same_chamber(a: Vector2i, b: Vector2i) -> bool:
 	return node_a != null and node_a.is_same_chamber(node_b)
 
 func tags_for(coord: Vector2i) -> Array[StringName]:
+	var result: Array[StringName] = []
 	var node: WorldStructureNode = get_node(coord)
-	return node.structure_tags.duplicate() if node != null else []
+	if node != null:
+		for tag: StringName in node.structure_tags:
+			result.append(tag)
+	return result
 
 func tag_string_for(coord: Vector2i) -> String:
 	var node: WorldStructureNode = get_node(coord)
@@ -76,16 +80,16 @@ func _mark_special_chunk_occupied_nodes(placement: SpecialChunkPlacement) -> voi
 
 func _mark_special_chunk_gateways(placement: SpecialChunkPlacement) -> void:
 	var def: SpecialChunkDef = placement.chunk_def
-	var tiles_per_chunk: int = TileConstants.TILES_PER_CHUNK
+	var slots_per_chunk: int = PieceWorldConstants.CHUNK_UNITS
 	for local_y: int in range(placement.size_in_chunks.y):
-		if _special_profile_slice_has_open(def.left_profile, local_y, tiles_per_chunk):
+		if _special_profile_slice_has_open(def.left_profile, local_y, slots_per_chunk):
 			_mark_special_gateway(placement, Vector2i(placement.origin_chunk.x - 1, placement.origin_chunk.y + local_y), &"right")
-		if _special_profile_slice_has_open(def.right_profile, local_y, tiles_per_chunk):
+		if _special_profile_slice_has_open(def.right_profile, local_y, slots_per_chunk):
 			_mark_special_gateway(placement, Vector2i(placement.origin_chunk.x + placement.size_in_chunks.x, placement.origin_chunk.y + local_y), &"left")
 	for local_x: int in range(placement.size_in_chunks.x):
-		if _special_profile_slice_has_open(def.top_profile, local_x, tiles_per_chunk):
+		if _special_profile_slice_has_open(def.top_profile, local_x, slots_per_chunk):
 			_mark_special_gateway(placement, Vector2i(placement.origin_chunk.x + local_x, placement.origin_chunk.y - 1), &"bottom")
-		if _special_profile_slice_has_open(def.bottom_profile, local_x, tiles_per_chunk):
+		if _special_profile_slice_has_open(def.bottom_profile, local_x, slots_per_chunk):
 			_mark_special_gateway(placement, Vector2i(placement.origin_chunk.x + local_x, placement.origin_chunk.y + placement.size_in_chunks.y), &"top")
 
 func _mark_special_gateway(placement: SpecialChunkPlacement, coord: Vector2i, side_to_special: StringName) -> void:
@@ -105,11 +109,11 @@ func _mark_special_gateway(placement: SpecialChunkPlacement, coord: Vector2i, si
 	if node.chunk_type == BiomeMap.ChunkType.SOLID:
 		node.chunk_type = BiomeMap.ChunkType.BRANCH
 
-func _special_profile_slice_has_open(profile: Array[int], local_chunk_index: int, tiles_per_chunk: int) -> bool:
-	var start: int = local_chunk_index * tiles_per_chunk
-	var end: int = mini(start + tiles_per_chunk, profile.size())
+func _special_profile_slice_has_open(profile: Array[int], local_chunk_index: int, slots_per_chunk: int) -> bool:
+	var start: int = local_chunk_index * slots_per_chunk
+	var end: int = mini(start + slots_per_chunk, profile.size())
 	for i: int in range(start, end):
-		var edge_value: int = int(profile[i])
-		if edge_value == TileDef.Edge.OPEN or edge_value == TileDef.Edge.AIR:
+		var socket: PieceSocket.Socket = PieceSocket.from_value(profile[i])
+		if PieceSocket.is_open(socket):
 			return true
 	return false

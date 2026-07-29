@@ -4,19 +4,18 @@
 [ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="2"]
 [ext_resource type="PackedScene" path="res://scenes/DebugOverlay.tscn" id="3"]
 [ext_resource type="Resource" path="res://resources/world_gen/default_world_gen_config.tres" id="4"]
-[ext_resource type="TileSet" path="res://resources/tilesets/generated_tileset.tres" id="5"]
-[ext_resource type="Script" path="res://scripts/debug/WorldDebugDrawer.gd" id="6"]
+[ext_resource type="Script" path="res://scripts/debug/WorldDebugDrawer.gd" id="5"]
+[ext_resource type="Resource" path="res://resources/pieces/piece_library.tres" id="6"]
 
 [node name="World" type="Node2D"]
 script = ExtResource("1")
 world_gen_config = ExtResource("4")
+piece_library = ExtResource("6")
 override_seed = false
 world_seed = 20260706
-use_runtime_generated_fallback = true
+use_runtime_generated_fallback = false
 
-[node name="GroundLayer" type="TileMapLayer" parent="."]
-tile_set = ExtResource("5")
-texture_filter = 1
+[node name="ChunkRenderers" type="Node2D" parent="."]
 
 [node name="SpecialChunks" type="Node2D" parent="."]
 
@@ -25,6 +24,6 @@ position = Vector2(256, 256)
 
 [node name="WorldDebugDrawer" type="Node2D" parent="."]
 visible = true
-script = ExtResource("6")
+script = ExtResource("5")
 
 [node name="DebugOverlay" parent="." instance=ExtResource("3")]

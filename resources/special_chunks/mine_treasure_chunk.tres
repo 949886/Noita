@@ -1,14 +1,12 @@
-[gd_resource type="Resource" script_class="SpecialChunkDef" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="SpecialChunkDef" load_steps=2 format=3]
 
 [ext_resource type="Script" path="res://scripts/resources/SpecialChunkDef.gd" id="1"]
-[ext_resource type="PackedScene" path="res://scenes/special_chunks/MineTreasureChunk.tscn" id="2"]
 
 [resource]
 script = ExtResource("1")
 id = &"mine_treasure_chunk"
 display_name = "Mine Treasure Chunk"
 chunk_kind = 0
-scene = ExtResource("2")
 allowed_biomes = Array[StringName]([&"mine"])
 tags = Array[StringName]([])
 prefer_structure_tags = Array[StringName]([&"branch_end", &"path_shoulder"])
@@ -26,8 +24,7 @@ can_overlap_main_path = false
 require_near_main_path = true
 fill_mode = 2
 transition_style = 0
-auto_fill_transition_border = false
-top_profile = Array[int]([0, 0, 0, 0, 0, 0, 0, 0])
-right_profile = Array[int]([0, 0, 0, 1, 1, 0, 0, 0])
-bottom_profile = Array[int]([0, 0, 0, 0, 0, 0, 0, 0])
-left_profile = Array[int]([0, 0, 0, 1, 1, 0, 0, 0])
+top_profile = Array[int]([0, 0, 0, 0])
+right_profile = Array[int]([0, 3, 3, 0])
+bottom_profile = Array[int]([0, 0, 0, 0])
+left_profile = Array[int]([0, 3, 3, 0])

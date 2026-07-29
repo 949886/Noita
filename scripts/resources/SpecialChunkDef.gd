@@ -1,9 +1,8 @@
 class_name SpecialChunkDef
 extends Resource
 
-# Metadata for a hand-authored chunk-sized structure.
-# The PackedScene contains the visible content; this Resource tells the world generator
-# where the structure may appear and which edge profiles neighboring Wang chunks must match.
+# Metadata for a piece-rendered special chunk. The old TileMap scene/TileSet path
+# is intentionally gone; external seams are stored as PieceSocket slots.
 enum ChunkKind {
 	TREASURE,
 	SHOP,
@@ -16,8 +15,6 @@ enum ChunkKind {
 	DECORATIVE,
 }
 
-# TransitionStyle selects which column family in the special_chunk transition rows
-# should be used for this authored chunk. Direction comes from the edge being filled.
 enum TransitionStyle {
 	ROCK,
 	SNOW,
@@ -25,23 +22,17 @@ enum TransitionStyle {
 	RUINS,
 }
 
-# FillMode is mutually exclusive. TRANSITION_BORDER uses the authored special atlas
-# transition tiles, while ENVIRONMENT_WANG_FILL fills every empty cell with biome
-# Wang tiles inferred from neighboring authored/empty cells and external profiles.
 enum FillMode {
 	NONE,
-	TRANSITION_BORDER,
-	ENVIRONMENT_WANG_FILL,
+	PIECE_BORDER,
+	PIECE_ENVIRONMENT,
 }
 
 @export var id: StringName = &""
 @export var display_name: String = ""
 @export_enum("Treasure", "Shop", "Altar", "Portal", "Boss Entrance", "Puzzle", "Hall", "Shrine", "Decorative") var chunk_kind: int = ChunkKind.DECORATIVE
-@export var scene: PackedScene
 @export var allowed_biomes: Array[StringName] = []
 @export var tags: Array[StringName] = []
-# Structure-aware placement controls. These are soft rules used by SpecialChunkPlanner
-# to place authored chunks at branch ends, chamber edges, or other macro-structure nodes.
 @export var prefer_structure_tags: Array[StringName] = []
 @export var avoid_structure_tags: Array[StringName] = []
 @export var prefer_branch_end: bool = true
@@ -57,26 +48,50 @@ enum FillMode {
 @export var can_overlap_main_path: bool = false
 @export var require_near_main_path: bool = false
 @export_enum("Rock", "Snow", "Deep", "Ruins") var transition_style: int = TransitionStyle.ROCK
-@export_enum("None", "Transition Border", "Environment Wang Fill") var fill_mode: int = FillMode.TRANSITION_BORDER
-# Deprecated compatibility flag. Runtime auto-fill uses fill_mode, so this flag is
-# ignored when fill_mode is ENVIRONMENT_WANG_FILL or NONE.
-@export var auto_fill_transition_border: bool = true
+@export_enum("None", "Piece Border", "Piece Environment") var fill_mode: int = FillMode.PIECE_ENVIRONMENT
 
-# External profiles are measured in tile edges, not pixels.
-# For a 2x1 chunk, top_profile and bottom_profile have 16 entries; left/right have 8.
+# Profiles are four 128px socket slots per chunk edge.
+# For a 2x1 chunk, top/bottom have 8 entries; left/right have 4 entries.
 @export var top_profile: Array[int] = []
 @export var right_profile: Array[int] = []
 @export var bottom_profile: Array[int] = []
 @export var left_profile: Array[int] = []
 
-func profile_length_top_bottom(tiles_per_chunk: int) -> int:
-	return size_in_chunks.x * tiles_per_chunk
+func profile_length_top_bottom(slots_per_chunk: int) -> int:
+	return size_in_chunks.x * slots_per_chunk
 
-func profile_length_left_right(tiles_per_chunk: int) -> int:
-	return size_in_chunks.y * tiles_per_chunk
+func profile_length_left_right(slots_per_chunk: int) -> int:
+	return size_in_chunks.y * slots_per_chunk
 
-func validate_profiles(tiles_per_chunk: int) -> bool:
-	return top_profile.size() == profile_length_top_bottom(tiles_per_chunk) \
-		and bottom_profile.size() == profile_length_top_bottom(tiles_per_chunk) \
-		and left_profile.size() == profile_length_left_right(tiles_per_chunk) \
-		and right_profile.size() == profile_length_left_right(tiles_per_chunk)
+func validate_profiles(slots_per_chunk: int) -> bool:
+	return top_profile.size() == profile_length_top_bottom(slots_per_chunk) \
+		and bottom_profile.size() == profile_length_top_bottom(slots_per_chunk) \
+		and left_profile.size() == profile_length_left_right(slots_per_chunk) \
+		and right_profile.size() == profile_length_left_right(slots_per_chunk)
+
+func socket_profile(side: StringName, local_chunk_offset: Vector2i, slots_per_chunk: int) -> Array[PieceSocket.Socket]:
+	match side:
+		&"top":
+			return _slice_socket_profile(top_profile, local_chunk_offset.x, slots_per_chunk)
+		&"bottom":
+			return _slice_socket_profile(bottom_profile, local_chunk_offset.x, slots_per_chunk)
+		&"left":
+			return _slice_socket_profile(left_profile, local_chunk_offset.y, slots_per_chunk)
+		&"right":
+			return _slice_socket_profile(right_profile, local_chunk_offset.y, slots_per_chunk)
+	return _solid_profile(slots_per_chunk)
+
+func _slice_socket_profile(profile: Array[int], local_chunk_index: int, slots_per_chunk: int) -> Array[PieceSocket.Socket]:
+	var result: Array[PieceSocket.Socket] = []
+	var start: int = local_chunk_index * slots_per_chunk
+	for i: int in range(start, mini(start + slots_per_chunk, profile.size())):
+		result.append(PieceSocket.from_value(profile[i]))
+	while result.size() < slots_per_chunk:
+		result.append(PieceSocket.SOLID)
+	return result
+
+func _solid_profile(slots_per_chunk: int) -> Array[PieceSocket.Socket]:
+	var result: Array[PieceSocket.Socket] = []
+	for i: int in range(slots_per_chunk):
+		result.append(PieceSocket.SOLID)
+	return result

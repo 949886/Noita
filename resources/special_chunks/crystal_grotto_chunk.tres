@@ -1,14 +1,12 @@
-[gd_resource type="Resource" script_class="SpecialChunkDef" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="SpecialChunkDef" load_steps=2 format=3]
 
 [ext_resource type="Script" path="res://scripts/resources/SpecialChunkDef.gd" id="1"]
-[ext_resource type="PackedScene" path="res://scenes/special_chunks/CrystalGrottoChunk.tscn" id="2"]
 
 [resource]
 script = ExtResource("1")
 id = &"crystal_grotto_chunk"
 display_name = "Crystal Grotto Chunk"
 chunk_kind = 8
-scene = ExtResource("2")
 allowed_biomes = Array[StringName]([&"deep", &"snow"])
 tags = Array[StringName]([&"crystal", &"grotto"])
 prefer_structure_tags = Array[StringName]([&"chamber_edge", &"branch_end"])
@@ -26,8 +24,7 @@ can_overlap_main_path = false
 require_near_main_path = true
 transition_style = 2
 fill_mode = 2
-auto_fill_transition_border = false
-top_profile = Array[int]([0, 0, 0, 0, 0, 0, 0, 0])
-right_profile = Array[int]([0, 0, 0, 1, 1, 0, 0, 0])
-bottom_profile = Array[int]([0, 0, 0, 0, 0, 0, 0, 0])
-left_profile = Array[int]([0, 0, 0, 1, 1, 0, 0, 0])
+top_profile = Array[int]([0, 0, 0, 0])
+right_profile = Array[int]([0, 3, 3, 0])
+bottom_profile = Array[int]([0, 0, 0, 0])
+left_profile = Array[int]([0, 3, 3, 0])

@@ -2,7 +2,7 @@ class_name WorldStructureNode
 extends RefCounted
 
 # One low-resolution structure cell. A node maps to one streamed world chunk.
-# It stores the intended macro role before tile-level Wang generation runs.
+# It stores the intended macro role before piece-level generation runs.
 
 var coord: Vector2i = Vector2i.ZERO
 var biome_id: StringName = &"mine"
@@ -14,7 +14,7 @@ var intended_connections: Dictionary = {
 	&"bottom": false,
 	&"left": false,
 }
-# Chamber metadata lets the tile generator treat a multi-chunk chamber as one
+# Chamber metadata lets the piece generator treat a multi-chunk chamber as one
 # continuous cave instead of carving each chunk as an isolated small room.
 var chamber_id: StringName = &""
 var chamber_origin: Vector2i = Vector2i.ZERO

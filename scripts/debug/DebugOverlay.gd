@@ -1,7 +1,6 @@
 extends CanvasLayer
 
-# Modern, compact debug HUD. It is intentionally built in script so it stays
-# resilient while the project changes scene structure during early prototyping.
+# Compact debug HUD retained from project 2 and adapted to the piece/socket world.
 
 var panel: PanelContainer
 var title_label: Label
@@ -24,13 +23,13 @@ func _build_ui() -> void:
 	margin.set_anchors_preset(Control.PRESET_TOP_LEFT)
 	margin.offset_left = 18.0
 	margin.offset_top = 18.0
-	margin.offset_right = 398.0
-	margin.offset_bottom = 310.0
+	margin.offset_right = 430.0
+	margin.offset_bottom = 318.0
 	add_child(margin)
 
 	panel = PanelContainer.new()
 	panel.name = "DebugPanel"
-	panel.custom_minimum_size = Vector2(380, 0)
+	panel.custom_minimum_size = Vector2(412, 0)
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color(0.055, 0.06, 0.075, 0.82)
 	style.border_color = Color(1.0, 1.0, 1.0, 0.12)
@@ -55,10 +54,9 @@ func _build_ui() -> void:
 	box.add_theme_constant_override("separation", 7)
 	panel.add_child(box)
 
-	title_label = _make_label("NOITA WORLD DEBUG", 15, Color(0.90, 0.96, 1.0, 1.0))
+	title_label = _make_label("NOITA PIECE WORLD DEBUG", 15, Color(0.90, 0.96, 1.0, 1.0))
 	title_label.add_theme_constant_override("outline_size", 1)
 	box.add_child(title_label)
-
 	world_label = _make_label("World: loading...", 12, Color(0.82, 0.88, 0.94, 1.0))
 	box.add_child(world_label)
 	chunk_label = _make_label("Chunk: loading...", 12, Color(0.78, 0.86, 0.92, 1.0))
@@ -82,25 +80,27 @@ func _make_label(text_value: String, font_size: int, color: Color) -> Label:
 func set_debug_snapshot(snapshot: Dictionary) -> void:
 	if panel == null:
 		_build_ui()
-	world_label.text = "Seed %d  ·  Loaded %d  ·  Radius %d\nPlayer chunk %s  ·  Renderer %s" % [
+	world_label.text = "Seed %d  ·  Loaded %d  ·  Radius %d\nPlayer chunk %s  ·  Renderer %s  ·  Unit %dpx x %d" % [
 		int(snapshot.get("seed", 0)),
 		int(snapshot.get("loaded_count", 0)),
 		int(snapshot.get("load_radius", 0)),
 		str(snapshot.get("center_chunk", Vector2i.ZERO)),
-		str(snapshot.get("renderer", "TileMapLayer")),
+		str(snapshot.get("renderer", "PieceImage")),
+		int(snapshot.get("unit_size", 128)),
+		int(snapshot.get("units_per_chunk", 4)),
 	]
-	chunk_label.text = "Biome %s  ·  Type %s  ·  Open sides %d  ·  Conn %d\nTags %s\nT %s\nR %s\nB %s\nL %s" % [
+	chunk_label.text = "Biome %s  ·  Type %s  ·  Open sides %d  ·  Conn %d\nSockets: T %s  R %s  B %s  L %s\nTags %s" % [
 		str(snapshot.get("biome", "unknown")),
 		str(snapshot.get("chunk_type", "unknown")),
 		int(snapshot.get("open_sides", 0)),
 		int(snapshot.get("intended_connections", 0)),
+		str(snapshot.get("top_profile", "SSSS")),
+		str(snapshot.get("right_profile", "SSSS")),
+		str(snapshot.get("bottom_profile", "SSSS")),
+		str(snapshot.get("left_profile", "SSSS")),
 		str(snapshot.get("structure_tags", "fallback")),
-		str(snapshot.get("top_profile", "--------")),
-		str(snapshot.get("right_profile", "--------")),
-		str(snapshot.get("bottom_profile", "--------")),
-		str(snapshot.get("left_profile", "--------")),
 	]
-	stats_label.text = "Exact %d  ·  Compatible %d  ·  Fallback %d\nAir tiles %d  ·  Pockets %d  ·  Chamber carve A%d/O%d\nConn path %d  ·  Current sides %d  ·  Adjusted %d" % [
+	stats_label.text = "Regular pieces %d  ·  Open sockets %d  ·  Glue %d\nAir units %d  ·  Placements %d  ·  Special loaded %d\nChambers %d  ·  Current sides %d  ·  Adjusted %d" % [
 		int(snapshot.get("exact_matches", 0)),
 		int(snapshot.get("compatible_matches", 0)),
 		int(snapshot.get("fallback_count", 0)),
@@ -108,7 +108,6 @@ func set_debug_snapshot(snapshot: Dictionary) -> void:
 		int(snapshot.get("air_pockets", 0)),
 		int(snapshot.get("chamber_carve_air", 0)),
 		int(snapshot.get("chamber_carve_open", 0)),
-		int(snapshot.get("connectivity_path_tiles", 0)),
 		int(snapshot.get("connected_open_sides", 0)),
 		int(snapshot.get("connectivity_adjusted", 0)),
 	]
@@ -120,8 +119,7 @@ func set_debug_snapshot(snapshot: Dictionary) -> void:
 	special_label.text = detail_text
 	help_label.text = "F1 HUD  F2 World Debug  F3 Regenerate  F4 Next Seed"
 
-# Backward-compatible entry point retained for older WorldManager builds.
-func set_debug_data(seed_value: int, center_chunk: Vector2i, loaded_count: int, fallback_count: int, renderer_name: String = "TileMapLayer", air_tile_count: int = 0, compatible_match_count: int = 0) -> void:
+func set_debug_data(seed_value: int, center_chunk: Vector2i, loaded_count: int, fallback_count: int, renderer_name: String = "PieceImage", air_tile_count: int = 0, compatible_match_count: int = 0) -> void:
 	set_debug_snapshot({
 		"seed": seed_value,
 		"center_chunk": center_chunk,

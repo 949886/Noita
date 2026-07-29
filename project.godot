@@ -10,7 +10,7 @@ config_version=5
 
 [application]
 
-config/name="Noita Wang TileMapLayer Demo"
+config/name="Noita Piece World Demo"
 run/main_scene="res://scenes/World.tscn"
 config/features=PackedStringArray("4.7")
 config/icon="res://icon.svg"
@@ -23,11 +23,7 @@ window/stretch/mode="canvas_items"
 
 [dotnet]
 
-project/assembly_name="Noita Wang TileMapLayer Demo"
-
-[editor_plugins]
-
-enabled=PackedStringArray("res://addons/noita_world_gen/plugin.cfg")
+project/assembly_name="Noita Piece World Demo"
 
 [rendering]
 

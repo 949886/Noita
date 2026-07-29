@@ -1,41 +1,37 @@
 extends Node2D
 
-# Runtime streaming coordinator. Normal chunks are painted into GroundLayer;
-# chunks occupied by SpecialChunks are skipped and instantiated by SpecialChunkManager.
+# Runtime streaming coordinator for the migrated piece world.
+# TileMap generation has been removed from the main runtime path; chunks are
+# generated as 4 x 4 piece-unit images where each unit is 128px.
 
 const DEFAULT_CONFIG_PATH: String = "res://resources/world_gen/default_world_gen_config.tres"
-const TILE_SIZE: int = TileConstants.TILE_SIZE
-const TILES_PER_CHUNK: int = TileConstants.TILES_PER_CHUNK
-const CHUNK_SIZE: int = TileConstants.CHUNK_SIZE
+const UNIT_SIZE: int = PieceWorldConstants.UNIT_SIZE
+const UNITS_PER_CHUNK: int = PieceWorldConstants.CHUNK_UNITS
+const CHUNK_SIZE: int = PieceWorldConstants.CHUNK_SIZE
 
 @export var world_gen_config: WorldGenConfig
+@export var piece_library: PieceLibrary
 @export var override_seed: bool = false
 @export var world_seed: int = 20260706
 @export var use_runtime_generated_fallback: bool = false
 
-var tile_library: TileLibrary
-var generator: WorldGenerator
-var renderer: ChunkTileMapRenderer
+var library: PieceLibrary
+var generator: PieceChunkGenerator
 var loaded_chunks: Dictionary = {}
+var chunk_renderers: Dictionary = {}
 var player: Node2D
 var debug_overlay: CanvasLayer
 var world_debug_drawer: WorldDebugDrawer
 var debug_world_visible: bool = true
-var ground_layer: TileMapLayer
 var active_config: WorldGenConfig
 var load_radius: int = 2
 var special_chunk_planner: SpecialChunkPlanner
 var special_chunk_manager: SpecialChunkManager
 var special_chunks_parent: Node2D
+var chunk_renderers_parent: Node2D
 var world_structure: WorldStructure
 
 func _ready() -> void:
-	ground_layer = get_node_or_null("GroundLayer") as TileMapLayer
-	if ground_layer == null:
-		push_error("WorldManager: GroundLayer TileMapLayer node not found.")
-		return
-	ground_layer.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-
 	active_config = _load_config()
 	if active_config == null:
 		push_error("WorldManager: Unable to load WorldGenConfig.")
@@ -44,12 +40,17 @@ func _ready() -> void:
 		active_config.world_seed = world_seed
 	world_seed = active_config.world_seed
 	load_radius = active_config.load_radius
+	library = _load_piece_library()
+	if library == null:
+		push_error("WorldManager: Unable to load PieceLibrary.")
+		return
+	library.prepare()
 
-	tile_library = TileLibrary.new()
-	tile_library.load_from_config(active_config)
-	if active_config.tile_set == null:
-		active_config.tile_set = TileSetBuilder.build_from_config(active_config, active_config.enable_tilemap_collision)
-	ground_layer.tile_set = active_config.tile_set
+	chunk_renderers_parent = get_node_or_null("ChunkRenderers") as Node2D
+	if chunk_renderers_parent == null:
+		chunk_renderers_parent = Node2D.new()
+		chunk_renderers_parent.name = "ChunkRenderers"
+		add_child(chunk_renderers_parent)
 
 	world_structure = WorldStructureBuilder.new(world_seed, active_config).build()
 	var planning_biome_map: BiomeMap = BiomeMap.new(world_seed, active_config)
@@ -60,12 +61,11 @@ func _ready() -> void:
 		special_chunks_parent = Node2D.new()
 		special_chunks_parent.name = "SpecialChunks"
 		add_child(special_chunks_parent)
-	special_chunk_manager = SpecialChunkManager.new(special_chunk_planner, active_config.tile_set, special_chunks_parent)
+	special_chunk_manager = SpecialChunkManager.new(special_chunk_planner, special_chunks_parent)
 
-	generator = WorldGenerator.new(world_seed, tile_library, active_config, special_chunk_planner, world_structure)
-	renderer = ChunkTileMapRenderer.new(tile_library)
-	player = get_node_or_null("Player")
-	debug_overlay = get_node_or_null("DebugOverlay")
+	generator = PieceChunkGenerator.new(world_seed, library, active_config, special_chunk_planner, world_structure)
+	player = get_node_or_null("Player") as Node2D
+	debug_overlay = get_node_or_null("DebugOverlay") as CanvasLayer
 	world_debug_drawer = get_node_or_null("WorldDebugDrawer") as WorldDebugDrawer
 	if world_debug_drawer != null:
 		world_debug_drawer.world_manager = self
@@ -80,10 +80,19 @@ func _load_config() -> WorldGenConfig:
 	var loaded: WorldGenConfig = ResourceLoader.load(DEFAULT_CONFIG_PATH) as WorldGenConfig
 	if loaded != null:
 		return loaded
-	if use_runtime_generated_fallback:
-		var runtime_library: TileLibrary = TileLibrary.new()
-		return runtime_library.build_demo_library()
 	return null
+
+func _load_piece_library() -> PieceLibrary:
+	if piece_library != null:
+		return piece_library.duplicate(false) as PieceLibrary
+	if active_config != null and active_config.piece_library != null:
+		return active_config.piece_library.duplicate(false) as PieceLibrary
+	var loaded: PieceLibrary = ResourceLoader.load("res://resources/pieces/piece_library.tres") as PieceLibrary
+	if loaded != null:
+		return loaded.duplicate(false) as PieceLibrary
+	var runtime_library: PieceLibrary = PieceLibrary.new()
+	runtime_library.load_from_default_dirs()
+	return runtime_library
 
 func _process(_delta: float) -> void:
 	_update_loaded_chunks(false)
@@ -111,7 +120,7 @@ func _update_debug_ui() -> void:
 	debug_overlay.call("set_debug_snapshot", _build_debug_snapshot(center))
 
 func _build_debug_snapshot(center: Vector2i) -> Dictionary:
-	var current_chunk: ChunkData = loaded_chunks.get(center, null) as ChunkData
+	var current_chunk: PieceChunkData = loaded_chunks.get(center, null) as PieceChunkData
 	var special_info: String = ""
 	if special_chunk_planner != null and special_chunk_planner.is_chunk_inside_special_chunk(center):
 		var placement: SpecialChunkPlacement = special_chunk_planner.get_chunk_at(center)
@@ -134,22 +143,24 @@ func _build_debug_snapshot(center: Vector2i) -> Dictionary:
 		"center_chunk": center,
 		"loaded_count": loaded_chunks.size(),
 		"load_radius": load_radius,
-		"renderer": "TileMapLayer + SpecialChunks",
+		"renderer": "PieceImage + SpecialPiece",
+		"unit_size": UNIT_SIZE,
+		"units_per_chunk": UNITS_PER_CHUNK,
 		"biome": current_chunk.biome_id if current_chunk != null else biome_map_name(center),
 		"chunk_type": chunk_type_text,
 		"open_sides": current_chunk.open_side_count if current_chunk != null else 0,
-		"top_profile": _profile_to_string(current_chunk.top_profile) if current_chunk != null else "--------",
-		"right_profile": _profile_to_string(current_chunk.right_profile) if current_chunk != null else "--------",
-		"bottom_profile": _profile_to_string(current_chunk.bottom_profile) if current_chunk != null else "--------",
-		"left_profile": _profile_to_string(current_chunk.left_profile) if current_chunk != null else "--------",
-		"exact_matches": _loaded_exact_match_count(),
-		"compatible_matches": _loaded_compatible_match_count(),
-		"fallback_count": _loaded_fallback_count(),
-		"air_tiles": _loaded_air_tile_count(),
-		"air_pockets": _loaded_air_pocket_count(),
-		"chamber_carve_air": _loaded_chamber_carve_air_count(),
-		"chamber_carve_open": _loaded_chamber_carve_open_count(),
-		"connectivity_path_tiles": _loaded_connectivity_path_tile_count(),
+		"top_profile": _profile_to_string(current_chunk.top_profile) if current_chunk != null else "SSSS",
+		"right_profile": _profile_to_string(current_chunk.right_profile) if current_chunk != null else "SSSS",
+		"bottom_profile": _profile_to_string(current_chunk.bottom_profile) if current_chunk != null else "SSSS",
+		"left_profile": _profile_to_string(current_chunk.left_profile) if current_chunk != null else "SSSS",
+		"exact_matches": _loaded_regular_piece_count(),
+		"compatible_matches": _loaded_open_socket_count(),
+		"fallback_count": _loaded_glue_count(),
+		"air_tiles": _loaded_air_unit_count(),
+		"air_pockets": _loaded_piece_count(),
+		"chamber_carve_air": _loaded_special_piece_count(),
+		"chamber_carve_open": _loaded_chamber_piece_count(),
+		"connectivity_path_tiles": _loaded_open_socket_count(),
 		"connected_open_sides": current_chunk.connected_open_sides if current_chunk != null else 0,
 		"current_chamber": _current_chamber_debug(current_chunk),
 		"connectivity_adjusted": _loaded_connectivity_adjusted_count(),
@@ -157,6 +168,8 @@ func _build_debug_snapshot(center: Vector2i) -> Dictionary:
 		"structure_tags": current_chunk.structure_tag_string() if current_chunk != null else (world_structure.tag_string_for(center) if world_structure != null else "fallback"),
 		"structure_source": current_chunk.structure_source if current_chunk != null else ("structure_v1" if world_structure != null and world_structure.has_node(center) else "fallback"),
 		"intended_connections": current_chunk.intended_connection_count if current_chunk != null else 0,
+		"piece_count": current_chunk.piece_count if current_chunk != null else 0,
+		"glue_count": current_chunk.used_glue_count if current_chunk != null else 0,
 	}
 
 func biome_map_name(coord: Vector2i) -> StringName:
@@ -164,94 +177,82 @@ func biome_map_name(coord: Vector2i) -> StringName:
 		return generator.biome_map.get_biome(coord)
 	return &"unknown"
 
-func _loaded_air_tile_count() -> int:
+func _loaded_air_unit_count() -> int:
 	var total: int = 0
 	for item in loaded_chunks.values():
-		var chunk_data: ChunkData = item as ChunkData
+		var chunk_data: PieceChunkData = item as PieceChunkData
 		if chunk_data != null:
 			total += chunk_data.air_tile_count
 	return total
 
-
-func _loaded_chamber_carve_air_count() -> int:
+func _loaded_piece_count() -> int:
 	var total: int = 0
 	for item in loaded_chunks.values():
-		var chunk_data: ChunkData = item as ChunkData
+		var chunk_data: PieceChunkData = item as PieceChunkData
 		if chunk_data != null:
-			total += chunk_data.chamber_carve_air_tiles
+			total += chunk_data.piece_count
 	return total
 
-func _loaded_chamber_carve_open_count() -> int:
+func _loaded_regular_piece_count() -> int:
 	var total: int = 0
 	for item in loaded_chunks.values():
-		var chunk_data: ChunkData = item as ChunkData
+		var chunk_data: PieceChunkData = item as PieceChunkData
 		if chunk_data != null:
-			total += chunk_data.chamber_carve_open_tiles
+			total += chunk_data.regular_piece_count
 	return total
 
-func _loaded_connectivity_path_tile_count() -> int:
+func _loaded_glue_count() -> int:
 	var total: int = 0
 	for item in loaded_chunks.values():
-		var chunk_data: ChunkData = item as ChunkData
+		var chunk_data: PieceChunkData = item as PieceChunkData
 		if chunk_data != null:
-			total += chunk_data.connectivity_path_tiles
+			total += chunk_data.used_glue_count
 	return total
 
-func _current_chamber_debug(chunk_data: ChunkData) -> String:
-	if chunk_data == null or chunk_data.chamber_id == &"":
-		return ""
-	return "%s %s@%s carve A%d/O%d" % [
-		str(chunk_data.chamber_id),
-		str(chunk_data.chamber_size),
-		str(chunk_data.chamber_origin),
-		chunk_data.chamber_carve_air_tiles,
-		chunk_data.chamber_carve_open_tiles,
-	]
-
-func _loaded_air_pocket_count() -> int:
+func _loaded_open_socket_count() -> int:
 	var total: int = 0
 	for item in loaded_chunks.values():
-		var chunk_data: ChunkData = item as ChunkData
-		if chunk_data != null:
-			total += chunk_data.air_pocket_count
-	return total
-
-func _loaded_exact_match_count() -> int:
-	var total: int = 0
-	for item in loaded_chunks.values():
-		var chunk_data: ChunkData = item as ChunkData
-		if chunk_data != null:
-			total += chunk_data.exact_match_tiles
-	return total
-
-func _loaded_compatible_match_count() -> int:
-	var total: int = 0
-	for item in loaded_chunks.values():
-		var chunk_data: ChunkData = item as ChunkData
+		var chunk_data: PieceChunkData = item as PieceChunkData
 		if chunk_data != null:
 			total += chunk_data.compatible_match_tiles
 	return total
 
-func _loaded_fallback_count() -> int:
+func _loaded_special_piece_count() -> int:
+	if special_chunk_manager == null:
+		return 0
+	return special_chunk_manager.loaded_chunks.size()
+
+func _loaded_chamber_piece_count() -> int:
 	var total: int = 0
 	for item in loaded_chunks.values():
-		var chunk_data: ChunkData = item as ChunkData
-		if chunk_data != null:
-			total += chunk_data.fallback_tiles
+		var chunk_data: PieceChunkData = item as PieceChunkData
+		if chunk_data != null and chunk_data.chunk_type == BiomeMap.ChunkType.CHAMBER:
+			total += 1
 	return total
+
+func _current_chamber_debug(chunk_data: PieceChunkData) -> String:
+	if chunk_data == null or chunk_data.chamber_id == &"":
+		return ""
+	return "%s %s@%s pieces %d/glue %d" % [
+		str(chunk_data.chamber_id),
+		str(chunk_data.chamber_size),
+		str(chunk_data.chamber_origin),
+		chunk_data.piece_count,
+		chunk_data.used_glue_count,
+	]
 
 func _loaded_connectivity_adjusted_count() -> int:
 	var total: int = 0
 	for item in loaded_chunks.values():
-		var chunk_data: ChunkData = item as ChunkData
+		var chunk_data: PieceChunkData = item as PieceChunkData
 		if chunk_data != null and chunk_data.connectivity_adjusted:
 			total += 1
 	return total
 
-func _profile_to_string(profile: Array[int]) -> String:
+func _profile_to_string(profile: Array[PieceSocket.Socket]) -> String:
 	var result: String = ""
-	for edge_value: int in profile:
-		result += TileDef.edge_to_char(edge_value)
+	for socket: PieceSocket.Socket in profile:
+		result += PieceSocket.to_debug_char(PieceSocket.from_value(socket))
 	return result
 
 func _regenerate_world(advance_seed: bool) -> void:
@@ -259,30 +260,30 @@ func _regenerate_world(advance_seed: bool) -> void:
 		world_seed += 1
 		if active_config != null:
 			active_config.world_seed = world_seed
-	if tile_library != null:
-		tile_library.fallback_count = 0
-		tile_library.compatible_match_count = 0
-	for coord: Vector2i in loaded_chunks.keys():
-		var existing: Variant = loaded_chunks.get(coord, null)
-		if existing != null:
-			renderer.clear_chunk(coord, ground_layer)
+	for coord: Vector2i in chunk_renderers.keys():
+		var renderer: Node = chunk_renderers.get(coord, null) as Node
+		if renderer != null:
+			renderer.queue_free()
 	loaded_chunks.clear()
+	chunk_renderers.clear()
 	if special_chunks_parent != null:
-		for child in special_chunks_parent.get_children():
+		for child: Node in special_chunks_parent.get_children():
 			child.queue_free()
+	if library != null:
+		library.prepare()
 	world_structure = WorldStructureBuilder.new(world_seed, active_config).build()
 	var planning_biome_map: BiomeMap = BiomeMap.new(world_seed, active_config)
 	planning_biome_map.world_structure = world_structure
 	special_chunk_planner = SpecialChunkPlanner.new(world_seed, active_config, planning_biome_map, world_structure)
-	special_chunk_manager = SpecialChunkManager.new(special_chunk_planner, active_config.tile_set, special_chunks_parent)
-	generator = WorldGenerator.new(world_seed, tile_library, active_config, special_chunk_planner, world_structure)
+	special_chunk_manager = SpecialChunkManager.new(special_chunk_planner, special_chunks_parent)
+	generator = PieceChunkGenerator.new(world_seed, library, active_config, special_chunk_planner, world_structure)
 	_update_loaded_chunks(true)
 
 func world_pos_to_chunk(pos: Vector2) -> Vector2i:
 	return Vector2i(floori(pos.x / float(CHUNK_SIZE)), floori(pos.y / float(CHUNK_SIZE)))
 
 func _update_loaded_chunks(force: bool) -> void:
-	if ground_layer == null:
+	if generator == null:
 		return
 	var center: Vector2i = world_pos_to_chunk(player.global_position if player != null else Vector2.ZERO)
 	var needed: Dictionary = {}
@@ -305,12 +306,16 @@ func _load_chunk(coord: Vector2i) -> void:
 	if special_chunk_planner != null and special_chunk_planner.is_chunk_inside_special_chunk(coord):
 		loaded_chunks[coord] = null
 		return
-	var data: ChunkData = generator.generate_chunk(coord)
-	renderer.paint_chunk(data, ground_layer)
+	var data: PieceChunkData = generator.generate_chunk(coord)
+	var renderer: PieceChunkRenderer = PieceChunkRenderer.new()
+	chunk_renderers_parent.add_child(renderer)
+	renderer.setup(data)
+	chunk_renderers[coord] = renderer
 	loaded_chunks[coord] = data
 
 func _unload_chunk(coord: Vector2i) -> void:
-	var existing: Variant = loaded_chunks.get(coord, null)
-	if existing != null:
-		renderer.clear_chunk(coord, ground_layer)
+	var renderer: Node = chunk_renderers.get(coord, null) as Node
+	if renderer != null:
+		renderer.queue_free()
+	chunk_renderers.erase(coord)
 	loaded_chunks.erase(coord)

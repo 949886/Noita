@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="PieceDef" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/pieces/PieceDef.gd" id="1"]
+[ext_resource type="Texture2D" path="res://resources/generated_pieces/textures/gen_mine_tank_1x2_01.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = &"gen_mine_tank_1x2_01"
+kind = 2
+texture = ExtResource("2")
+size_px = Vector2i(128, 256)
+size_units = Vector2i(1, 2)
+allowed_biomes = Array[StringName]([&"mine"])
+tags = Array[StringName]([&"generated", &"tank", &"vertical"])
+weight = 0.60
+top_slots = Array[int]([2])
+right_slots = Array[int]([0, 0])
+bottom_slots = Array[int]([1])
+left_slots = Array[int]([0, 0])

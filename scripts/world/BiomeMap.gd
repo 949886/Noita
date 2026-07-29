@@ -114,7 +114,10 @@ func get_structure_node(coord: Vector2i) -> WorldStructureNode:
 	return world_structure.get_node(coord) if world_structure != null else null
 
 func get_structure_tags(coord: Vector2i) -> Array[StringName]:
-	return world_structure.tags_for(coord) if world_structure != null else []
+	if world_structure != null:
+		return world_structure.tags_for(coord)
+	var empty: Array[StringName] = []
+	return empty
 
 func structure_tag_string(coord: Vector2i) -> String:
 	return world_structure.tag_string_for(coord) if world_structure != null else "fallback"

@@ -1,26 +1,21 @@
-[gd_resource type="Resource" script_class="WorldGenConfig" load_steps=13 format=3]
+[gd_resource type="Resource" script_class="WorldGenConfig" load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://scripts/resources/WorldGenConfig.gd" id="1"]
 [ext_resource type="Resource" path="res://resources/biomes/mine.tres" id="2"]
 [ext_resource type="Resource" path="res://resources/biomes/snow.tres" id="3"]
 [ext_resource type="Resource" path="res://resources/biomes/deep.tres" id="4"]
-[ext_resource type="Resource" path="res://resources/tile_atlases/special_chunk_atlas_def.tres" id="5"]
-[ext_resource type="Resource" path="res://resources/special_chunks/mine_treasure_chunk.tres" id="6"]
-[ext_resource type="Resource" path="res://resources/special_chunks/ancient_hall_2x1_chunk.tres" id="7"]
-[ext_resource type="TileSet" path="res://resources/tilesets/generated_tileset.tres" id="8"]
-[ext_resource type="Resource" path="res://resources/special_chunks/snow_shrine_chunk.tres" id="9"]
-[ext_resource type="Resource" path="res://resources/tile_atlases/crystal_grotto_atlas_def.tres" id="10"]
-[ext_resource type="Resource" path="res://resources/special_chunks/crystal_grotto_chunk.tres" id="11"]
-[ext_resource type="Resource" path="res://resources/tile_atlases/common_atlas_def.tres" id="12"]
+[ext_resource type="Resource" path="res://resources/special_chunks/mine_treasure_chunk.tres" id="5"]
+[ext_resource type="Resource" path="res://resources/special_chunks/ancient_hall_2x1_chunk.tres" id="6"]
+[ext_resource type="Resource" path="res://resources/special_chunks/snow_shrine_chunk.tres" id="7"]
+[ext_resource type="Resource" path="res://resources/special_chunks/crystal_grotto_chunk.tres" id="8"]
+[ext_resource type="Resource" path="res://resources/pieces/piece_library.tres" id="9"]
 
 [resource]
 script = ExtResource("1")
 world_seed = 20260706
-tile_size = Vector2i(64, 64)
-tiles_per_chunk = 8
+unit_size = 128
+units_per_chunk = 4
 load_radius = 2
-tile_set = ExtResource("8")
+piece_library = ExtResource("9")
 biome_configs = Array[Resource]([ExtResource("2"), ExtResource("3"), ExtResource("4")])
-extra_tile_atlases = Array[Resource]([ExtResource("5"), ExtResource("10"), ExtResource("12")])
-special_chunk_defs = Array[Resource]([ExtResource("6"), ExtResource("7"), ExtResource("9"), ExtResource("11")])
-enable_tilemap_collision = false
+special_chunk_defs = Array[Resource]([ExtResource("5"), ExtResource("6"), ExtResource("7"), ExtResource("8")])
