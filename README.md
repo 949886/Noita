@@ -37,3 +37,13 @@ The runtime terrain generation path now uses 128px **Piece** units instead of
 ## Debug guide
 
 See [`DEBUG_OVERLAY_GUIDE.md`](DEBUG_OVERLAY_GUIDE.md) for a detailed explanation of the F1 HUD, F2 world debug drawer, socket marker shapes, and color meanings.
+
+## Piece generation sequence demo
+
+A standalone adapted sequence visualizer is available at:
+
+```text
+scenes/PieceGenerationSequenceDemo.tscn
+```
+
+It was migrated from project 1 but now uses the current piece-world generator, 128px units, 4 socket slots per edge, `WorldSeamRegistry`, and non-destructive seam repair. See `PIECE_GENERATION_SEQUENCE_DEMO_GUIDE.md` for controls and how to read the expected/actual socket markers.

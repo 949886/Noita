@@ -141,3 +141,42 @@ The world-space socket marker style has been refined again for readability:
 - `DEBUG_OVERLAY_GUIDE.md` now explicitly documents marker shape, size rules, socket colors, chunk colors, piece phase colors, and the recommended seam debugging workflow.
 
 This is a debug-visual-only change. It does not alter generation, seam registry data, piece selection, or repair behavior.
+
+## PieceGenerationSequenceDemo migrated and adapted
+
+This version restores project 1's `PieceGenerationSequenceDemo.tscn` as a standalone diagnostic scene, but it no longer depends on project 1's old debug stack.
+
+New files:
+
+- `scenes/PieceGenerationSequenceDemo.tscn`
+- `scripts/piece_world/PieceGenerationSequenceDemo.gd`
+- `PIECE_GENERATION_SEQUENCE_DEMO_GUIDE.md`
+
+Adaptation details:
+
+- Uses the current migrated `PieceChunkGenerator` instead of the original project 1 generator interface.
+- Uses `WorldGenConfig`, `WorldStructureBuilder`, `SpecialChunkPlanner`, and the current `WorldSeamRegistry` path when `build_world_structure` is enabled.
+- Uses `PieceWorldConstants.UNIT_SIZE = 128` and `PieceWorldConstants.CHUNK_UNITS = 4`.
+- Shows current canonical/expected socket profiles and generated/actual socket profiles using the same marker language as `WorldDebugDrawer`:
+  - Expected = hollow outer ring.
+  - Actual = filled inner dot.
+  - Red edge strip = expected/actual mismatch.
+- Shows phase colors consistent with the world debug overlay:
+  - red = anchor
+  - green = regular
+  - orange = glue
+  - bright red = seam_repair
+- Supports stepping backward by rebuilding the visible image up to the requested step. This keeps the demo deterministic without mutating the generator output.
+- Does not restore `PieceDebugOverlay`, `PiecePlayer`, or project 1's old runtime debug/demo stack.
+
+Controls:
+
+- `SPACE`: pause/play
+- `Right`: step forward
+- `Left`: step backward
+- `Home`: show all placements
+- `Backspace`: clear back to step 0
+- `R` or `F3`: restart current seed
+- `F4`: increment seed and restart
+- `F5`: decrement seed and restart
+- `F2`: toggle socket markers

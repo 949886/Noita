@@ -1,0 +1,34 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/piece_world/PieceGenerationSequenceDemo.gd" id="1"]
+[ext_resource type="Resource" path="res://resources/pieces/piece_library.tres" id="2"]
+[ext_resource type="Resource" path="res://resources/world_gen/default_world_gen_config.tres" id="3"]
+
+[node name="PieceGenerationSequenceDemo" type="Node2D"]
+script = ExtResource("1")
+piece_library = ExtResource("2")
+world_gen_config = ExtResource("3")
+step_delay = 0.22
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+centered = false
+texture_filter = 1
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(256, 256)
+zoom = Vector2(1.15, 1.15)
+enabled = true
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="InfoLabel" type="Label" parent="CanvasLayer"]
+offset_left = 12.0
+offset_top = 12.0
+offset_right = 932.0
+offset_bottom = 236.0
+
+[node name="LegendLabel" type="Label" parent="CanvasLayer"]
+offset_left = 12.0
+offset_top = 246.0
+offset_right = 932.0
+offset_bottom = 416.0
