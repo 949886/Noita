@@ -135,10 +135,6 @@ func _socket_color(socket_value: int) -> Color:
 			return Color(0.2, 0.95, 0.75, 0.94)
 		PieceSocket.OPEN_LARGE:
 			return Color(1.0, 0.75, 0.25, 0.95)
-		PieceSocket.ROOM:
-			return Color(1.0, 0.55, 0.25, 0.95)
-		PieceSocket.SHAFT:
-			return Color(0.8, 0.55, 1.0, 0.94)
 		PieceSocket.ANY:
 			return Color(1.0, 1.0, 1.0, 0.68)
 		PieceSocket.SOLID:

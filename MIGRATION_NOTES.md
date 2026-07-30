@@ -8,10 +8,18 @@ This project is the migrated version of `noita-tilemap` using the piece-based ge
 - Migrated the piece model, generated piece definitions, piece textures, material palette, glue generator, and image chunk renderer.
 - Replaced the old 64px-by-8 edge profile concept with four 128px `PieceSocket` slots per chunk side.
 - Retained and adapted the second project's debug HUD and world debug drawer:
-  - socket letters per edge: `S`, `s`, `d`, `m`, `L`, `R`, `H`, `?`
+  - socket letters per edge: `S`, `s`, `d`, `m`, `L`, `?`
   - piece bounds, glue placements, chamber/special metadata, and special chunk outlines
 - Reworked special chunks to be image-based `SpecialPieceRenderer` nodes instead of TileMap scenes.
 - Updated `World.tscn` to run through `WorldManager -> PieceChunkGenerator -> PieceChunkRenderer`.
+
+
+## Socket enum cleanup
+
+- Removed unused semantic socket variants `ROOM` and `SHAFT` from `PieceSocket.Socket`.
+- Existing piece/socket resources only used numeric socket values `0..4` (`SOLID` through `OPEN_LARGE`), so serialized piece edge data is preserved.
+- `ROOM` still exists as `PieceDef.PieceKind.ROOM`, and `room` remains a normal piece tag. The cleanup only removes room/shaft as boundary socket shapes.
+- Chamber-internal seams now use `OPEN_LARGE` for broad passage intent instead of a separate `ROOM` socket.
 
 ## Important controls
 

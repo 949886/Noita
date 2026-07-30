@@ -45,8 +45,6 @@ The demo intentionally shows both profiles because socket bugs can happen at dif
 | `d` | `DOUBLE_OPEN_SMALL` | light blue | Two small openings or a split small opening. |
 | `m` | `OPEN_MEDIUM` | teal | Medium connection. |
 | `L` | `OPEN_LARGE` | yellow | Large opening. |
-| `R` | `ROOM` | orange | Room-sized opening. |
-| `H` | `SHAFT` | purple | Vertical shaft connection. |
 | `?` | `ANY` | white | Wildcard/debug socket. |
 
 ## HUD fields

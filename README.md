@@ -25,6 +25,16 @@ The runtime terrain generation path now uses 128px **Piece** units instead of
 - `F3`: regenerate same seed
 - `F4`: advance seed and regenerate
 
+## Socket model
+
+`PieceSocket.Socket` now only contains boundary-connection shapes:
+
+```text
+SOLID, OPEN_SMALL, DOUBLE_OPEN_SMALL, OPEN_MEDIUM, OPEN_LARGE, ANY
+```
+
+The old `ROOM` and `SHAFT` socket variants were removed because no piece or special-chunk resource used them as edge socket values. Room/lab/cave identity still exists through `PieceDef.kind` and piece tags such as `room`, `lab`, and `cave_room`.
+
 ## Main files
 
 - `scenes/World.tscn` — main scene

@@ -86,14 +86,12 @@ Tags main_path
 | `d` | `DOUBLE_OPEN_SMALL` | 双小开口 | 浅蓝 |
 | `m` | `OPEN_MEDIUM` | 中开口 | 青绿色 |
 | `L` | `OPEN_LARGE` | 大开口 | 黄色 |
-| `R` | `ROOM` | 房间级开口 | 橙色 |
-| `H` | `SHAFT` | 竖井/井道型开口 | 紫色 |
 | `?` | `ANY` | 通配 socket，通常会在 seam registry 中被具体化 | 白色 |
 
 示例：
 
 ```text
-R smSS
+Right: smSS
 ```
 
 表示右边 4 个 slot 从上到下分别是：
@@ -178,7 +176,7 @@ Chambers 0  ·  Seam repairs 1  ·  Seam broken E/N 0/0
 | 空心外圈 | `Expected` / canonical socket | 所有 socket 类型固定同一半径 |
 | 实心内点 | `Actual` / 实际生成 socket | 所有 socket 类型固定同一半径 |
 
-大小只用于区分“外圈”和“内点”两层含义，不再用于区分 `open_small`、`open_medium`、`room` 等类型。类型统一看颜色或 F1 HUD 的 socket 字符。
+大小只用于区分“外圈”和“内点”两层含义，不再用于区分 `open_small`、`open_medium`、`open_large` 等类型。类型统一看颜色或 F1 HUD 的 socket 字符。
 
 ---
 
@@ -191,8 +189,6 @@ Chambers 0  ·  Seam repairs 1  ·  Seam broken E/N 0/0
 | 浅蓝 | `DOUBLE_OPEN_SMALL` | 两个小入口；目前兼容性更严格，通常需要精确匹配 |
 | 青绿色 | `OPEN_MEDIUM` | 中型通道入口 |
 | 黄色 | `OPEN_LARGE` | 大型通道入口 |
-| 橙色 | `ROOM` | 房间型入口，通常用于特殊结构或大型空间 |
-| 紫色 | `SHAFT` | 竖井/纵向通道 |
 | 白色 | `ANY` | 通配/未具体化，正常 world seam 中应较少出现 |
 | 红色半透明边缘条 | mismatch | `expected != actual`，需要检查 piece 选择、glue 修复或 authored piece socket 标注 |
 

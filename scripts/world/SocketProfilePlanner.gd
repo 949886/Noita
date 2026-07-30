@@ -63,8 +63,8 @@ func get_horizontal_profile(chunk_x: int, edge_y: int) -> Array[PieceSocket.Sock
 func make_chamber_internal_profile() -> Array[PieceSocket.Socket]:
 	var profile: Array[PieceSocket.Socket] = []
 	profile.append(PieceSocket.OPEN_LARGE)
-	profile.append(PieceSocket.ROOM)
-	profile.append(PieceSocket.ROOM)
+	profile.append(PieceSocket.OPEN_LARGE)
+	profile.append(PieceSocket.OPEN_LARGE)
 	profile.append(PieceSocket.OPEN_LARGE)
 	return profile
 

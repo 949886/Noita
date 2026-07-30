@@ -329,10 +329,6 @@ func _socket_color(socket_value: int) -> Color:
 			return Color(0.2, 0.95, 0.75, 0.94)
 		PieceSocket.OPEN_LARGE:
 			return Color(1.0, 0.75, 0.25, 0.95)
-		PieceSocket.ROOM:
-			return Color(1.0, 0.55, 0.25, 0.95)
-		PieceSocket.SHAFT:
-			return Color(0.8, 0.55, 1.0, 0.94)
 		PieceSocket.ANY:
 			return Color(1.0, 1.0, 1.0, 0.68)
 		PieceSocket.SOLID:
@@ -412,4 +408,4 @@ func _update_label() -> void:
 func _update_legend_label() -> void:
 	if legend_label == null:
 		return
-	legend_label.text = "Controls: SPACE pause/play | Right step | Left back | Home show all | Backspace clear | R/F3 restart | F4 seed+1 | F5 seed-1 | F2 sockets\nPiece bounds: red=anchor, green=regular, orange=glue, bright red=seam_repair. White outline marks next placement.\nSocket marker: outer ring=Expected/Canonical seam, inner dot=Actual generated edge; red edge strip means mismatch.\nSocket colors: gray/white=S solid, green=s open_small, blue=d double_open_small, teal=m open_medium, yellow=L open_large, orange=R room, purple=H shaft, white=? any."
+	legend_label.text = "Controls: SPACE pause/play | Right step | Left back | Home show all | Backspace clear | R/F3 restart | F4 seed+1 | F5 seed-1 | F2 sockets\nPiece bounds: red=anchor, green=regular, orange=glue, bright red=seam_repair. White outline marks next placement.\nSocket marker: outer ring=Expected/Canonical seam, inner dot=Actual generated edge; red edge strip means mismatch.\nSocket colors: gray/white=S solid, green=s open_small, blue=d double_open_small, teal=m open_medium, yellow=L open_large, white=? any."
