@@ -12,6 +12,7 @@ var special_chunk_planner: SpecialChunkPlanner
 var world_structure: WorldStructure
 var biome_map: BiomeMap
 var socket_profile_planner: SocketProfilePlanner
+var seam_registry: WorldSeamRegistry
 
 func _init(p_seed: int, p_library: PieceLibrary, p_config: WorldGenConfig = null, p_special_chunk_planner: SpecialChunkPlanner = null, p_world_structure: WorldStructure = null) -> void:
 	world_seed = p_seed
@@ -23,6 +24,7 @@ func _init(p_seed: int, p_library: PieceLibrary, p_config: WorldGenConfig = null
 	biome_map.world_structure = world_structure
 	biome_map.special_chunk_planner = special_chunk_planner
 	socket_profile_planner = SocketProfilePlanner.new(world_seed, biome_map, special_chunk_planner)
+	seam_registry = WorldSeamRegistry.new(socket_profile_planner)
 
 func generate_chunk(coord: Vector2i) -> PieceChunkData:
 	var data: PieceChunkData = PieceChunkData.new(coord)
@@ -40,7 +42,7 @@ func generate_chunk(coord: Vector2i) -> PieceChunkData:
 		data.special_chunk_gateway_side = structure_node.special_chunk_gateway_side
 	data.structure_source = "structure_v1" if world_structure != null and world_structure.has_node(coord) else "fallback"
 	data.intended_connection_count = _count_intended_connections(coord)
-	var profiles: Dictionary = socket_profile_planner.get_profiles_for_chunk(coord)
+	var profiles: Dictionary = seam_registry.get_profiles_for_chunk(coord) if seam_registry != null else socket_profile_planner.get_profiles_for_chunk(coord)
 	data.top_profile = _profile_from_variant(profiles.get("top", []))
 	data.bottom_profile = _profile_from_variant(profiles.get("bottom", []))
 	data.left_profile = _profile_from_variant(profiles.get("left", []))
@@ -57,6 +59,12 @@ func generate_chunk(coord: Vector2i) -> PieceChunkData:
 	_place_anchor_pieces(data, occupied, rng)
 	_fill_with_regular_pieces(data, occupied, rng)
 	_fill_glue(data, occupied, rng)
+	_refresh_actual_profiles(data)
+	_repair_boundary_sockets(data, rng)
+	_refresh_actual_profiles(data)
+	# Do not carve/seal authored piece pixels globally. Seam correctness is
+	# enforced through exact socket selection plus localized generated glue repair.
+	_recount_seam_status(data)
 	data.texture = ImageTexture.create_from_image(data.visual_image)
 	data.piece_count = data.placements.size()
 	data.used_glue_count = _count_glue(data)
@@ -230,10 +238,11 @@ func _placement_match_score(data: PieceChunkData, occupied: Array[bool], piece: 
 				var neighbor_pos: Vector2i = cell + _side_dir(side)
 				if not _unit_in_chunk(neighbor_pos):
 					var seam_socket: PieceSocket.Socket = _boundary_socket(data, cell, side)
-					var seam_score: int = PieceSocket.compatibility_score(socket_a, seam_socket)
-					if seam_score < 60:
+					# Chunk borders are exact hard constraints from WorldSeamRegistry.
+					# Compatibility remains allowed only inside a chunk.
+					if socket_a != seam_socket:
 						return -1
-					total += seam_score
+					total += 120
 					checked += 1
 					continue
 				if not occupied[neighbor_pos.y * UNITS_PER_CHUNK + neighbor_pos.x]:
@@ -346,6 +355,128 @@ func _paste_piece_texture(target: Image, tex: Texture2D, dst_rect: Rect2i) -> vo
 		img.convert(target.get_format())
 	target.blit_rect(img, Rect2i(Vector2i.ZERO, img.get_size()), dst_rect.position)
 
+
+func _repair_boundary_sockets(data: PieceChunkData, rng: RandomNumberGenerator) -> void:
+	# Long-term seam correctness rule: a chunk edge must expose exactly the
+	# canonical WorldSeamRegistry socket. Repair is non-destructive: only empty or
+	# generated-glue boundary units may be replaced. Authored prefab pieces are
+	# reported as seam issues but are never carved or overwritten here.
+	var repair_units: Dictionary = {}
+	for side: StringName in [&"top", &"right", &"bottom", &"left"]:
+		for slot: int in range(UNITS_PER_CHUNK):
+			var unit_pos: Vector2i = _boundary_unit_for_slot(side, slot)
+			var expected: PieceSocket.Socket = _boundary_socket(data, unit_pos, side)
+			var actual: PieceSocket.Socket = _actual_boundary_socket(data, unit_pos, side)
+			if actual != expected:
+				data.seam_issue_count += 1
+				var placement: PiecePlacement = _placement_at_unit(data, unit_pos)
+				var can_repair_non_destructively: bool = placement == null or placement.is_glue
+				data.seam_repairs.append({
+					"unit": unit_pos,
+					"side": side,
+					"slot": slot,
+					"expected": PieceSocket.to_name(expected),
+					"actual_before": PieceSocket.to_name(actual),
+					"repair_mode": &"generated_glue" if can_repair_non_destructively else &"authored_piece_not_modified",
+				})
+				if can_repair_non_destructively:
+					repair_units[unit_pos] = true
+	for unit_value in repair_units.keys():
+		var unit_pos: Vector2i = unit_value
+		_add_seam_repair_glue(data, unit_pos, rng)
+
+func _add_seam_repair_glue(data: PieceChunkData, unit_pos: Vector2i, rng: RandomNumberGenerator) -> void:
+	var sockets: Dictionary = _repair_glue_sockets_for(data, unit_pos, rng)
+	var top_socket: PieceSocket.Socket = PieceSocket.from_value(sockets.get(&"top", PieceSocket.SOLID))
+	var right_socket: PieceSocket.Socket = PieceSocket.from_value(sockets.get(&"right", PieceSocket.SOLID))
+	var bottom_socket: PieceSocket.Socket = PieceSocket.from_value(sockets.get(&"bottom", PieceSocket.SOLID))
+	var left_socket: PieceSocket.Socket = PieceSocket.from_value(sockets.get(&"left", PieceSocket.SOLID))
+	var seed_value: int = int(_chunk_seed(data.coord) + unit_pos.x * 1009 + unit_pos.y * 9173 + 531441)
+	var glue: Image = GluePieceGenerator.generate(data.biome_id, top_socket, right_socket, bottom_socket, left_socket, seed_value)
+	var rect: Rect2i = Rect2i(unit_pos * UNIT_SIZE, Vector2i.ONE * UNIT_SIZE)
+	data.visual_image.blit_rect(glue, Rect2i(Vector2i.ZERO, glue.get_size()), rect.position)
+	data.material_image.blit_rect(glue, Rect2i(Vector2i.ZERO, glue.get_size()), rect.position)
+	var placement: PiecePlacement = PiecePlacement.new()
+	placement.id = &"seam_repair_glue"
+	placement.unit_pos = unit_pos
+	placement.size_units = Vector2i.ONE
+	placement.is_glue = true
+	placement.phase = &"seam_repair"
+	placement.sequence_index = data.placements.size()
+	placement.generated_image = glue
+	placement.sockets = sockets
+	data.placements.append(placement)
+	data.used_glue_count += 1
+	data.seam_repair_count += 1
+
+func _repair_glue_sockets_for(data: PieceChunkData, pos: Vector2i, rng: RandomNumberGenerator) -> Dictionary:
+	var sockets: Dictionary = {}
+	for side: StringName in [&"top", &"right", &"bottom", &"left"]:
+		var neighbor_pos: Vector2i = pos + _side_dir(side)
+		if not _unit_in_chunk(neighbor_pos):
+			# Boundary sides are exact hard constraints from the canonical seam.
+			sockets[side] = _boundary_socket(data, pos, side)
+		else:
+			var neighbor: PiecePlacement = _placement_at_unit(data, neighbor_pos)
+			if neighbor != null:
+				sockets[side] = _placement_socket_for_unit_side(neighbor, neighbor_pos, _opposite_side(side))
+			else:
+				sockets[side] = _procedural_socket(data.coord, pos, side, _open_chance_for(data.chunk_type), rng)
+	return sockets
+
+func _refresh_actual_profiles(data: PieceChunkData) -> void:
+	var top: Array[PieceSocket.Socket] = []
+	var right: Array[PieceSocket.Socket] = []
+	var bottom: Array[PieceSocket.Socket] = []
+	var left: Array[PieceSocket.Socket] = []
+	for slot: int in range(UNITS_PER_CHUNK):
+		top.append(_actual_boundary_socket(data, Vector2i(slot, 0), &"top"))
+		right.append(_actual_boundary_socket(data, Vector2i(UNITS_PER_CHUNK - 1, slot), &"right"))
+		bottom.append(_actual_boundary_socket(data, Vector2i(slot, UNITS_PER_CHUNK - 1), &"bottom"))
+		left.append(_actual_boundary_socket(data, Vector2i(0, slot), &"left"))
+	data.actual_top_profile = top
+	data.actual_right_profile = right
+	data.actual_bottom_profile = bottom
+	data.actual_left_profile = left
+
+func _actual_boundary_socket(data: PieceChunkData, unit_pos: Vector2i, side: StringName) -> PieceSocket.Socket:
+	var placement: PiecePlacement = _placement_at_unit(data, unit_pos)
+	if placement == null:
+		return PieceSocket.SOLID
+	return _placement_socket_for_unit_side(placement, unit_pos, side)
+
+func _boundary_unit_for_slot(side: StringName, slot: int) -> Vector2i:
+	match side:
+		&"top":
+			return Vector2i(slot, 0)
+		&"right":
+			return Vector2i(UNITS_PER_CHUNK - 1, slot)
+		&"bottom":
+			return Vector2i(slot, UNITS_PER_CHUNK - 1)
+		&"left":
+			return Vector2i(0, slot)
+	return Vector2i.ZERO
+
+func _recount_seam_status(data: PieceChunkData) -> void:
+	data.seam_exact_count = 0
+	data.seam_compatible_count = 0
+	data.seam_broken_count = 0
+	for side: StringName in [&"top", &"right", &"bottom", &"left"]:
+		var expected_profile: Array[PieceSocket.Socket] = data.profile_for_side(side, false)
+		var actual_profile: Array[PieceSocket.Socket] = data.profile_for_side(side, true)
+		for slot: int in range(UNITS_PER_CHUNK):
+			var expected: PieceSocket.Socket = PieceSocket.from_value(expected_profile[slot] if slot < expected_profile.size() else PieceSocket.SOLID)
+			var actual: PieceSocket.Socket = PieceSocket.from_value(actual_profile[slot] if slot < actual_profile.size() else PieceSocket.SOLID)
+			if actual == expected:
+				data.seam_exact_count += 1
+			elif PieceSocket.compatible(actual, expected):
+				data.seam_compatible_count += 1
+			else:
+				data.seam_broken_count += 1
+
+
+
+
 func _fill_glue(data: PieceChunkData, occupied: Array[bool], rng: RandomNumberGenerator) -> void:
 	for y: int in range(UNITS_PER_CHUNK):
 		for x: int in range(UNITS_PER_CHUNK):
@@ -388,7 +519,10 @@ func _glue_sockets_for(data: PieceChunkData, pos: Vector2i, rng: RandomNumberGen
 			else:
 				socket = _procedural_socket(data.coord, pos, side, _open_chance_for(data.chunk_type), rng)
 		else:
+			# Boundary sockets are fixed by WorldSeamRegistry and must never be
+			# normalized away by glue-shape cleanup.
 			socket = _boundary_socket(data, pos, side)
+			is_fixed = true
 		d[side] = socket
 		fixed[side] = is_fixed
 	_normalize_glue_socket_mix(d, fixed)

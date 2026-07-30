@@ -6,6 +6,9 @@ extends Node2D
 const CHUNK_SIZE: int = PieceWorldConstants.CHUNK_SIZE
 const UNIT_SIZE: int = PieceWorldConstants.UNIT_SIZE
 const UNITS_PER_CHUNK: int = PieceWorldConstants.CHUNK_UNITS
+const SOCKET_MARKER_RING_RADIUS: float = 7.0
+const SOCKET_MARKER_DOT_RADIUS: float = 3.2
+const SOCKET_MARKER_RING_WIDTH: float = 2.0
 
 @export var show_chunk_bounds: bool = true
 @export var show_socket_profiles: bool = true
@@ -96,6 +99,8 @@ func _phase_color(phase: StringName) -> Color:
 			return Color(0.35, 1.0, 0.45, 0.68)
 		&"glue":
 			return Color(1.0, 0.65, 0.1, 0.68)
+		&"seam_repair":
+			return Color(1.0, 0.05, 0.05, 0.82)
 		_:
 			return Color(0.8, 0.8, 0.8, 0.6)
 
@@ -103,35 +108,50 @@ func _draw_profiles(data: PieceChunkData, origin: Vector2) -> void:
 	for i: int in range(UNITS_PER_CHUNK):
 		var center_x: float = origin.x + i * UNIT_SIZE + UNIT_SIZE * 0.5
 		var center_y: float = origin.y + i * UNIT_SIZE + UNIT_SIZE * 0.5
-		_draw_socket_marker(Vector2(center_x, origin.y + 8), data.top_profile[i] if i < data.top_profile.size() else PieceSocket.SOLID)
-		_draw_socket_marker(Vector2(origin.x + CHUNK_SIZE - 8, center_y), data.right_profile[i] if i < data.right_profile.size() else PieceSocket.SOLID)
-		_draw_socket_marker(Vector2(center_x, origin.y + CHUNK_SIZE - 8), data.bottom_profile[i] if i < data.bottom_profile.size() else PieceSocket.SOLID)
-		_draw_socket_marker(Vector2(origin.x + 8, center_y), data.left_profile[i] if i < data.left_profile.size() else PieceSocket.SOLID)
+		_draw_profile_marker_pair(Vector2(center_x, origin.y + 16), _socket_at(data.top_profile, i), _socket_at(data.actual_top_profile, i), Rect2(origin + Vector2(i * UNIT_SIZE, 0), Vector2(UNIT_SIZE, 20)))
+		_draw_profile_marker_pair(Vector2(origin.x + CHUNK_SIZE - 16, center_y), _socket_at(data.right_profile, i), _socket_at(data.actual_right_profile, i), Rect2(origin + Vector2(CHUNK_SIZE - 20, i * UNIT_SIZE), Vector2(20, UNIT_SIZE)))
+		_draw_profile_marker_pair(Vector2(center_x, origin.y + CHUNK_SIZE - 16), _socket_at(data.bottom_profile, i), _socket_at(data.actual_bottom_profile, i), Rect2(origin + Vector2(i * UNIT_SIZE, CHUNK_SIZE - 20), Vector2(UNIT_SIZE, 20)))
+		_draw_profile_marker_pair(Vector2(origin.x + 16, center_y), _socket_at(data.left_profile, i), _socket_at(data.actual_left_profile, i), Rect2(origin + Vector2(0, i * UNIT_SIZE), Vector2(20, UNIT_SIZE)))
 
-func _draw_socket_marker(pos: Vector2, socket_value: int) -> void:
+func _socket_at(profile: Array[PieceSocket.Socket], index: int) -> PieceSocket.Socket:
+	if index >= 0 and index < profile.size():
+		return PieceSocket.from_value(profile[index])
+	return PieceSocket.SOLID
+
+func _draw_profile_marker_pair(marker_pos: Vector2, expected: PieceSocket.Socket, actual: PieceSocket.Socket, edge_rect: Rect2) -> void:
+	if actual != expected:
+		draw_rect(edge_rect, Color(1.0, 0.05, 0.05, 0.42), true)
+	_draw_expected_socket_ring(marker_pos, expected)
+	_draw_actual_socket_dot(marker_pos, actual)
+
+func _socket_color(socket_value: int) -> Color:
 	var socket: PieceSocket.Socket = PieceSocket.from_value(socket_value)
-	var color := Color(0.9, 0.9, 0.9, 0.30)
-	var radius := 3.0
 	match socket:
 		PieceSocket.OPEN_SMALL:
-			color = Color(0.35, 1.0, 0.55, 0.88)
-			radius = 4.5
+			return Color(0.35, 1.0, 0.55, 0.92)
 		PieceSocket.DOUBLE_OPEN_SMALL:
-			color = Color(0.35, 0.8, 1.0, 0.88)
-			radius = 5.0
+			return Color(0.35, 0.8, 1.0, 0.92)
 		PieceSocket.OPEN_MEDIUM:
-			color = Color(0.2, 0.95, 0.75, 0.90)
-			radius = 6.0
-		PieceSocket.OPEN_LARGE, PieceSocket.ROOM:
-			color = Color(1.0, 0.75, 0.25, 0.92)
-			radius = 7.5
+			return Color(0.2, 0.95, 0.75, 0.94)
+		PieceSocket.OPEN_LARGE:
+			return Color(1.0, 0.75, 0.25, 0.95)
+		PieceSocket.ROOM:
+			return Color(1.0, 0.55, 0.25, 0.95)
 		PieceSocket.SHAFT:
-			color = Color(0.8, 0.55, 1.0, 0.90)
-			radius = 5.5
+			return Color(0.8, 0.55, 1.0, 0.94)
+		PieceSocket.ANY:
+			return Color(1.0, 1.0, 1.0, 0.68)
 		PieceSocket.SOLID:
-			color = Color(1.0, 1.0, 1.0, 0.22)
-			radius = 2.5
-	draw_circle(pos, radius, color)
+			return Color(1.0, 1.0, 1.0, 0.30)
+	return Color(0.9, 0.9, 0.9, 0.35)
+
+func _draw_expected_socket_ring(pos: Vector2, socket_value: int) -> void:
+	var color: Color = _socket_color(socket_value)
+	draw_arc(pos, SOCKET_MARKER_RING_RADIUS, 0.0, TAU, 32, color, SOCKET_MARKER_RING_WIDTH, true)
+
+func _draw_actual_socket_dot(pos: Vector2, socket_value: int) -> void:
+	var color: Color = _socket_color(socket_value)
+	draw_circle(pos, SOCKET_MARKER_DOT_RADIUS, color)
 
 func _draw_chunk_label(data: PieceChunkData, origin: Vector2, color: Color) -> void:
 	var chamber_line: String = ""
@@ -143,7 +163,7 @@ func _draw_chunk_label(data: PieceChunkData, origin: Vector2, color: Color) -> v
 			special_line = "\nGW %s -> %s" % [str(data.special_chunk_gateway_side), str(data.special_chunk_id)]
 		else:
 			special_line = "\nSP %s" % str(data.special_chunk_id)
-	var text := "%s\n%s/%s\n%s%s%s\npieces %d  glue %d  sockets %d" % [
+	var text := "%s\n%s/%s\n%s%s%s\npieces %d  glue %d  repairs %d  broken %d" % [
 		str(data.coord),
 		str(data.biome_id),
 		BiomeMap.chunk_type_name(data.chunk_type),
@@ -152,7 +172,8 @@ func _draw_chunk_label(data: PieceChunkData, origin: Vector2, color: Color) -> v
 		special_line,
 		data.piece_count,
 		data.used_glue_count,
-		data.compatible_match_tiles,
+		data.seam_repair_count,
+		data.seam_broken_count,
 	]
 	var font: Font = ThemeDB.fallback_font
 	if font == null:

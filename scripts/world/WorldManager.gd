@@ -121,6 +121,7 @@ func _update_debug_ui() -> void:
 
 func _build_debug_snapshot(center: Vector2i) -> Dictionary:
 	var current_chunk: PieceChunkData = loaded_chunks.get(center, null) as PieceChunkData
+	var seam_debug: Dictionary = ChunkSeamValidator.validate_loaded_chunks(loaded_chunks)
 	var special_info: String = ""
 	if special_chunk_planner != null and special_chunk_planner.is_chunk_inside_special_chunk(center):
 		var placement: SpecialChunkPlacement = special_chunk_planner.get_chunk_at(center)
@@ -153,6 +154,15 @@ func _build_debug_snapshot(center: Vector2i) -> Dictionary:
 		"right_profile": _profile_to_string(current_chunk.right_profile) if current_chunk != null else "SSSS",
 		"bottom_profile": _profile_to_string(current_chunk.bottom_profile) if current_chunk != null else "SSSS",
 		"left_profile": _profile_to_string(current_chunk.left_profile) if current_chunk != null else "SSSS",
+		"actual_top_profile": _profile_to_string(current_chunk.actual_top_profile) if current_chunk != null else "SSSS",
+		"actual_right_profile": _profile_to_string(current_chunk.actual_right_profile) if current_chunk != null else "SSSS",
+		"actual_bottom_profile": _profile_to_string(current_chunk.actual_bottom_profile) if current_chunk != null else "SSSS",
+		"actual_left_profile": _profile_to_string(current_chunk.actual_left_profile) if current_chunk != null else "SSSS",
+		"seam_repairs": current_chunk.seam_repair_count if current_chunk != null else 0,
+		"seam_expected_broken": int(seam_debug.get("expected_broken", 0)),
+		"seam_neighbor_broken": int(seam_debug.get("neighbor_broken", 0)),
+		"seam_neighbor_exact": int(seam_debug.get("neighbor_exact", 0)),
+		"seam_neighbor_compatible": int(seam_debug.get("neighbor_compatible", 0)),
 		"exact_matches": _loaded_regular_piece_count(),
 		"compatible_matches": _loaded_open_socket_count(),
 		"fallback_count": _loaded_glue_count(),

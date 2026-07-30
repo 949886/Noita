@@ -13,6 +13,20 @@ var right_profile: Array[PieceSocket.Socket] = []
 var bottom_profile: Array[PieceSocket.Socket] = []
 var left_profile: Array[PieceSocket.Socket] = []
 
+# Actual profiles are computed after piece placement and seam repair.
+# Expected profiles are the canonical WorldSeamRegistry contract; actual profiles
+# describe what the rendered/material image now exposes at the chunk edge.
+var actual_top_profile: Array[PieceSocket.Socket] = []
+var actual_right_profile: Array[PieceSocket.Socket] = []
+var actual_bottom_profile: Array[PieceSocket.Socket] = []
+var actual_left_profile: Array[PieceSocket.Socket] = []
+var seam_issue_count: int = 0
+var seam_repair_count: int = 0
+var seam_exact_count: int = 0
+var seam_compatible_count: int = 0
+var seam_broken_count: int = 0
+var seam_repairs: Array[Dictionary] = []
+
 var visual_image: Image
 var material_image: Image
 var texture: ImageTexture
@@ -58,8 +72,47 @@ func _init(p_coord: Vector2i = Vector2i.ZERO) -> void:
 	coord = p_coord
 
 func placement_at_unit(unit: Vector2i) -> PiecePlacement:
-	for placement: PiecePlacement in placements:
+	# Search newest first so seam-repair glue overlays take precedence over
+	# earlier multi-unit pieces that occupied the same 128px unit.
+	for i: int in range(placements.size() - 1, -1, -1):
+		var placement: PiecePlacement = placements[i]
 		var rect: Rect2i = Rect2i(placement.unit_pos, placement.size_units)
 		if rect.has_point(unit):
 			return placement
 	return null
+
+
+func profile_for_side(side: StringName, actual: bool = false) -> Array[PieceSocket.Socket]:
+	if actual:
+		match side:
+			&"top":
+				return actual_top_profile
+			&"right":
+				return actual_right_profile
+			&"bottom":
+				return actual_bottom_profile
+			&"left":
+				return actual_left_profile
+	else:
+		match side:
+			&"top":
+				return top_profile
+			&"right":
+				return right_profile
+			&"bottom":
+				return bottom_profile
+			&"left":
+				return left_profile
+	var empty: Array[PieceSocket.Socket] = []
+	return empty
+
+func set_actual_profile(side: StringName, profile: Array[PieceSocket.Socket]) -> void:
+	match side:
+		&"top":
+			actual_top_profile = profile
+		&"right":
+			actual_right_profile = profile
+		&"bottom":
+			actual_bottom_profile = profile
+		&"left":
+			actual_left_profile = profile

@@ -33,3 +33,7 @@ The runtime terrain generation path now uses 128px **Piece** units instead of
 - `scripts/world/SocketProfilePlanner.gd` — socket seam planner, 4 slots per edge
 - `scripts/special/SpecialPieceRenderer.gd` — image-based special chunks
 - `resources/pieces/piece_library.tres` — migrated piece library
+
+## Debug guide
+
+See [`DEBUG_OVERLAY_GUIDE.md`](DEBUG_OVERLAY_GUIDE.md) for a detailed explanation of the F1 HUD, F2 world debug drawer, socket marker shapes, and color meanings.

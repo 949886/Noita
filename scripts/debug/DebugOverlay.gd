@@ -24,7 +24,7 @@ func _build_ui() -> void:
 	margin.offset_left = 18.0
 	margin.offset_top = 18.0
 	margin.offset_right = 430.0
-	margin.offset_bottom = 318.0
+	margin.offset_bottom = 386.0
 	add_child(margin)
 
 	panel = PanelContainer.new()
@@ -65,7 +65,7 @@ func _build_ui() -> void:
 	box.add_child(stats_label)
 	special_label = _make_label("Special: none", 12, Color(0.84, 0.78, 0.94, 1.0))
 	box.add_child(special_label)
-	help_label = _make_label("F1 HUD  F2 World Debug  F3 Regen  F4 Next Seed", 11, Color(0.62, 0.68, 0.74, 1.0))
+	help_label = _make_label("F1 HUD  F2 World Debug  F3 Regen  F4 Next Seed\nSocket marker: hollow ring=Expected, filled dot=Actual, red strip=mismatch", 11, Color(0.62, 0.68, 0.74, 1.0))
 	box.add_child(help_label)
 
 func _make_label(text_value: String, font_size: int, color: Color) -> Label:
@@ -89,7 +89,7 @@ func set_debug_snapshot(snapshot: Dictionary) -> void:
 		int(snapshot.get("unit_size", 128)),
 		int(snapshot.get("units_per_chunk", 4)),
 	]
-	chunk_label.text = "Biome %s  ·  Type %s  ·  Open sides %d  ·  Conn %d\nSockets: T %s  R %s  B %s  L %s\nTags %s" % [
+	chunk_label.text = "Biome %s  ·  Type %s  ·  Open sides %d  ·  Conn %d\nExpected: T %s  R %s  B %s  L %s\nActual:   T %s  R %s  B %s  L %s\nTags %s" % [
 		str(snapshot.get("biome", "unknown")),
 		str(snapshot.get("chunk_type", "unknown")),
 		int(snapshot.get("open_sides", 0)),
@@ -98,9 +98,13 @@ func set_debug_snapshot(snapshot: Dictionary) -> void:
 		str(snapshot.get("right_profile", "SSSS")),
 		str(snapshot.get("bottom_profile", "SSSS")),
 		str(snapshot.get("left_profile", "SSSS")),
+		str(snapshot.get("actual_top_profile", "SSSS")),
+		str(snapshot.get("actual_right_profile", "SSSS")),
+		str(snapshot.get("actual_bottom_profile", "SSSS")),
+		str(snapshot.get("actual_left_profile", "SSSS")),
 		str(snapshot.get("structure_tags", "fallback")),
 	]
-	stats_label.text = "Regular pieces %d  ·  Open sockets %d  ·  Glue %d\nAir units %d  ·  Placements %d  ·  Special loaded %d\nChambers %d  ·  Current sides %d  ·  Adjusted %d" % [
+	stats_label.text = "Regular pieces %d  ·  Open sockets %d  ·  Glue %d\nAir units %d  ·  Placements %d  ·  Special loaded %d\nChambers %d  ·  Seam repairs %d  ·  Seam broken E/N %d/%d" % [
 		int(snapshot.get("exact_matches", 0)),
 		int(snapshot.get("compatible_matches", 0)),
 		int(snapshot.get("fallback_count", 0)),
@@ -108,8 +112,9 @@ func set_debug_snapshot(snapshot: Dictionary) -> void:
 		int(snapshot.get("air_pockets", 0)),
 		int(snapshot.get("chamber_carve_air", 0)),
 		int(snapshot.get("chamber_carve_open", 0)),
-		int(snapshot.get("connected_open_sides", 0)),
-		int(snapshot.get("connectivity_adjusted", 0)),
+		int(snapshot.get("seam_repairs", 0)),
+		int(snapshot.get("seam_expected_broken", 0)),
+		int(snapshot.get("seam_neighbor_broken", 0)),
 	]
 	var special_text: String = str(snapshot.get("special_info", ""))
 	var chamber_text: String = str(snapshot.get("current_chamber", ""))
@@ -117,7 +122,7 @@ func set_debug_snapshot(snapshot: Dictionary) -> void:
 	if chamber_text != "":
 		detail_text += "\nChamber: " + chamber_text
 	special_label.text = detail_text
-	help_label.text = "F1 HUD  F2 World Debug  F3 Regenerate  F4 Next Seed"
+	help_label.text = "F1 HUD  F2 World Debug  F3 Regenerate  F4 Next Seed\nSocket marker: hollow ring=Expected, filled dot=Actual, red strip=mismatch"
 
 func set_debug_data(seed_value: int, center_chunk: Vector2i, loaded_count: int, fallback_count: int, renderer_name: String = "PieceImage", air_tile_count: int = 0, compatible_match_count: int = 0) -> void:
 	set_debug_snapshot({

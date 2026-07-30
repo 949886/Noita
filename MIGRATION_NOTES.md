@@ -30,3 +30,114 @@ This project is the migrated version of `noita-tilemap` using the piece-based ge
 - Checked special chunk socket profiles have the expected 4-slot-per-chunk-edge lengths.
 
 Godot CLI was not available in this container, so the editor/runtime launch itself could not be executed here. On first open, Godot may regenerate `.import` cache files for PNG/SVG resources.
+
+## 2026-07-30 Seam hardening pass
+
+This pass fixes the open-vs-solid chunk-border problem at the root instead of relying on soft compatibility scoring.
+
+### Added
+
+- `scripts/world/WorldSeamRegistry.gd`
+  - Stores one authoritative profile per world seam.
+  - `chunk(x-1,y).right` and `chunk(x,y).left` now read the same cached vertical seam.
+  - `chunk(x,y-1).bottom` and `chunk(x,y).top` now read the same cached horizontal seam.
+  - Canonicalizes `ANY` sockets into concrete `OPEN_MEDIUM` sockets so world seams are never ambiguous.
+
+- `scripts/piece_world/ChunkSeamValidator.gd`
+  - Checks expected-vs-actual chunk profiles.
+  - Checks loaded neighbor actual-vs-actual profiles.
+  - Reports exact, compatible, and broken counts for debug HUD/world debug.
+
+### Changed
+
+- `PieceChunkGenerator.gd`
+  - Uses `WorldSeamRegistry` as the only source of external chunk profiles.
+  - Treats chunk boundary sockets as exact hard constraints during regular piece placement.
+  - Computes `actual_*_profile` after placement.
+  - Runs a deterministic seam-repair pass: any boundary unit whose actual socket does not equal the canonical seam is replaced by a 128px `seam_repair_glue` unit.
+  - Recomputes actual profiles and seam status after repair.
+  - Fixed glue normalization so boundary sockets are treated as fixed and are never normalized from open to solid.
+
+- `PieceChunkData.gd`
+  - Added `actual_top/right/bottom/left_profile`.
+  - Added seam repair/status counters.
+  - `placement_at_unit()` now searches newest placement first, so seam repair overlays take precedence over earlier multi-unit pieces.
+
+- `DebugOverlay.gd`
+  - Shows expected and actual socket profiles separately.
+  - Shows seam repair count and expected/neighbor broken seam counts.
+
+- `WorldDebugDrawer.gd`
+  - Draws expected and actual socket markers separately.
+  - Highlights any expected-vs-actual mismatch in red.
+  - Shows seam repairs in red in the piece-boundary overlay.
+
+### Result
+
+Normal streamed chunks now satisfy this invariant:
+
+```text
+for each loaded non-special neighbor seam:
+    left_chunk.actual_right_profile == right_chunk.actual_left_profile
+    upper_chunk.actual_bottom_profile == lower_chunk.actual_top_profile
+```
+
+Special chunks still render through `SpecialPieceRenderer`; their external profiles feed the same `WorldSeamRegistry` override path, and neighboring normal chunks are repaired against that canonical profile.
+
+Additional visual/material hardening:
+
+- `PieceChunkGenerator` now enforces boundary pixels after seam repair:
+  - open sockets are carved through `visual_image` and `material_image` at the canonical slot position;
+  - solid sockets seal an 8px border strip with biome rock color.
+- This catches the case where a `PieceDef` declares a matching socket but the source image edge was authored incorrectly.
+
+## 2026-07-30 Seam visual preservation hotfix
+
+The previous seam-fixed build enforced canonical sockets by carving/sealing final
+chunk edge pixels. That protected seams but was too destructive for authored
+prefab pieces: a predefined piece placed on an open seam could receive a large
+forced edge tunnel.
+
+This hotfix keeps the long-term seam architecture but changes the enforcement
+rules:
+
+- `WorldSeamRegistry` remains the single canonical source for chunk-edge sockets.
+- Chunk boundary placement remains an exact logical socket constraint.
+- `_enforce_boundary_pixels()` was removed from the generation path.
+- Authored prefab images are no longer carved, sealed, or overwritten to satisfy
+  a seam.
+- Seam repair is non-destructive: only empty/generated-glue boundary units may be
+  replaced by `seam_repair_glue`.
+- If an authored piece somehow violates the logical seam contract, the issue is
+  reported in `seam_repairs` with `repair_mode = authored_piece_not_modified`
+  instead of mutating the art.
+
+This separates the generator contract from art correction: socket mismatch is
+handled by selection/registry/repair logic, while piece art remains under author
+control.
+
+## 2026-07-30 Debug marker clarity pass
+
+The world-space socket overlay has been updated to make expected-vs-actual seam debugging easier to read:
+
+- Each socket slot now uses one combined marker instead of two separated dots.
+- Hollow outer ring = expected/canonical socket from `WorldSeamRegistry`.
+- Filled inner dot = actual socket produced by the placed piece/glue.
+- A red translucent strip still marks `expected != actual`.
+- The F1 HUD help text now includes the marker legend.
+- Added `DEBUG_OVERLAY_GUIDE.md` with detailed explanations for the HUD, socket characters, marker shapes, color meanings, chunk colors, piece phase colors, and recommended debugging workflow.
+
+This is a visual/debug-only change. It does not modify seam planning, piece selection, or generated chunk data.
+
+
+## 2026-07-30 Debug marker uniform-size pass
+
+The world-space socket marker style has been refined again for readability:
+
+- Expected/canonical socket is drawn as a hollow outer ring.
+- Actual/generated socket is drawn as a filled inner dot.
+- Marker sizes are now fixed across all socket types. Size no longer encodes socket class.
+- Socket type is encoded only by color and by the F1 HUD socket characters.
+- `DEBUG_OVERLAY_GUIDE.md` now explicitly documents marker shape, size rules, socket colors, chunk colors, piece phase colors, and the recommended seam debugging workflow.
+
+This is a debug-visual-only change. It does not alter generation, seam registry data, piece selection, or repair behavior.
