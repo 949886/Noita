@@ -80,14 +80,21 @@ func _make_label(text_value: String, font_size: int, color: Color) -> Label:
 func set_debug_snapshot(snapshot: Dictionary) -> void:
 	if panel == null:
 		_build_ui()
-	world_label.text = "Seed %d  ·  Loaded %d  ·  Radius %d\nPlayer chunk %s  ·  Renderer %s  ·  Unit %dpx x %d" % [
+	world_label.text = "Seed %d  ·  Loaded %d  ·  Pending %d  ·  Radius %d\nPlayer chunk %s  ·  Renderer %s  ·  Unit %dpx x %d\nAsync chunks %s q/r %d/%d  ·  special q %d  ·  last gen/upload %dms/%d" % [
 		int(snapshot.get("seed", 0)),
 		int(snapshot.get("loaded_count", 0)),
+		int(snapshot.get("pending_count", 0)),
 		int(snapshot.get("load_radius", 0)),
 		str(snapshot.get("center_chunk", Vector2i.ZERO)),
 		str(snapshot.get("renderer", "PieceImage")),
 		int(snapshot.get("unit_size", 128)),
 		int(snapshot.get("units_per_chunk", 4)),
+		"on" if bool(snapshot.get("threaded_chunks", false)) else "off",
+		int(snapshot.get("worker_queue", 0)),
+		int(snapshot.get("worker_results", 0)),
+		int(snapshot.get("special_pending", 0)),
+		int(snapshot.get("last_chunk_ms", 0)),
+		int(snapshot.get("last_upload_count", 0)),
 	]
 	chunk_label.text = "Biome %s  ·  Type %s  ·  Open sides %d  ·  Conn %d\nExpected: T %s  R %s  B %s  L %s\nActual:   T %s  R %s  B %s  L %s\nTags %s" % [
 		str(snapshot.get("biome", "unknown")),

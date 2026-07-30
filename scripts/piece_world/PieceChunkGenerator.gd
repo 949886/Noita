@@ -26,7 +26,7 @@ func _init(p_seed: int, p_library: PieceLibrary, p_config: WorldGenConfig = null
 	socket_profile_planner = SocketProfilePlanner.new(world_seed, biome_map, special_chunk_planner)
 	seam_registry = WorldSeamRegistry.new(socket_profile_planner)
 
-func generate_chunk(coord: Vector2i) -> PieceChunkData:
+func generate_chunk(coord: Vector2i, create_texture: bool = true) -> PieceChunkData:
 	var data: PieceChunkData = PieceChunkData.new(coord)
 	data.biome_id = biome_map.get_biome(coord)
 	data.chunk_type = biome_map.get_chunk_type(coord)
@@ -65,7 +65,8 @@ func generate_chunk(coord: Vector2i) -> PieceChunkData:
 	# Do not carve/seal authored piece pixels globally. Seam correctness is
 	# enforced through exact socket selection plus localized generated glue repair.
 	_recount_seam_status(data)
-	data.texture = ImageTexture.create_from_image(data.visual_image)
+	if create_texture:
+		data.texture = ImageTexture.create_from_image(data.visual_image)
 	data.piece_count = data.placements.size()
 	data.used_glue_count = _count_glue(data)
 	data.regular_piece_count = maxi(0, data.piece_count - data.used_glue_count)
@@ -332,26 +333,37 @@ func _add_piece(data: PieceChunkData, occupied: Array[bool], piece: PieceDef, un
 	for y: int in range(piece.size_units.y):
 		for x: int in range(piece.size_units.x):
 			occupied[(unit_pos.y + y) * UNITS_PER_CHUNK + (unit_pos.x + x)] = true
-	_paste_piece_texture(data.visual_image, piece.texture, placement.pixel_rect(UNIT_SIZE))
-	_paste_piece_texture(data.material_image, piece.material_texture if piece.material_texture != null else piece.texture, placement.pixel_rect(UNIT_SIZE))
+	_paste_piece_image(data.visual_image, piece.cached_visual_image, piece.texture, dst_rect_for_piece(placement))
+	_paste_piece_image(data.material_image, piece.cached_material_image, piece.material_texture if piece.material_texture != null else piece.texture, dst_rect_for_piece(placement))
 
-func _paste_piece_texture(target: Image, tex: Texture2D, dst_rect: Rect2i) -> void:
-	if tex == null:
-		return
-	var img: Image = tex.get_image()
+func dst_rect_for_piece(placement: PiecePlacement) -> Rect2i:
+	return placement.pixel_rect(UNIT_SIZE)
+
+func _paste_piece_image(target: Image, cached_img: Image, fallback_tex: Texture2D, dst_rect: Rect2i) -> void:
+	var img: Image = cached_img
 	if img == null or img.is_empty():
-		return
-	img = img.duplicate()
-	if img.is_compressed():
-		var err: Error = img.decompress()
-		if err != OK:
-			push_warning("Could not decompress piece texture image before blit.")
+		# This fallback should only be reached when a library was not prepared. It is
+		# kept for editor/demo resilience, but runtime threaded generation prepares all
+		# images on the main thread before workers start.
+		if fallback_tex == null:
 			return
+		img = fallback_tex.get_image()
+		if img == null or img.is_empty():
+			return
+		img = img.duplicate()
+		if img.is_compressed():
+			var err: Error = img.decompress()
+			if err != OK:
+				push_warning("Could not decompress piece texture image before blit.")
+				return
+		if img.get_format() != target.get_format():
+			img.convert(target.get_format())
+		if img.get_size() != dst_rect.size:
+			img.resize(dst_rect.size.x, dst_rect.size.y, Image.INTERPOLATE_NEAREST)
 	if img.get_format() != target.get_format():
-		img.convert(target.get_format())
-	if img.get_size() != dst_rect.size:
-		img.resize(dst_rect.size.x, dst_rect.size.y, Image.INTERPOLATE_NEAREST)
-	if img.get_format() != target.get_format():
+		# Do not mutate the cached image when it is already shared by worker jobs. The
+		# prepared cache uses target format, so this branch is normally unreachable.
+		img = img.duplicate()
 		img.convert(target.get_format())
 	target.blit_rect(img, Rect2i(Vector2i.ZERO, img.get_size()), dst_rect.position)
 

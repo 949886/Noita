@@ -188,3 +188,37 @@ Controls:
 - `F4`: increment seed and restart
 - `F5`: decrement seed and restart
 - `F2`: toggle socket markers
+
+## 2026-07-31 threaded streaming refactor
+
+Added a two-stage threaded streaming architecture to reduce movement stutter when crossing chunk boundaries.
+
+### Added
+
+- `scripts/piece_world/ChunkGenerationWorker.gd`
+- `scripts/special/SpecialChunkImageWorker.gd`
+- `scripts/special/SpecialPieceImageBuilder.gd`
+- `THREADING_STREAMING_GUIDE.md`
+
+### Changed
+
+- `WorldManager.gd` now queues missing chunks instead of synchronously generating every chunk in the current load radius.
+- `PieceChunkGenerator.generate_chunk(coord, create_texture)` can now generate chunk data/images without creating an `ImageTexture`.
+- `PieceChunkRenderer.gd` creates the `ImageTexture` on the main thread when attaching a completed chunk.
+- `PieceLibrary.prepare()` now pre-caches piece `Image` data through `PieceDef.prepare_image_cache()`.
+- `SpecialChunkManager.gd` can queue special chunk image generation through a background worker.
+- `SpecialPieceRenderer.gd` only performs Node/Texture setup; image construction moved to `SpecialPieceImageBuilder`.
+- `DebugOverlay.gd` now displays pending/worker queue stats.
+- `WorldDebugDrawer.gd` redraws at a throttled interval instead of every frame.
+
+### Threading boundary
+
+Background threads now perform CPU-heavy `Image` generation and composition. Main thread remains responsible for:
+
+- scene-tree mutation
+- renderer node creation
+- `ImageTexture.create_from_image()`
+- `Sprite2D` texture assignment
+- debug UI update
+
+This avoids unsafe scene-tree access from worker threads while moving the expensive chunk calculation off the movement frame.

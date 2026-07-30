@@ -14,12 +14,22 @@ const SOCKET_MARKER_RING_WIDTH: float = 2.0
 @export var show_socket_profiles: bool = true
 @export var show_chunk_labels: bool = true
 @export var show_piece_bounds: bool = true
+@export_range(0.05, 1.0, 0.05) var redraw_interval: float = 0.15
 
 var world_manager: Node = null
+var redraw_accum: float = 999.0
 
-func _process(_delta: float) -> void:
-	if visible:
+func _process(delta: float) -> void:
+	if not visible:
+		return
+	redraw_accum += delta
+	if redraw_accum >= redraw_interval:
+		redraw_accum = 0.0
 		queue_redraw()
+
+func request_debug_redraw() -> void:
+	redraw_accum = redraw_interval
+	queue_redraw()
 
 func _draw() -> void:
 	if world_manager == null:

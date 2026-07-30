@@ -3,6 +3,10 @@ extends Node2D
 # Runtime streaming coordinator for the migrated piece world.
 # TileMap generation has been removed from the main runtime path; chunks are
 # generated as 4 x 4 piece-unit images where each unit is 128px.
+#
+# Threading model:
+# - Background worker: PieceChunkData + visual/material Image composition.
+# - Main thread: scene-tree changes, ImageTexture upload, debug UI updates.
 
 const DEFAULT_CONFIG_PATH: String = "res://resources/world_gen/default_world_gen_config.tres"
 const UNIT_SIZE: int = PieceWorldConstants.UNIT_SIZE
@@ -14,11 +18,18 @@ const CHUNK_SIZE: int = PieceWorldConstants.CHUNK_SIZE
 @export var override_seed: bool = false
 @export var world_seed: int = 20260706
 @export var use_runtime_generated_fallback: bool = false
+@export var use_threaded_chunk_generation: bool = true
+@export var use_threaded_special_generation: bool = true
+@export_range(1, 8, 1) var main_thread_upload_budget_per_frame: int = 2
+@export_range(0.05, 1.0, 0.05) var debug_update_interval: float = 0.20
 
 var library: PieceLibrary
 var generator: PieceChunkGenerator
+var chunk_worker: ChunkGenerationWorker
 var loaded_chunks: Dictionary = {}
 var chunk_renderers: Dictionary = {}
+var pending_chunks: Dictionary = {}
+var wanted_chunks: Dictionary = {}
 var player: Node2D
 var debug_overlay: CanvasLayer
 var world_debug_drawer: WorldDebugDrawer
@@ -30,6 +41,11 @@ var special_chunk_manager: SpecialChunkManager
 var special_chunks_parent: Node2D
 var chunk_renderers_parent: Node2D
 var world_structure: WorldStructure
+var debug_update_accum: float = 999.0
+var cached_seam_debug: Dictionary = {}
+var seam_debug_dirty: bool = true
+var last_chunk_generation_ms: int = 0
+var last_chunk_upload_count: int = 0
 
 func _ready() -> void:
 	active_config = _load_config()
@@ -44,6 +60,8 @@ func _ready() -> void:
 	if library == null:
 		push_error("WorldManager: Unable to load PieceLibrary.")
 		return
+	# Important: this caches Texture2D -> Image on the main thread before any
+	# background workers start.
 	library.prepare()
 
 	chunk_renderers_parent = get_node_or_null("ChunkRenderers") as Node2D
@@ -52,18 +70,7 @@ func _ready() -> void:
 		chunk_renderers_parent.name = "ChunkRenderers"
 		add_child(chunk_renderers_parent)
 
-	world_structure = WorldStructureBuilder.new(world_seed, active_config).build()
-	var planning_biome_map: BiomeMap = BiomeMap.new(world_seed, active_config)
-	planning_biome_map.world_structure = world_structure
-	special_chunk_planner = SpecialChunkPlanner.new(world_seed, active_config, planning_biome_map, world_structure)
-	special_chunks_parent = get_node_or_null("SpecialChunks") as Node2D
-	if special_chunks_parent == null:
-		special_chunks_parent = Node2D.new()
-		special_chunks_parent.name = "SpecialChunks"
-		add_child(special_chunks_parent)
-	special_chunk_manager = SpecialChunkManager.new(special_chunk_planner, special_chunks_parent)
-
-	generator = PieceChunkGenerator.new(world_seed, library, active_config, special_chunk_planner, world_structure)
+	_build_world_runtime()
 	player = get_node_or_null("Player") as Node2D
 	debug_overlay = get_node_or_null("DebugOverlay") as CanvasLayer
 	world_debug_drawer = get_node_or_null("WorldDebugDrawer") as WorldDebugDrawer
@@ -73,6 +80,40 @@ func _ready() -> void:
 	if player == null:
 		push_warning("WorldManager: Player node not found. Chunks will load around origin.")
 	_update_loaded_chunks(true)
+
+func _exit_tree() -> void:
+	_stop_workers()
+
+func _build_world_runtime() -> void:
+	world_structure = WorldStructureBuilder.new(world_seed, active_config).build()
+	var planning_biome_map: BiomeMap = BiomeMap.new(world_seed, active_config)
+	planning_biome_map.world_structure = world_structure
+	special_chunk_planner = SpecialChunkPlanner.new(world_seed, active_config, planning_biome_map, world_structure)
+	special_chunks_parent = get_node_or_null("SpecialChunks") as Node2D
+	if special_chunks_parent == null:
+		special_chunks_parent = Node2D.new()
+		special_chunks_parent.name = "SpecialChunks"
+		add_child(special_chunks_parent)
+	special_chunk_manager = SpecialChunkManager.new(special_chunk_planner, special_chunks_parent, use_threaded_special_generation)
+	generator = PieceChunkGenerator.new(world_seed, library, active_config, special_chunk_planner, world_structure)
+	_start_chunk_worker()
+
+func _start_chunk_worker() -> void:
+	if not use_threaded_chunk_generation:
+		chunk_worker = null
+		return
+	chunk_worker = ChunkGenerationWorker.new()
+	if not chunk_worker.start(generator):
+		push_warning("WorldManager: chunk worker failed to start; falling back to synchronous generation.")
+		chunk_worker = null
+		use_threaded_chunk_generation = false
+
+func _stop_workers() -> void:
+	if chunk_worker != null:
+		chunk_worker.stop()
+		chunk_worker = null
+	if special_chunk_manager != null:
+		special_chunk_manager.stop()
 
 func _load_config() -> WorldGenConfig:
 	if world_gen_config != null:
@@ -94,9 +135,15 @@ func _load_piece_library() -> PieceLibrary:
 	runtime_library.load_from_default_dirs()
 	return runtime_library
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	_update_loaded_chunks(false)
-	_update_debug_ui()
+	_collect_chunk_results()
+	if special_chunk_manager != null:
+		special_chunk_manager.process_ready(main_thread_upload_budget_per_frame)
+	debug_update_accum += delta
+	if debug_update_accum >= debug_update_interval:
+		debug_update_accum = 0.0
+		_update_debug_ui()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:
@@ -104,10 +151,12 @@ func _unhandled_input(event: InputEvent) -> void:
 			KEY_F1:
 				if debug_overlay != null:
 					debug_overlay.visible = not debug_overlay.visible
+					debug_update_accum = debug_update_interval
 			KEY_F2:
 				debug_world_visible = not debug_world_visible
 				if world_debug_drawer != null:
 					world_debug_drawer.visible = debug_world_visible
+					world_debug_drawer.queue_redraw()
 			KEY_F3:
 				_regenerate_world(false)
 			KEY_F4:
@@ -121,7 +170,10 @@ func _update_debug_ui() -> void:
 
 func _build_debug_snapshot(center: Vector2i) -> Dictionary:
 	var current_chunk: PieceChunkData = loaded_chunks.get(center, null) as PieceChunkData
-	var seam_debug: Dictionary = ChunkSeamValidator.validate_loaded_chunks(loaded_chunks)
+	if seam_debug_dirty:
+		cached_seam_debug = ChunkSeamValidator.validate_loaded_chunks(loaded_chunks)
+		seam_debug_dirty = false
+	var seam_debug: Dictionary = cached_seam_debug
 	var special_info: String = ""
 	if special_chunk_planner != null and special_chunk_planner.is_chunk_inside_special_chunk(center):
 		var placement: SpecialChunkPlacement = special_chunk_planner.get_chunk_at(center)
@@ -143,8 +195,17 @@ func _build_debug_snapshot(center: Vector2i) -> Dictionary:
 		"seed": world_seed,
 		"center_chunk": center,
 		"loaded_count": loaded_chunks.size(),
+		"pending_count": pending_chunks.size(),
+		"worker_queue": chunk_worker.queued_count() if chunk_worker != null else 0,
+		"worker_results": chunk_worker.result_count() if chunk_worker != null else 0,
+		"special_pending": special_chunk_manager.queued_count() if special_chunk_manager != null else 0,
+		"special_worker_queue": special_chunk_manager.worker_queue_count() if special_chunk_manager != null else 0,
+		"threaded_chunks": use_threaded_chunk_generation and chunk_worker != null,
+		"threaded_specials": use_threaded_special_generation and special_chunk_manager != null and special_chunk_manager.image_worker != null,
+		"last_chunk_ms": last_chunk_generation_ms,
+		"last_upload_count": last_chunk_upload_count,
 		"load_radius": load_radius,
-		"renderer": "PieceImage + SpecialPiece",
+		"renderer": "PieceImage threaded" if use_threaded_chunk_generation and chunk_worker != null else "PieceImage sync",
 		"unit_size": UNIT_SIZE,
 		"units_per_chunk": UNITS_PER_CHUNK,
 		"biome": current_chunk.biome_id if current_chunk != null else biome_map_name(center),
@@ -183,9 +244,144 @@ func _build_debug_snapshot(center: Vector2i) -> Dictionary:
 	}
 
 func biome_map_name(coord: Vector2i) -> StringName:
-	if generator != null and generator.biome_map != null:
-		return generator.biome_map.get_biome(coord)
-	return &"unknown"
+	# Avoid touching the background worker's generator/biome map from the main
+	# thread. This lightweight temporary map only performs read-only lookups for HUD
+	# fallback text when the current chunk has not arrived yet.
+	if active_config == null:
+		return &"unknown"
+	var map: BiomeMap = BiomeMap.new(world_seed, active_config)
+	map.world_structure = world_structure
+	map.special_chunk_planner = special_chunk_planner
+	return map.get_biome(coord)
+
+func _regenerate_world(advance_seed: bool) -> void:
+	_stop_workers()
+	if advance_seed:
+		world_seed += 1
+		if active_config != null:
+			active_config.world_seed = world_seed
+	for coord: Vector2i in chunk_renderers.keys():
+		var renderer: Node = chunk_renderers.get(coord, null) as Node
+		if renderer != null:
+			renderer.queue_free()
+	loaded_chunks.clear()
+	chunk_renderers.clear()
+	pending_chunks.clear()
+	wanted_chunks.clear()
+	if special_chunks_parent != null:
+		for child: Node in special_chunks_parent.get_children():
+			child.queue_free()
+	if library != null:
+		library.prepare()
+	_build_world_runtime()
+	seam_debug_dirty = true
+	debug_update_accum = debug_update_interval
+	_update_loaded_chunks(true)
+
+func world_pos_to_chunk(pos: Vector2) -> Vector2i:
+	return Vector2i(floori(pos.x / float(CHUNK_SIZE)), floori(pos.y / float(CHUNK_SIZE)))
+
+func _update_loaded_chunks(force: bool) -> void:
+	if generator == null:
+		return
+	var center: Vector2i = world_pos_to_chunk(player.global_position if player != null else Vector2.ZERO)
+	var needed: Dictionary = {}
+	var normal_candidates: Array[Vector2i] = []
+	for y: int in range(center.y - load_radius, center.y + load_radius + 1):
+		for x: int in range(center.x - load_radius, center.x + load_radius + 1):
+			var coord: Vector2i = Vector2i(x, y)
+			needed[coord] = true
+			if special_chunk_planner != null and special_chunk_planner.is_chunk_inside_special_chunk(coord):
+				if not loaded_chunks.has(coord):
+					loaded_chunks[coord] = null
+				continue
+			if force or (not loaded_chunks.has(coord) and not pending_chunks.has(coord)):
+				normal_candidates.append(coord)
+	normal_candidates.sort_custom(func(a: Vector2i, b: Vector2i) -> bool:
+		return a.distance_squared_to(center) < b.distance_squared_to(center)
+	)
+	for coord: Vector2i in normal_candidates:
+		if not loaded_chunks.has(coord) and not pending_chunks.has(coord):
+			_request_chunk(coord)
+	wanted_chunks = needed
+	if chunk_worker != null:
+		chunk_worker.prune_requests(needed)
+	if special_chunk_manager != null:
+		special_chunk_manager.update_loaded_chunks(needed)
+	var existing: Array = loaded_chunks.keys()
+	for coord_to_check: Vector2i in existing:
+		if not needed.has(coord_to_check):
+			_unload_chunk(coord_to_check)
+	var pending_existing: Array = pending_chunks.keys()
+	for pending_coord: Vector2i in pending_existing:
+		if not needed.has(pending_coord):
+			pending_chunks.erase(pending_coord)
+
+func _request_chunk(coord: Vector2i) -> void:
+	if loaded_chunks.has(coord) or pending_chunks.has(coord):
+		return
+	if use_threaded_chunk_generation and chunk_worker != null:
+		pending_chunks[coord] = true
+		chunk_worker.enqueue(coord)
+	else:
+		_load_chunk_sync(coord)
+
+func _collect_chunk_results() -> void:
+	last_chunk_upload_count = 0
+	if chunk_worker == null:
+		return
+	var results: Array[Dictionary] = chunk_worker.collect_results(main_thread_upload_budget_per_frame)
+	for result: Dictionary in results:
+		var coord: Vector2i = result.get("coord", Vector2i.ZERO)
+		pending_chunks.erase(coord)
+		last_chunk_generation_ms = int(result.get("elapsed_ms", 0))
+		var data: PieceChunkData = result.get("data", null) as PieceChunkData
+		if data == null:
+			push_warning("WorldManager: async chunk %s failed: %s" % [str(coord), str(result.get("error", "unknown"))])
+			continue
+		if not _chunk_is_currently_needed(coord):
+			continue
+		_attach_chunk_renderer(data)
+		last_chunk_upload_count += 1
+
+func _chunk_is_currently_needed(coord: Vector2i) -> bool:
+	if not wanted_chunks.has(coord):
+		return false
+	if special_chunk_planner != null and special_chunk_planner.is_chunk_inside_special_chunk(coord):
+		return false
+	return true
+
+func _load_chunk_sync(coord: Vector2i) -> void:
+	if loaded_chunks.has(coord):
+		return
+	if special_chunk_planner != null and special_chunk_planner.is_chunk_inside_special_chunk(coord):
+		loaded_chunks[coord] = null
+		return
+	var data: PieceChunkData = generator.generate_chunk(coord, true)
+	_attach_chunk_renderer(data)
+
+func _attach_chunk_renderer(data: PieceChunkData) -> void:
+	if data == null or loaded_chunks.has(data.coord):
+		return
+	var renderer: PieceChunkRenderer = PieceChunkRenderer.new()
+	chunk_renderers_parent.add_child(renderer)
+	renderer.setup(data)
+	chunk_renderers[data.coord] = renderer
+	loaded_chunks[data.coord] = data
+	seam_debug_dirty = true
+	if world_debug_drawer != null and world_debug_drawer.visible:
+		world_debug_drawer.queue_redraw()
+
+func _unload_chunk(coord: Vector2i) -> void:
+	var renderer: Node = chunk_renderers.get(coord, null) as Node
+	if renderer != null:
+		renderer.queue_free()
+	chunk_renderers.erase(coord)
+	loaded_chunks.erase(coord)
+	pending_chunks.erase(coord)
+	seam_debug_dirty = true
+	if world_debug_drawer != null and world_debug_drawer.visible:
+		world_debug_drawer.queue_redraw()
 
 func _loaded_air_unit_count() -> int:
 	var total: int = 0
@@ -264,68 +460,3 @@ func _profile_to_string(profile: Array[PieceSocket.Socket]) -> String:
 	for socket: PieceSocket.Socket in profile:
 		result += PieceSocket.to_debug_char(PieceSocket.from_value(socket))
 	return result
-
-func _regenerate_world(advance_seed: bool) -> void:
-	if advance_seed:
-		world_seed += 1
-		if active_config != null:
-			active_config.world_seed = world_seed
-	for coord: Vector2i in chunk_renderers.keys():
-		var renderer: Node = chunk_renderers.get(coord, null) as Node
-		if renderer != null:
-			renderer.queue_free()
-	loaded_chunks.clear()
-	chunk_renderers.clear()
-	if special_chunks_parent != null:
-		for child: Node in special_chunks_parent.get_children():
-			child.queue_free()
-	if library != null:
-		library.prepare()
-	world_structure = WorldStructureBuilder.new(world_seed, active_config).build()
-	var planning_biome_map: BiomeMap = BiomeMap.new(world_seed, active_config)
-	planning_biome_map.world_structure = world_structure
-	special_chunk_planner = SpecialChunkPlanner.new(world_seed, active_config, planning_biome_map, world_structure)
-	special_chunk_manager = SpecialChunkManager.new(special_chunk_planner, special_chunks_parent)
-	generator = PieceChunkGenerator.new(world_seed, library, active_config, special_chunk_planner, world_structure)
-	_update_loaded_chunks(true)
-
-func world_pos_to_chunk(pos: Vector2) -> Vector2i:
-	return Vector2i(floori(pos.x / float(CHUNK_SIZE)), floori(pos.y / float(CHUNK_SIZE)))
-
-func _update_loaded_chunks(force: bool) -> void:
-	if generator == null:
-		return
-	var center: Vector2i = world_pos_to_chunk(player.global_position if player != null else Vector2.ZERO)
-	var needed: Dictionary = {}
-	for y: int in range(center.y - load_radius, center.y + load_radius + 1):
-		for x: int in range(center.x - load_radius, center.x + load_radius + 1):
-			var coord: Vector2i = Vector2i(x, y)
-			needed[coord] = true
-			if force or not loaded_chunks.has(coord):
-				_load_chunk(coord)
-	if special_chunk_manager != null:
-		special_chunk_manager.update_loaded_chunks(needed)
-	var existing: Array = loaded_chunks.keys()
-	for coord_to_check: Vector2i in existing:
-		if not needed.has(coord_to_check):
-			_unload_chunk(coord_to_check)
-
-func _load_chunk(coord: Vector2i) -> void:
-	if loaded_chunks.has(coord):
-		return
-	if special_chunk_planner != null and special_chunk_planner.is_chunk_inside_special_chunk(coord):
-		loaded_chunks[coord] = null
-		return
-	var data: PieceChunkData = generator.generate_chunk(coord)
-	var renderer: PieceChunkRenderer = PieceChunkRenderer.new()
-	chunk_renderers_parent.add_child(renderer)
-	renderer.setup(data)
-	chunk_renderers[coord] = renderer
-	loaded_chunks[coord] = data
-
-func _unload_chunk(coord: Vector2i) -> void:
-	var renderer: Node = chunk_renderers.get(coord, null) as Node
-	if renderer != null:
-		renderer.queue_free()
-	chunk_renderers.erase(coord)
-	loaded_chunks.erase(coord)

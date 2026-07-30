@@ -57,3 +57,8 @@ scenes/PieceGenerationSequenceDemo.tscn
 ```
 
 It was migrated from project 1 but now uses the current piece-world generator, 128px units, 4 socket slots per edge, `WorldSeamRegistry`, and non-destructive seam repair. See `PIECE_GENERATION_SEQUENCE_DEMO_GUIDE.md` for controls and how to read the expected/actual socket markers.
+
+
+## Threaded streaming
+
+This build includes a threaded chunk-streaming refactor. Normal piece chunk generation and special chunk image construction are queued to background workers; the main thread only uploads ready images to `ImageTexture` and attaches renderer nodes. See `THREADING_STREAMING_GUIDE.md` for details and runtime tuning options.

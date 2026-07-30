@@ -10,6 +10,8 @@ enum PieceKind {
 	SPECIAL,
 }
 
+const DEFAULT_TARGET_FORMAT: Image.Format = Image.FORMAT_RGBA8
+
 @export var id: StringName = &""
 @export_enum("Cave", "Room", "Structure", "Glue", "Special") var kind: int = PieceKind.CAVE
 @export var texture: Texture2D
@@ -23,6 +25,13 @@ enum PieceKind {
 @export var right_slots: Array[PieceSocket.Socket] = []
 @export var bottom_slots: Array[PieceSocket.Socket] = []
 @export var left_slots: Array[PieceSocket.Socket] = []
+
+# Runtime-only image caches. These are filled on the main thread by
+# PieceLibrary.prepare() so background chunk workers never need to call
+# Texture2D.get_image(), decompress, convert, or resize during generation.
+var cached_visual_image: Image
+var cached_material_image: Image
+var image_cache_ready: bool = false
 
 func allows_biome(biome_id: StringName) -> bool:
 	return allowed_biomes.is_empty() or allowed_biomes.has(biome_id)
@@ -54,3 +63,37 @@ func normalized_slots(side: StringName) -> Array[PieceSocket.Socket]:
 		else:
 			result.append(PieceSocket.SOLID)
 	return result
+
+func target_pixel_size() -> Vector2i:
+	var unit_size: int = PieceWorldConstants.UNIT_SIZE
+	var result: Vector2i = size_units * unit_size
+	if result.x <= 0 or result.y <= 0:
+		return size_px
+	return result
+
+func prepare_image_cache(target_format: Image.Format = DEFAULT_TARGET_FORMAT) -> void:
+	var target_size: Vector2i = target_pixel_size()
+	cached_visual_image = _texture_to_cached_image(texture, target_size, target_format)
+	var material_source: Texture2D = material_texture if material_texture != null else texture
+	cached_material_image = _texture_to_cached_image(material_source, target_size, target_format)
+	image_cache_ready = cached_visual_image != null and not cached_visual_image.is_empty()
+
+func _texture_to_cached_image(source_texture: Texture2D, target_size: Vector2i, target_format: Image.Format) -> Image:
+	if source_texture == null:
+		return null
+	var img: Image = source_texture.get_image()
+	if img == null or img.is_empty():
+		return null
+	img = img.duplicate()
+	if img.is_compressed():
+		var err: Error = img.decompress()
+		if err != OK:
+			push_warning("PieceDef %s could not decompress cached image." % str(id))
+			return null
+	if img.get_format() != target_format:
+		img.convert(target_format)
+	if img.get_size() != target_size:
+		img.resize(target_size.x, target_size.y, Image.INTERPOLATE_NEAREST)
+	if img.get_format() != target_format:
+		img.convert(target_format)
+	return img

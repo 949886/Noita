@@ -21,6 +21,9 @@ func setup(p_data: PieceChunkData) -> void:
 		sprite.centered = false
 		add_child(sprite)
 	position = Vector2(data.coord * PieceWorldConstants.CHUNK_SIZE).round()
+	if data.texture == null and data.visual_image != null and not data.visual_image.is_empty():
+		# Texture upload must stay on the main thread. Background workers only build Images.
+		data.texture = ImageTexture.create_from_image(data.visual_image)
 	sprite.texture = data.texture
 	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	queue_redraw()

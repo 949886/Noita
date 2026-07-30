@@ -9,6 +9,7 @@ func prepare() -> void:
 	for resource: Resource in pieces:
 		var piece: PieceDef = resource as PieceDef
 		if piece != null:
+			piece.prepare_image_cache()
 			pieces_by_id[piece.id] = piece
 	print("PieceLibrary loaded ", pieces_by_id.size(), " piece defs")
 	if pieces_by_id.is_empty():
