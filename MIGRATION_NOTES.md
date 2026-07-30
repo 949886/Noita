@@ -222,3 +222,43 @@ Background threads now perform CPU-heavy `Image` generation and composition. Mai
 - debug UI update
 
 This avoids unsafe scene-tree access from worker threads while moving the expensive chunk calculation off the movement frame.
+
+
+## 2026-07-31 mobile performance pass
+
+Added a mobile-oriented streaming optimization pass on top of threaded chunk generation.
+
+### Changed
+
+- Mobile performance behavior is now provided by `resources/runtime_profiles/mobile_runtime_profile.tres`.
+- PC/editor behavior is provided by `resources/runtime_profiles/pc_runtime_profile.tres`.
+- Normal chunk and special chunk uploads share one main-thread upload budget.
+- The Mobile profile sets `main_thread_upload_budget_per_frame = 1`; the PC profile sets it to `2`.
+- F1/F2 debug UI starts hidden in `World.tscn`; profile resources control startup visibility and draw detail defaults.
+- `DebugOverlay` no longer builds snapshots while hidden.
+- `PieceChunkRenderer` supports CPU `visual_image` release after `ImageTexture` upload.
+- `PieceChunkRenderer` and `SpecialPieceRenderer` now support visual texture downscaling before upload.
+- The Mobile profile sets `visual_texture_downscale_factor = 2`, uploading 256 x 256 chunk textures while preserving 512 x 512 world size via nearest-neighbor sprite scale. The PC profile keeps full-resolution visuals with downscale factor `1`.
+- Normal chunk renderers are pooled instead of being freed/recreated on every unload/load cycle.
+- Special chunk renderers are also pooled.
+- Added `MOBILE_PERFORMANCE_GUIDE.md` and `RUNTIME_PROFILES_GUIDE.md`.
+
+### Important limitation
+
+`ImageTexture.create_from_image()` still runs on the main thread because texture upload and scene-tree attachment are rendering/main-thread operations. This pass reduces upload size and caps uploads per frame, but it does not remove the upload cost entirely.
+
+## Platform runtime profiles
+
+This version separates PC and Mobile performance behavior into two `WorldRuntimeProfile` resources:
+
+- `resources/runtime_profiles/pc_runtime_profile.tres`
+- `resources/runtime_profiles/mobile_runtime_profile.tres`
+
+`WorldManager.runtime_profile_mode` now controls profile selection:
+
+- `Auto`: Mobile on Android/iOS/mobile exports, PC elsewhere.
+- `PC`: force PC profile.
+- `Mobile`: force Mobile profile.
+- `Custom`: use `custom_runtime_profile`.
+
+The older direct mobile overrides (`mobile_performance_mode`, `mobile_load_radius`, and `mobile_visual_texture_downscale_factor`) were removed from `WorldManager`. Runtime/platform choices are now data-driven through the two profile resources, while generation content remains in `WorldGenConfig`.

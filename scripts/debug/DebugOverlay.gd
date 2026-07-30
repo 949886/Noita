@@ -80,8 +80,9 @@ func _make_label(text_value: String, font_size: int, color: Color) -> Label:
 func set_debug_snapshot(snapshot: Dictionary) -> void:
 	if panel == null:
 		_build_ui()
-	world_label.text = "Seed %d  ·  Loaded %d  ·  Pending %d  ·  Radius %d\nPlayer chunk %s  ·  Renderer %s  ·  Unit %dpx x %d\nAsync chunks %s q/r %d/%d  ·  special q %d  ·  last gen/upload %dms/%d" % [
+	world_label.text = "Seed %d  ·  Profile %s  ·  Loaded %d  ·  Pending %d  ·  Radius %d\nPlayer chunk %s  ·  Renderer %s  ·  Unit %dpx x %d  ·  Downscale %dx  ·  Pool %d\nAsync chunks %s q/r %d/%d  ·  special q %d  ·  last gen/upload %dms/%d" % [
 		int(snapshot.get("seed", 0)),
+		str(snapshot.get("runtime_profile", "None")),
 		int(snapshot.get("loaded_count", 0)),
 		int(snapshot.get("pending_count", 0)),
 		int(snapshot.get("load_radius", 0)),
@@ -89,6 +90,8 @@ func set_debug_snapshot(snapshot: Dictionary) -> void:
 		str(snapshot.get("renderer", "PieceImage")),
 		int(snapshot.get("unit_size", 128)),
 		int(snapshot.get("units_per_chunk", 4)),
+		int(snapshot.get("visual_downscale", 1)),
+		int(snapshot.get("renderer_pool", 0)),
 		"on" if bool(snapshot.get("threaded_chunks", false)) else "off",
 		int(snapshot.get("worker_queue", 0)),
 		int(snapshot.get("worker_results", 0)),

@@ -1,29 +1,31 @@
-[gd_scene load_steps=7 format=3 uid="uid://worlddemo001"]
+[gd_scene format=3 uid="uid://worlddemo001"]
 
-[ext_resource type="Script" path="res://scripts/world/WorldManager.gd" id="1"]
-[ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="2"]
-[ext_resource type="PackedScene" path="res://scenes/DebugOverlay.tscn" id="3"]
+[ext_resource type="Script" uid="uid://dy5k5skx4rb2n" path="res://scripts/world/WorldManager.gd" id="1"]
+[ext_resource type="PackedScene" uid="uid://dy2dmllmw3eqq" path="res://scenes/Player.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://dp8k3r3swjbrc" path="res://scenes/DebugOverlay.tscn" id="3"]
 [ext_resource type="Resource" path="res://resources/world_gen/default_world_gen_config.tres" id="4"]
-[ext_resource type="Script" path="res://scripts/debug/WorldDebugDrawer.gd" id="5"]
+[ext_resource type="Script" uid="uid://dynqgvg1xlhp2" path="res://scripts/debug/WorldDebugDrawer.gd" id="5"]
 [ext_resource type="Resource" path="res://resources/pieces/piece_library.tres" id="6"]
+[ext_resource type="Resource" path="res://resources/runtime_profiles/pc_runtime_profile.tres" id="7"]
+[ext_resource type="Resource" uid="uid://d3iitjp1fxcuw" path="res://resources/runtime_profiles/mobile_runtime_profile.tres" id="8"]
 
-[node name="World" type="Node2D"]
+[node name="World" type="Node2D" unique_id=1354663026]
 script = ExtResource("1")
 world_gen_config = ExtResource("4")
 piece_library = ExtResource("6")
-override_seed = false
-world_seed = 20260706
-use_runtime_generated_fallback = false
+pc_runtime_profile = ExtResource("7")
+mobile_runtime_profile = ExtResource("8")
 
-[node name="ChunkRenderers" type="Node2D" parent="."]
+[node name="ChunkRenderers" type="Node2D" parent="." unique_id=135106713]
 
-[node name="SpecialChunks" type="Node2D" parent="."]
+[node name="SpecialChunks" type="Node2D" parent="." unique_id=1166992168]
 
-[node name="Player" parent="." instance=ExtResource("2")]
+[node name="Player" parent="." unique_id=1306727430 instance=ExtResource("2")]
 position = Vector2(256, 256)
 
-[node name="WorldDebugDrawer" type="Node2D" parent="."]
-visible = true
+[node name="WorldDebugDrawer" type="Node2D" parent="." unique_id=1508704323]
+visible = false
 script = ExtResource("5")
 
-[node name="DebugOverlay" parent="." instance=ExtResource("3")]
+[node name="DebugOverlay" parent="." unique_id=1598397729 instance=ExtResource("3")]
+visible = false

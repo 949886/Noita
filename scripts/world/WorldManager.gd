@@ -9,6 +9,12 @@ extends Node2D
 # - Main thread: scene-tree changes, ImageTexture upload, debug UI updates.
 
 const DEFAULT_CONFIG_PATH: String = "res://resources/world_gen/default_world_gen_config.tres"
+const PC_RUNTIME_PROFILE_PATH: String = "res://resources/runtime_profiles/pc_runtime_profile.tres"
+const MOBILE_RUNTIME_PROFILE_PATH: String = "res://resources/runtime_profiles/mobile_runtime_profile.tres"
+const PROFILE_AUTO: int = 0
+const PROFILE_PC: int = 1
+const PROFILE_MOBILE: int = 2
+const PROFILE_CUSTOM: int = 3
 const UNIT_SIZE: int = PieceWorldConstants.UNIT_SIZE
 const UNITS_PER_CHUNK: int = PieceWorldConstants.CHUNK_UNITS
 const CHUNK_SIZE: int = PieceWorldConstants.CHUNK_SIZE
@@ -18,22 +24,32 @@ const CHUNK_SIZE: int = PieceWorldConstants.CHUNK_SIZE
 @export var override_seed: bool = false
 @export var world_seed: int = 20260706
 @export var use_runtime_generated_fallback: bool = false
-@export var use_threaded_chunk_generation: bool = true
-@export var use_threaded_special_generation: bool = true
-@export_range(1, 8, 1) var main_thread_upload_budget_per_frame: int = 2
-@export_range(0.05, 1.0, 0.05) var debug_update_interval: float = 0.20
+@export_enum("Auto", "PC", "Mobile", "Custom") var runtime_profile_mode: int = PROFILE_AUTO
+@export var pc_runtime_profile: WorldRuntimeProfile
+@export var mobile_runtime_profile: WorldRuntimeProfile
+@export var custom_runtime_profile: WorldRuntimeProfile
+
+var runtime_profile: WorldRuntimeProfile
+var use_threaded_chunk_generation: bool = true
+var use_threaded_special_generation: bool = true
+var main_thread_upload_budget_per_frame: int = 2
+var keep_cpu_visual_images: bool = true
+var visual_texture_downscale_factor: int = 1
+var chunk_renderer_pool_limit: int = 64
+var debug_update_interval: float = 0.20
 
 var library: PieceLibrary
 var generator: PieceChunkGenerator
 var chunk_worker: ChunkGenerationWorker
 var loaded_chunks: Dictionary = {}
 var chunk_renderers: Dictionary = {}
+var chunk_renderer_pool: Array[PieceChunkRenderer] = []
 var pending_chunks: Dictionary = {}
 var wanted_chunks: Dictionary = {}
 var player: Node2D
 var debug_overlay: CanvasLayer
 var world_debug_drawer: WorldDebugDrawer
-var debug_world_visible: bool = true
+var debug_world_visible: bool = false
 var active_config: WorldGenConfig
 var load_radius: int = 2
 var special_chunk_planner: SpecialChunkPlanner
@@ -55,7 +71,8 @@ func _ready() -> void:
 	if override_seed:
 		active_config.world_seed = world_seed
 	world_seed = active_config.world_seed
-	load_radius = active_config.load_radius
+	runtime_profile = _resolve_runtime_profile()
+	_apply_runtime_profile()
 	library = _load_piece_library()
 	if library == null:
 		push_error("WorldManager: Unable to load PieceLibrary.")
@@ -76,7 +93,7 @@ func _ready() -> void:
 	world_debug_drawer = get_node_or_null("WorldDebugDrawer") as WorldDebugDrawer
 	if world_debug_drawer != null:
 		world_debug_drawer.world_manager = self
-		world_debug_drawer.visible = debug_world_visible
+	_apply_runtime_profile_to_debug_nodes()
 	if player == null:
 		push_warning("WorldManager: Player node not found. Chunks will load around origin.")
 	_update_loaded_chunks(true)
@@ -94,7 +111,8 @@ func _build_world_runtime() -> void:
 		special_chunks_parent = Node2D.new()
 		special_chunks_parent.name = "SpecialChunks"
 		add_child(special_chunks_parent)
-	special_chunk_manager = SpecialChunkManager.new(special_chunk_planner, special_chunks_parent, use_threaded_special_generation)
+	var special_pool_limit: int = runtime_profile.special_renderer_pool_limit if runtime_profile != null else 32
+	special_chunk_manager = SpecialChunkManager.new(special_chunk_planner, special_chunks_parent, use_threaded_special_generation, visual_texture_downscale_factor, special_pool_limit)
 	generator = PieceChunkGenerator.new(world_seed, library, active_config, special_chunk_planner, world_structure)
 	_start_chunk_worker()
 
@@ -135,11 +153,74 @@ func _load_piece_library() -> PieceLibrary:
 	runtime_library.load_from_default_dirs()
 	return runtime_library
 
+
+func _resolve_runtime_profile() -> WorldRuntimeProfile:
+	var mode: int = runtime_profile_mode
+	if mode == PROFILE_AUTO:
+		mode = PROFILE_MOBILE if _is_mobile_platform() else PROFILE_PC
+	match mode:
+		PROFILE_PC:
+			return _load_runtime_profile(pc_runtime_profile, PC_RUNTIME_PROFILE_PATH)
+		PROFILE_MOBILE:
+			return _load_runtime_profile(mobile_runtime_profile, MOBILE_RUNTIME_PROFILE_PATH)
+		PROFILE_CUSTOM:
+			if custom_runtime_profile != null:
+				return custom_runtime_profile
+			push_warning("WorldManager: Runtime profile mode is Custom, but no custom_runtime_profile is assigned. Falling back to PC profile.")
+			return _load_runtime_profile(pc_runtime_profile, PC_RUNTIME_PROFILE_PATH)
+		_:
+			return _load_runtime_profile(pc_runtime_profile, PC_RUNTIME_PROFILE_PATH)
+
+func _load_runtime_profile(assigned_profile: WorldRuntimeProfile, fallback_path: String) -> WorldRuntimeProfile:
+	if assigned_profile != null:
+		return assigned_profile
+	var loaded: WorldRuntimeProfile = ResourceLoader.load(fallback_path) as WorldRuntimeProfile
+	if loaded != null:
+		return loaded
+	var fallback: WorldRuntimeProfile = WorldRuntimeProfile.new()
+	fallback.display_name = "Fallback"
+	return fallback
+
+func _is_mobile_platform() -> bool:
+	return OS.has_feature("mobile") or OS.has_feature("android") or OS.has_feature("ios") or OS.get_name() == "Android" or OS.get_name() == "iOS"
+
+func _apply_runtime_profile() -> void:
+	if runtime_profile == null:
+		runtime_profile = _resolve_runtime_profile()
+	load_radius = runtime_profile.load_radius if runtime_profile != null else active_config.load_radius
+	use_threaded_chunk_generation = runtime_profile.use_threaded_chunk_generation if runtime_profile != null else true
+	use_threaded_special_generation = runtime_profile.use_threaded_special_generation if runtime_profile != null else true
+	main_thread_upload_budget_per_frame = runtime_profile.main_thread_upload_budget_per_frame if runtime_profile != null else 2
+	keep_cpu_visual_images = runtime_profile.keep_cpu_visual_images if runtime_profile != null else true
+	visual_texture_downscale_factor = runtime_profile.visual_texture_downscale_factor if runtime_profile != null else 1
+	chunk_renderer_pool_limit = runtime_profile.chunk_renderer_pool_limit if runtime_profile != null else 64
+	debug_update_interval = runtime_profile.debug_update_interval if runtime_profile != null else 0.20
+	debug_world_visible = runtime_profile.world_debug_visible_on_start if runtime_profile != null else false
+
+func _apply_runtime_profile_to_debug_nodes() -> void:
+	if runtime_profile == null:
+		runtime_profile = _resolve_runtime_profile()
+	if debug_overlay != null:
+		debug_overlay.visible = runtime_profile.debug_overlay_visible_on_start if runtime_profile != null else false
+	if world_debug_drawer != null:
+		world_debug_drawer.visible = runtime_profile.world_debug_visible_on_start if runtime_profile != null else false
+		debug_world_visible = world_debug_drawer.visible
+		if runtime_profile != null:
+			world_debug_drawer.redraw_interval = runtime_profile.world_debug_redraw_interval
+			world_debug_drawer.show_chunk_bounds = runtime_profile.show_world_debug_chunk_bounds
+			world_debug_drawer.show_socket_profiles = runtime_profile.show_world_debug_socket_profiles
+			world_debug_drawer.show_chunk_labels = runtime_profile.show_world_debug_chunk_labels
+			world_debug_drawer.show_piece_bounds = runtime_profile.show_world_debug_piece_bounds
+
 func _process(delta: float) -> void:
 	_update_loaded_chunks(false)
-	_collect_chunk_results()
-	if special_chunk_manager != null:
-		special_chunk_manager.process_ready(main_thread_upload_budget_per_frame)
+	var remaining_upload_budget: int = maxi(1, main_thread_upload_budget_per_frame)
+	var normal_uploads: int = _collect_chunk_results(remaining_upload_budget)
+	remaining_upload_budget = maxi(0, remaining_upload_budget - normal_uploads)
+	var special_uploads: int = 0
+	if special_chunk_manager != null and remaining_upload_budget > 0:
+		special_uploads = special_chunk_manager.process_ready(remaining_upload_budget)
+	last_chunk_upload_count = normal_uploads + special_uploads
 	debug_update_accum += delta
 	if debug_update_accum >= debug_update_interval:
 		debug_update_accum = 0.0
@@ -163,7 +244,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				_regenerate_world(true)
 
 func _update_debug_ui() -> void:
-	if debug_overlay == null or not debug_overlay.has_method("set_debug_snapshot"):
+	if debug_overlay == null or not debug_overlay.visible or not debug_overlay.has_method("set_debug_snapshot"):
 		return
 	var center: Vector2i = world_pos_to_chunk(player.global_position if player != null else Vector2.ZERO)
 	debug_overlay.call("set_debug_snapshot", _build_debug_snapshot(center))
@@ -193,6 +274,7 @@ func _build_debug_snapshot(center: Vector2i) -> Dictionary:
 		chunk_type_text = "special"
 	return {
 		"seed": world_seed,
+		"runtime_profile": runtime_profile.display_name if runtime_profile != null else "None",
 		"center_chunk": center,
 		"loaded_count": loaded_chunks.size(),
 		"pending_count": pending_chunks.size(),
@@ -205,6 +287,8 @@ func _build_debug_snapshot(center: Vector2i) -> Dictionary:
 		"last_chunk_ms": last_chunk_generation_ms,
 		"last_upload_count": last_chunk_upload_count,
 		"load_radius": load_radius,
+		"visual_downscale": visual_texture_downscale_factor,
+		"renderer_pool": chunk_renderer_pool.size(),
 		"renderer": "PieceImage threaded" if use_threaded_chunk_generation and chunk_worker != null else "PieceImage sync",
 		"unit_size": UNIT_SIZE,
 		"units_per_chunk": UNITS_PER_CHUNK,
@@ -264,6 +348,10 @@ func _regenerate_world(advance_seed: bool) -> void:
 		var renderer: Node = chunk_renderers.get(coord, null) as Node
 		if renderer != null:
 			renderer.queue_free()
+	for pooled: PieceChunkRenderer in chunk_renderer_pool:
+		if pooled != null and is_instance_valid(pooled):
+			pooled.queue_free()
+	chunk_renderer_pool.clear()
 	loaded_chunks.clear()
 	chunk_renderers.clear()
 	pending_chunks.clear()
@@ -271,6 +359,9 @@ func _regenerate_world(advance_seed: bool) -> void:
 	if special_chunks_parent != null:
 		for child: Node in special_chunks_parent.get_children():
 			child.queue_free()
+	runtime_profile = _resolve_runtime_profile()
+	_apply_runtime_profile()
+	_apply_runtime_profile_to_debug_nodes()
 	if library != null:
 		library.prepare()
 	_build_world_runtime()
@@ -326,11 +417,11 @@ func _request_chunk(coord: Vector2i) -> void:
 	else:
 		_load_chunk_sync(coord)
 
-func _collect_chunk_results() -> void:
-	last_chunk_upload_count = 0
-	if chunk_worker == null:
-		return
-	var results: Array[Dictionary] = chunk_worker.collect_results(main_thread_upload_budget_per_frame)
+func _collect_chunk_results(upload_budget: int) -> int:
+	if chunk_worker == null or upload_budget <= 0:
+		return 0
+	var uploaded: int = 0
+	var results: Array[Dictionary] = chunk_worker.collect_results(upload_budget)
 	for result: Dictionary in results:
 		var coord: Vector2i = result.get("coord", Vector2i.ZERO)
 		pending_chunks.erase(coord)
@@ -342,7 +433,8 @@ func _collect_chunk_results() -> void:
 		if not _chunk_is_currently_needed(coord):
 			continue
 		_attach_chunk_renderer(data)
-		last_chunk_upload_count += 1
+		uploaded += 1
+	return uploaded
 
 func _chunk_is_currently_needed(coord: Vector2i) -> bool:
 	if not wanted_chunks.has(coord):
@@ -360,12 +452,23 @@ func _load_chunk_sync(coord: Vector2i) -> void:
 	var data: PieceChunkData = generator.generate_chunk(coord, true)
 	_attach_chunk_renderer(data)
 
+func _obtain_chunk_renderer() -> PieceChunkRenderer:
+	var renderer: PieceChunkRenderer = null
+	while not chunk_renderer_pool.is_empty() and renderer == null:
+		renderer = chunk_renderer_pool.pop_back() as PieceChunkRenderer
+		if renderer == null or not is_instance_valid(renderer):
+			renderer = null
+	if renderer == null:
+		renderer = PieceChunkRenderer.new()
+		chunk_renderers_parent.add_child(renderer)
+	renderer.visible = true
+	return renderer
+
 func _attach_chunk_renderer(data: PieceChunkData) -> void:
 	if data == null or loaded_chunks.has(data.coord):
 		return
-	var renderer: PieceChunkRenderer = PieceChunkRenderer.new()
-	chunk_renderers_parent.add_child(renderer)
-	renderer.setup(data)
+	var renderer: PieceChunkRenderer = _obtain_chunk_renderer()
+	renderer.setup(data, not keep_cpu_visual_images, visual_texture_downscale_factor)
 	chunk_renderers[data.coord] = renderer
 	loaded_chunks[data.coord] = data
 	seam_debug_dirty = true
@@ -373,9 +476,13 @@ func _attach_chunk_renderer(data: PieceChunkData) -> void:
 		world_debug_drawer.queue_redraw()
 
 func _unload_chunk(coord: Vector2i) -> void:
-	var renderer: Node = chunk_renderers.get(coord, null) as Node
+	var renderer: PieceChunkRenderer = chunk_renderers.get(coord, null) as PieceChunkRenderer
 	if renderer != null:
-		renderer.queue_free()
+		if chunk_renderer_pool.size() < chunk_renderer_pool_limit:
+			renderer.recycle_for_pool()
+			chunk_renderer_pool.append(renderer)
+		else:
+			renderer.queue_free()
 	chunk_renderers.erase(coord)
 	loaded_chunks.erase(coord)
 	pending_chunks.erase(coord)

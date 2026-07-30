@@ -14,16 +14,26 @@ func _ready() -> void:
 		add_child(sprite)
 	z_index = 0
 
-func setup(p_data: PieceChunkData) -> void:
+func setup(p_data: PieceChunkData, release_visual_image_after_upload: bool = false, visual_downscale_factor: int = 1) -> void:
 	data = p_data
 	if sprite == null:
 		sprite = Sprite2D.new()
 		sprite.centered = false
 		add_child(sprite)
 	position = Vector2(data.coord * PieceWorldConstants.CHUNK_SIZE).round()
+	var downscale: int = maxi(1, visual_downscale_factor)
+	sprite.scale = Vector2(downscale, downscale)
 	if data.texture == null and data.visual_image != null and not data.visual_image.is_empty():
 		# Texture upload must stay on the main thread. Background workers only build Images.
-		data.texture = ImageTexture.create_from_image(data.visual_image)
+		var upload_image: Image = data.visual_image
+		if downscale > 1:
+			upload_image = data.visual_image.duplicate()
+			upload_image.resize(maxi(1, int(data.visual_image.get_width() / downscale)), maxi(1, int(data.visual_image.get_height() / downscale)), Image.INTERPOLATE_NEAREST)
+		data.texture = ImageTexture.create_from_image(upload_image)
+		if release_visual_image_after_upload:
+			# Mobile/runtime streaming path does not need the CPU visual image after upload.
+			# material_image remains available for future collision/material queries.
+			data.visual_image = null
 	sprite.texture = data.texture
 	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	queue_redraw()
@@ -46,3 +56,12 @@ func _phase_color(phase: StringName) -> Color:
 			return Color(1.0, 0.65, 0.1, 1.0)
 		_:
 			return Color(0.9, 0.9, 0.9, 1.0)
+
+func recycle_for_pool() -> void:
+	data = null
+	show_debug = false
+	visible = false
+	if sprite != null:
+		sprite.texture = null
+		sprite.scale = Vector2.ONE
+	queue_redraw()

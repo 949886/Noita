@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="WorldRuntimeProfile" format=3 uid="uid://d3iitjp1fxcuw"]
+
+[ext_resource type="Script" uid="uid://dtmtee2lyablj" path="res://scripts/resources/WorldRuntimeProfile.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"mobile"
+display_name = "Mobile"
+main_thread_upload_budget_per_frame = 1
+keep_cpu_visual_images = false
+visual_texture_downscale_factor = 2
+chunk_renderer_pool_limit = 32
+special_renderer_pool_limit = 16
+debug_update_interval = 0.3
+world_debug_redraw_interval = 0.25
+show_world_debug_chunk_bounds = false
+show_world_debug_socket_profiles = false
+show_world_debug_chunk_labels = false
+show_world_debug_piece_bounds = false

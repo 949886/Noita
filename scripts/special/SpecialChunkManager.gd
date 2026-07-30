@@ -12,11 +12,16 @@ var needed_special_chunks: Dictionary = {}
 var use_threaded_generation: bool = true
 var image_worker: SpecialChunkImageWorker
 var last_result_ms: int = 0
+var renderer_pool: Array[SpecialPieceRenderer] = []
+var visual_downscale_factor: int = 1
+var renderer_pool_limit: int = 32
 
-func _init(p_planner: SpecialChunkPlanner, p_parent_node: Node2D, p_use_threaded_generation: bool = true) -> void:
+func _init(p_planner: SpecialChunkPlanner, p_parent_node: Node2D, p_use_threaded_generation: bool = true, p_visual_downscale_factor: int = 1, p_renderer_pool_limit: int = 32) -> void:
 	planner = p_planner
 	parent_node = p_parent_node
 	use_threaded_generation = p_use_threaded_generation
+	visual_downscale_factor = maxi(1, p_visual_downscale_factor)
+	renderer_pool_limit = maxi(0, p_renderer_pool_limit)
 	if use_threaded_generation:
 		image_worker = SpecialChunkImageWorker.new()
 		if not image_worker.start():
@@ -30,6 +35,11 @@ func stop() -> void:
 		image_worker = null
 	pending_chunks.clear()
 	needed_special_chunks.clear()
+	for item in renderer_pool:
+		var renderer: Node = item as Node
+		if renderer != null and is_instance_valid(renderer):
+			renderer.queue_free()
+	renderer_pool.clear()
 
 func update_loaded_chunks(needed_chunks: Dictionary) -> void:
 	if planner == null or parent_node == null:
@@ -63,10 +73,10 @@ func update_loaded_chunks(needed_chunks: Dictionary) -> void:
 		image_worker.prune_requests(needed_special_chunks)
 
 func process_ready(upload_budget: int = 1) -> int:
-	if image_worker == null:
+	if image_worker == null or upload_budget <= 0:
 		return 0
 	var attached: int = 0
-	var results: Array[Dictionary] = image_worker.collect_results(maxi(1, upload_budget))
+	var results: Array[Dictionary] = image_worker.collect_results(upload_budget)
 	for result: Dictionary in results:
 		var id: StringName = StringName(str(result.get("id", &"")))
 		if not pending_chunks.has(id) or not needed_special_chunks.has(id):
@@ -82,23 +92,38 @@ func process_ready(upload_budget: int = 1) -> int:
 	return attached
 
 func _load_chunk_sync(placement: SpecialChunkPlacement) -> void:
-	var instance: SpecialPieceRenderer = SpecialPieceRenderer.new()
+	var instance: SpecialPieceRenderer = _obtain_renderer()
 	instance.name = str(placement.id)
-	parent_node.add_child(instance)
-	instance.setup(placement)
+	instance.setup(placement, visual_downscale_factor)
 	loaded_chunks[placement.id] = instance
 
 func _load_chunk_from_image(placement: SpecialChunkPlacement, img: Image) -> void:
-	var instance: SpecialPieceRenderer = SpecialPieceRenderer.new()
+	var instance: SpecialPieceRenderer = _obtain_renderer()
 	instance.name = str(placement.id)
-	parent_node.add_child(instance)
-	instance.setup_with_image(placement, img)
+	instance.setup_with_image(placement, img, visual_downscale_factor)
 	loaded_chunks[placement.id] = instance
 
+func _obtain_renderer() -> SpecialPieceRenderer:
+	var instance: SpecialPieceRenderer = null
+	while not renderer_pool.is_empty() and instance == null:
+		instance = renderer_pool.pop_back() as SpecialPieceRenderer
+		if instance == null or not is_instance_valid(instance):
+			instance = null
+	if instance == null:
+		instance = SpecialPieceRenderer.new()
+		parent_node.add_child(instance)
+	else:
+		instance.visible = true
+	return instance
+
 func _unload_chunk(chunk_id: StringName) -> void:
-	var instance: Node = loaded_chunks.get(chunk_id, null) as Node
+	var instance: SpecialPieceRenderer = loaded_chunks.get(chunk_id, null) as SpecialPieceRenderer
 	if instance != null:
-		instance.queue_free()
+		if renderer_pool.size() < renderer_pool_limit:
+			instance.recycle_for_pool()
+			renderer_pool.append(instance)
+		else:
+			instance.queue_free()
 	loaded_chunks.erase(chunk_id)
 
 func queued_count() -> int:

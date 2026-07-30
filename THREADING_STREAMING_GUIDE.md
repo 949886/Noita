@@ -91,7 +91,7 @@ Enables the special image worker. Recommended: `true`.
 main_thread_upload_budget_per_frame
 ```
 
-Limits how many ready results may be converted into renderers/textures in one frame. Recommended starting value: `2`.
+Limits how many ready results may be converted into renderers/textures in one frame. Recommended desktop starting value: `2`. Mobile performance mode caps this to `1`.
 
 Lower values reduce spikes but make chunks appear later. Higher values fill the world faster but can reintroduce upload stutter.
 
@@ -121,16 +121,26 @@ main thread uploads at most N textures per frame
 
 So the expensive CPU work is no longer packed into the same frame as player movement.
 
+## Mobile performance pass
+
+`MOBILE_PERFORMANCE_GUIDE.md` documents the extra mobile-oriented pass layered on top of this threaded architecture. In short:
+
+- normal and special chunks share one total texture-upload budget per frame;
+- mobile mode caps that budget to `1`;
+- debug overlays start hidden;
+- chunk/special renderers are pooled;
+- CPU `visual_image` data is released after upload by default;
+- mobile mode uploads half-resolution visual textures (`512 -> 256`) and scales sprites with nearest filtering.
+
 ## Remaining possible stutter source
 
-`ImageTexture.create_from_image()` still happens on the main thread. The upload budget limits how many uploads can happen per frame, but a very large image can still cost a frame.
+`ImageTexture.create_from_image()` still happens on the main thread. The upload budget and visual downscale reduce the spike, but texture upload cannot be fully moved into the current worker.
 
 For future optimization, consider:
 
-- texture pooling
-- renderer pooling
-- lower upload budget on low-end machines
-- preloading one extra radius beyond visible chunks
+- active/preload radius separation
+- glue image caching
+- dynamic worker throttling
 - splitting very large special chunks into smaller textures
 
 ## Debug HUD fields
@@ -167,3 +177,13 @@ last gen/upload
 
 Last normal chunk background generation time in milliseconds / how many generated chunks were uploaded this frame.
 
+
+
+## Runtime profile integration
+
+Threading and streaming knobs are now loaded from `WorldRuntimeProfile` resources instead of being hard-coded as mobile-only overrides on `WorldManager`.
+
+- PC profile: full-resolution visuals, larger load radius, larger upload budget.
+- Mobile profile: smaller load radius, one shared texture upload per frame, visual downscale, CPU visual-image release after upload.
+
+The worker model is unchanged: background threads build `Image` data, and the main thread still creates `ImageTexture` objects and scene nodes.
